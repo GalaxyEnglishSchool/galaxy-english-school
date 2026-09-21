@@ -170,16 +170,16 @@ export const milestones = [
   },
   {
     year: '2008',
-    title: 'Government Affiliation (Private)',
+    title: 'School Established : Government Affiliation (Private)',
     quote:
-      'After six years of dedicated effort, Galaxy English School received its official Government affiliation (Private) — turning a long-held dream into reality.',
+      'After six years of dedicated effort, Galaxy English School received its official Government affiliation (Private) — turning a long-held dream into realityThe school was inaugurated in Chh. Sambhajinagar with the support of Shri Vijaykumar Kalam-Patil (IAS), Smt. Jaishree Kalam-Patil, and the blessings of the family elders.',
   },
-  {
-    year: '2008',
-    title: 'School Established',
-    quote:
-      'The school was inaugurated in Chh. Sambhajinagar with the support of Shri Vijaykumar Kalam-Patil (IAS), Smt. Jaishree Kalam-Patil, and the blessings of the family elders.',
-  },
+ {
+  year: '2017',
+  title: 'First Student Transport Bus',
+  quote:
+    'With a vision to make education more accessible, we introduced our first school bus service for students.'
+},
 ]
 
 export const footerLinks = [
