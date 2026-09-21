@@ -1,5 +1,5 @@
 import Reveal from './Reveal'
-import { courses } from '../data/siteData'
+import { courses, site } from '../data/siteData'
 import './Courses.css'
 
 function Courses() {
@@ -8,10 +8,11 @@ function Courses() {
       <div className="container">
         <Reveal>
           <div className="section-header">
-            <span className="section-label">Our Programs</span>
-            <h2 className="section-title">Courses for every learner</h2>
+            <span className="section-label">Academics</span>
+            <h2 className="section-title">{site.grades}</h2>
             <p className="section-subtitle">
-              From first words to fluent professional English — find the right program for your goals.
+              {site.board} curriculum from early years through higher secondary,
+              with NEET/JEE foundation and holistic development at every stage.
             </p>
           </div>
         </Reveal>
@@ -21,7 +22,7 @@ function Courses() {
               <article
                 className={`course-card hover-lift ${course.highlight ? 'course-card--featured' : ''}`}
               >
-                {course.highlight && <span className="course-card__badge">Most Popular</span>}
+                {course.highlight && <span className="course-card__badge">SSC Preparation</span>}
                 <span className="course-card__level">{course.level}</span>
                 <h3>{course.title}</h3>
                 <p>{course.description}</p>
@@ -29,7 +30,7 @@ function Courses() {
                   <span>{course.duration}</span>
                   <span>{course.schedule}</span>
                 </div>
-                <a href="#contact" className="course-card__link">Enquire Now →</a>
+                <a href="#contact" className="course-card__link">Enquire for Admission →</a>
               </article>
             </Reveal>
           ))}

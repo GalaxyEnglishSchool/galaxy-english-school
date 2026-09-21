@@ -1,5 +1,5 @@
 import Reveal from './Reveal'
-import { site } from '../data/siteData'
+import { aboutStory, site } from '../data/siteData'
 import { loadGalleryPhotos } from '../utils/loadPhotos'
 import './About.css'
 
@@ -11,20 +11,15 @@ function About() {
       <div className="container about__inner">
         <Reveal className="about__content" direction="left">
           <span className="section-label">About Us</span>
-          <h2 className="section-title">A place where English learning feels inspiring</h2>
-          <p>
-            At {site.name}, we believe language opens doors. Since 2014, we have helped
-            thousands of students speak, read, and write English with confidence — whether
-            for school, career, travel, or global exams.
-          </p>
-          <p>
-            Our classrooms combine structured curriculum with interactive activities,
-            conversation practice, and continuous feedback so you progress at the right pace.
-          </p>
+          <h2 className="section-title">{aboutStory.title}</h2>
+          <p className="about__board-badge">{site.board} · {site.grades}</p>
+          {aboutStory.paragraphs.map((paragraph) => (
+            <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+          ))}
           <ul className="about__list">
-            <li>Cambridge-aligned curriculum</li>
-            <li>Weekly progress reports for parents &amp; professionals</li>
-            <li>Free placement test before enrollment</li>
+            {aboutStory.highlights.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
           </ul>
         </Reveal>
 
@@ -43,12 +38,9 @@ function About() {
           )}
           <div className="about__card hover-lift">
             <div className="about__card-icon" aria-hidden="true">🌟</div>
-            <h3>Why families trust us</h3>
-            <p>
-              Rated 4.9/5 by students and parents for teaching quality, friendly staff,
-              and visible results within the first month.
-            </p>
-            <a href="#contact" className="btn btn--secondary">Get Free Consultation</a>
+            <h3>Our Founding Family</h3>
+            <p>{aboutStory.foundersNote}</p>
+            <a href="#contact" className="btn btn--secondary">Enquire for Admission</a>
           </div>
         </Reveal>
       </div>

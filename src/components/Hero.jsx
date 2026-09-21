@@ -14,15 +14,18 @@ function Hero() {
 
       <div className="container hero__inner">
         <div className="hero__content">
-          <span className="hero__badge animate-fade-up">Admissions Open 2026</span>
+          <span className="hero__badge animate-fade-up">Admissions Open · {site.grades}</span>
           <h1 className="hero__title animate-fade-up delay-1">
-            Master English with
+            Welcome to
             <span className="hero__highlight"> {site.name}</span>
           </h1>
+          <p className="hero__board animate-fade-up delay-2">
+            {site.board} · {site.location}
+          </p>
           <p className="hero__text animate-fade-up delay-2">{site.description}</p>
           <div className="hero__actions animate-fade-up delay-3">
-            <a href="#contact" className="btn btn--primary btn--glow">Book a Free Demo</a>
-            <a href="#courses" className="btn btn--outline">View Courses</a>
+            <a href="#contact" className="btn btn--primary btn--glow">Apply for Admission</a>
+            <a href="#courses" className="btn btn--outline">View Academics</a>
           </div>
         </div>
 

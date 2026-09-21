@@ -1,5 +1,5 @@
 import Reveal from './Reveal'
-import { contact, site } from '../data/siteData'
+import { contact, courses, site } from '../data/siteData'
 import './Contact.css'
 
 function Contact() {
@@ -10,10 +10,10 @@ function Contact() {
       <div className="container contact__inner">
         <Reveal className="contact__info" direction="left">
           <span className="section-label">Get in Touch</span>
-          <h2 className="section-title">Start your English journey today</h2>
+          <h2 className="section-title">Enquire about admission</h2>
           <p>
-            Book a free demo class or speak with our counsellor. We will help you choose
-            the right course and batch.
+            Contact us for admission enquiries for {site.grades}. Our office team
+            will guide you through the process and answer your questions.
           </p>
           <ul className="contact__details">
             <li>
@@ -58,14 +58,14 @@ function Contact() {
               const form = e.target
               const name = form.name.value
               const phone = form.phone.value
-              const course = form.course.value
-              const body = `Name: ${name}%0APhone: ${phone}%0ACourse: ${course}`
-              window.location.href = `mailto:${contact.email}?subject=Enrollment Enquiry - ${site.name}&body=${body}`
+              const grade = form.grade.value
+              const body = `Name: ${name}%0APhone: ${phone}%0AGrade/Program: ${grade}`
+              window.location.href = `mailto:${contact.email}?subject=Admission Enquiry - ${site.name}&body=${body}`
             }}
           >
-            <h3>Request a callback</h3>
+            <h3>Admission enquiry form</h3>
             <label>
-              Full Name
+              Parent / Student Name
               <input type="text" name="name" required placeholder="Your name" />
             </label>
             <label>
@@ -73,15 +73,14 @@ function Contact() {
               <input type="tel" name="phone" required placeholder="+91 98765 43210" />
             </label>
             <label>
-              Course Interest
-              <select name="course" required defaultValue="">
-                <option value="" disabled>Select a course</option>
-                <option>English Foundations</option>
-                <option>Confident Communicator</option>
-                <option>Professional English</option>
-                <option>Galaxy Juniors</option>
-                <option>IELTS &amp; TOEFL</option>
-                <option>Business English</option>
+              Grade / Program
+              <select name="grade" required defaultValue="">
+                <option value="" disabled>Select grade or program</option>
+                {courses.map((course) => (
+                  <option key={course.title} value={course.title}>
+                    {course.title}
+                  </option>
+                ))}
               </select>
             </label>
             <button type="submit" className="btn btn--primary btn--full">

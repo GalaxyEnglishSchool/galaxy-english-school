@@ -4,6 +4,12 @@
   gap: 1.5rem;
 }
 
+@media (max-width: 1100px) {
+  .features__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .feature-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

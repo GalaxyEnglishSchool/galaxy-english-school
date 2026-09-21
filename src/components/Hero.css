@@ -84,6 +84,13 @@
   animation: shimmer 4s linear infinite;
 }
 
+.hero__board {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c7d2fe;
+  margin-bottom: 0.75rem;
+}
+
 .hero__text {
   font-size: 1.1rem;
   color: #94a3b8;

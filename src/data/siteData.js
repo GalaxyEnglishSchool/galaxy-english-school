@@ -1,30 +1,31 @@
 export const site = {
   name: 'Galaxy English School',
-  tagline: 'Nurturing Every Student, Since 2002.',
+  tagline: 'Founded in 2008 · Vision Since 2002',
+  board: 'Maharashtra State Board',
+  grades: 'Play Group to 12th Standard',
   description:
-    'Founded in 2002 with a vision to nurture students and bring out the best in them, Galaxy English School received its government affiliation in 2008 and has been serving students in Chh. Sambhajinagar ever since.',
+    'A government-affiliated private state board school in Chh. Sambhajinagar — Play Group to 12th — nurturing every student with academics, e-learning, NEET/JEE foundation, sports, and holistic growth.',
+  location: 'Chh. Sambhajinagar, Maharashtra',
 }
 
 export const contact = {
-  phone: '+91 XXXXX XXXXX', // TODO: add real phone number
-  phoneLink: '91XXXXXXXXXX', // TODO: add real phone number (digits only, with country code)
-  email: 'info@galaxyenglishschool.com', // TODO: confirm this is the real email
-  address: 'Chh. Sambhajinagar, Maharashtra', // TODO: add full street address
-  hours: 'Mon – Sat: 9:00 AM – 7:00 PM', // TODO: confirm actual school hours
-  whatsappMessage: 'Hi! I would like to know more about Galaxy English School courses.',
+  phone: '+91 94208 11484',
+  phoneLink: '919420811484',
+  email: 'info@galaxyenglishschool.com',
+  address: 'Galaxy English School, Chh. Sambhajinagar, Maharashtra',
+  hours: 'Mon – Sat: School Hours (Contact office for timings)',
+  whatsappMessage: 'Hi! I would like to enquire about admission at Galaxy English School.',
 }
 
 export const navLinks = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
   { label: 'Gallery', href: '#gallery' },
-  { label: 'Courses', href: '#courses' },
-  { label: 'Reviews', href: '#reviews' },
+  { label: 'Academics', href: '#courses' },
+  { label: 'Our Journey', href: '#journey' },
   { label: 'Contact', href: '#contact' },
 ]
 
-// Optional: custom captions for specific photos (key = exact filename)
-// Photos are auto-detected from src/assets/Photo*.jpg — just add Photo4.jpg, Photo5.jpg, etc.
 export const photoCaptions = {
   'Photo1.jpg': {
     caption: 'Galaxy English School — the school building',
@@ -41,115 +42,149 @@ export const photoCaptions = {
 }
 
 export const stats = [
-  { value: '20+', label: 'Years of Excellence' }, // TODO: confirm (2002 → present)
-  { value: '2000+', label: 'Students Trained' }, // TODO: add real number
-  { value: '95%', label: 'Success Rate' }, // TODO: add real number
-  { value: '25+', label: 'Expert Teachers' }, // TODO: add real number
+  { value: '18+', label: 'Years of Legacy (Since 2008)' },
+  { value: '2000', label: 'Students Trained' },
+  { value: '25+', label: 'Expert Teachers' },
+  { value: '10+', label: 'Modern Facilities' },
 ]
+
+export const aboutStory = {
+  title: 'A vision that became a school',
+  subtitle: 'Work began in 2002 — the school was founded in 2008',
+  paragraphs: [
+    'It all began in the year 2002. Smt. Dhanashree Kalam-Patil Madam and Shri Deelip Nagorao Kalam-Patil (Government Officer, 2000 batch) shared a common vision — to nurture young minds and help every student bring out the very best in themselves. This vision became the seed from which Galaxy English School would eventually grow.',
+    'With great effort, patience and perseverance sustained over six long years, the dream steadily took shape. Finally, in 2008, the day arrived when the school received its official Government affiliation — a moment that turned years of hard work into reality.',
+    'The school was established in Chh. Sambhajinagar, made possible by the generous support extended toward its infrastructure and building by Shri Vijaykumar Kalam-Patil (IAS), who joined the Maharashtra State Government service as a Deputy Collector in 1987, together with Smt. Jaishree Kalam-Patil, and with the blessings of Grandfather "DAD." and Grandmother Puspabai.',
+    'And so, in 2008, Galaxy English School was founded. Its first inauguration ceremony was held with great joy and pride, graced by the presence of all the esteemed dignitaries who had walked alongside this journey from its very beginning in 2002.',
+  ],
+  highlights: [
+    'Maharashtra State Board curriculum',
+    'Play Group to 12th Standard',
+    'Government affiliated since 2008',
+    'Holistic development — academics, sports & values',
+  ],
+  foundersNote:
+    'Founded on the vision of Smt. Dhanashree Kalam-Patil & Shri Deelip Nagorao Kalam-Patil, with the support of Shri Vijaykumar Kalam-Patil (IAS) & Smt. Jaishree Kalam-Patil.',
+}
 
 export const features = [
   {
-    icon: '👨‍🏫',
-    title: 'Certified Teachers',
-    description: 'Learn from experienced instructors who focus on practical communication.', // TODO: confirm/adjust
+    icon: '💻',
+    title: 'E-Learning',
+    description: 'Digital learning tools and e-learning resources to support classroom teaching and help students learn at their own pace.',
   },
   {
-    icon: '👥',
-    title: 'Small Batch Sizes',
-    description: 'Small class sizes so every learner gets personal attention and feedback.', // TODO: confirm batch size
+    icon: '🔬',
+    title: 'NEET & JEE Foundation',
+    description: 'Strong foundation in Mathematics and Science for students preparing for competitive exams like NEET and JEE.',
   },
   {
-    icon: '🎯',
-    title: 'Goal-Based Learning',
-    description: 'Custom study plans for school, career, travel, or international exam preparation.',
+    icon: '⚽',
+    title: 'Sports & Physical Growth',
+    description: 'Sports and physical activities to build fitness, teamwork, discipline, and confidence alongside academics.',
   },
   {
-    icon: '📱',
-    title: 'Online & Offline',
-    description: 'Flexible classroom and live online sessions to fit your schedule.', // TODO: confirm if online classes are offered
+    icon: '🧠',
+    title: 'IQ & EQ Development',
+    description: 'Programs that develop both intellectual ability (IQ) and emotional intelligence (EQ) for well-rounded personalities.',
+  },
+  {
+    icon: '🚌',
+    title: 'Bus Facility',
+    description: 'Safe and convenient school bus service for students across the area.',
+  },
+  {
+    icon: '🤝',
+    title: 'Student Counseling',
+    description: 'Guidance and counseling to support students through academic, personal, and career-related challenges.',
+  },
+  {
+    icon: '📹',
+    title: 'CCTV Security',
+    description: 'CCTV surveillance across the campus for the safety and security of every child.',
+  },
+  {
+    icon: '📚',
+    title: 'Smart Classrooms',
+    description: 'Proper classrooms equipped with boards and modern learning devices for effective, interactive teaching.',
   },
 ]
 
 export const courses = [
-  // TODO: replace with Galaxy English School's actual course offerings
   {
-    level: 'Beginner',
-    title: 'English Foundations',
-    description: 'Alphabet, pronunciation, basic grammar, and everyday conversation for absolute beginners.',
-    duration: '3 months',
-    schedule: 'Mon, Wed, Fri · 10 AM',
+    level: 'Early Years',
+    title: 'Play Group & Nursery',
+    description: 'A joyful start to learning through play, stories, rhymes, and activities that build curiosity and social skills.',
+    duration: 'Play Group & Nursery',
+    schedule: 'State Board',
     highlight: false,
   },
   {
-    level: 'Intermediate',
-    title: 'Confident Communicator',
-    description: 'Improve fluency, expand vocabulary, and practice real-life speaking scenarios.',
-    duration: '4 months',
-    schedule: 'Tue, Thu, Sat · 5 PM',
+    level: 'Primary',
+    title: 'Std 1st to 4th',
+    description: 'Strong foundation in language, mathematics, and environmental studies with activity-based learning.',
+    duration: 'Std 1 – 4',
+    schedule: 'State Board',
+    highlight: false,
+  },
+  {
+    level: 'Upper Primary',
+    title: 'Std 5th to 7th',
+    description: 'Deeper subject understanding, project work, and introduction to science and mathematics fundamentals.',
+    duration: 'Std 5 – 7',
+    schedule: 'State Board',
+    highlight: false,
+  },
+  {
+    level: 'Secondary',
+    title: 'Std 8th to 10th',
+    description: 'Rigorous state board preparation with focus on SSC examination success and conceptual clarity.',
+    duration: 'Std 8 – 10',
+    schedule: 'State Board · SSC',
     highlight: true,
   },
   {
-    level: 'Advanced',
-    title: 'Professional English',
-    description: 'Business writing, presentations, interviews, and advanced grammar for career growth.',
-    duration: '5 months',
-    schedule: 'Mon – Fri · 6 PM',
+    level: 'Higher Secondary',
+    title: 'Std 11th & 12th',
+    description: 'Science, Commerce, and Arts streams with guidance for higher education and competitive exam preparation.',
+    duration: 'Std 11 – 12',
+    schedule: 'State Board · HSC',
     highlight: false,
   },
   {
-    level: 'Kids',
-    title: 'Galaxy Juniors',
-    description: 'Fun, interactive English for children aged 6–14 with games, stories, and creative activities.',
-    duration: '6 months',
-    schedule: 'Sat & Sun · 11 AM',
+    level: 'Competitive Prep',
+    title: 'NEET / JEE Foundation',
+    description: 'Dedicated maths and science foundation coaching for students aiming for medical and engineering entrance exams.',
+    duration: 'Std 8 – 12',
+    schedule: 'Integrated Program',
     highlight: false,
   },
 ]
 
-export const testimonials = [
-  // ⚠️ PLACEHOLDER CONTENT — replace every entry below with a real testimonial
-  // from an actual student/parent before this site goes live. Do not publish
-  // these as-is; presenting invented reviews as genuine could mislead visitors.
+export const milestones = [
   {
-    name: 'Placeholder Name 1',
-    role: 'Student',
+    year: '2002',
+    title: 'The Vision Begins',
     quote:
-      'Replace this with a real quote from a student about their experience learning at Galaxy English School.',
-    rating: 5,
+      'Smt. Dhanashree Kalam-Patil and Shri Deelip Nagorao Kalam-Patil envisioned a school that would nurture young minds and bring out the best in every student.',
   },
   {
-    name: 'Placeholder Name 2',
-    role: 'Parent',
+    year: '2008',
+    title: 'Government Affiliation (Private)',
     quote:
-      'Replace this with a real quote from a parent about their child\'s progress at Galaxy English School.',
-    rating: 5,
+      'After six years of dedicated effort, Galaxy English School received its official Government affiliation (Private) — turning a long-held dream into reality.',
   },
   {
-    name: 'Placeholder Name 3',
-    role: 'Student',
+    year: '2008',
+    title: 'School Established',
     quote:
-      'Replace this with a real quote about a specific course or teacher at Galaxy English School.',
-    rating: 5,
-  },
-  {
-    name: 'Placeholder Name 4',
-    role: 'Alumni',
-    quote:
-      'Replace this with a real quote from a former student about how the school helped them long-term.',
-    rating: 5,
-  },
-  {
-    name: 'Placeholder Name 5',
-    role: 'Parent',
-    quote:
-      'Replace this with a real quote from a parent about the school environment or teaching quality.',
-    rating: 5,
+      'The school was inaugurated in Chh. Sambhajinagar with the support of Shri Vijaykumar Kalam-Patil (IAS), Smt. Jaishree Kalam-Patil, and the blessings of the family elders.',
   },
 ]
 
 export const footerLinks = [
   { label: 'About Us', href: '#about' },
   { label: 'Gallery', href: '#gallery' },
-  { label: 'Courses', href: '#courses' },
+  { label: 'Academics', href: '#courses' },
   { label: 'Contact', href: '#contact' },
 ]
