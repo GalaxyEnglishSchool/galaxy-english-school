@@ -1,9 +1,11 @@
 import { photoCaptions } from '../data/siteData'
 
-// Auto-detects every image in src/assets/ that starts with "Photo"
-// e.g. Photo1.jpg, Photo2.jpg, Photo123.png — add files, no code changes needed
+// Auto-detects campus photos: Photo*.jpg and named campus images (e.g. SchoolBus.jpg)
 const photoModules = import.meta.glob(
-  '../assets/Photo*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}',
+  [
+    '../assets/Photo*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}',
+    '../assets/SchoolBus.{jpg,jpeg,JPG,JPEG}',
+  ],
   { eager: true, import: 'default' },
 )
 

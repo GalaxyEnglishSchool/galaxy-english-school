@@ -177,6 +177,22 @@ p {
 
 @media (max-width: 768px) {
   .section {
-    padding: 3.5rem 0;
+    padding: 2.5rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .section-subtitle--compact-mobile {
+    font-size: 0.95rem;
+  }
+
+  .container {
+    width: min(var(--container), 100% - 1.5rem);
   }
 }

@@ -1,3 +1,4 @@
+import Carousel from './Carousel'
 import Reveal from './Reveal'
 import { loadGalleryPhotos } from '../utils/loadPhotos'
 import './Gallery.css'
@@ -22,22 +23,18 @@ function Gallery() {
           </div>
         </Reveal>
 
-        <div className="gallery__grid">
-          {photos.map((photo, index) => (
-            <Reveal key={photo.id} delay={index * 100} direction="scale">
-              <figure
-                className={`gallery__item ${index === 0 ? 'gallery__item--featured' : ''} hover-lift`}
-              >
-                <div className="gallery__image img-zoom">
-                  <img src={photo.src} alt={photo.alt} loading="lazy" />
-                  <div className="gallery__overlay">
-                    <span>{photo.caption}</span>
-                  </div>
+        <Carousel ariaLabel="School photo gallery" className="carousel--photos" mode="marquee">
+          {photos.map((photo) => (
+            <figure key={photo.id} className="gallery__slide-card hover-lift">
+              <div className="gallery__image gallery__image--slide">
+                <img src={photo.src} alt={photo.alt} loading="lazy" />
+                <div className="gallery__overlay">
+                  <span>{photo.caption}</span>
                 </div>
-              </figure>
-            </Reveal>
+              </div>
+            </figure>
           ))}
-        </div>
+        </Carousel>
       </div>
     </section>
   )

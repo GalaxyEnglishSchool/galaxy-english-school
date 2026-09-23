@@ -22,6 +22,20 @@
   margin-bottom: 1.25rem;
 }
 
+.about__read-more {
+  display: inline-block;
+  margin: 0.5rem 0 1rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .about__list {
   margin: 1.5rem 0 0;
   padding: 0;
@@ -88,10 +102,14 @@
 
 .about__photo--main img {
   min-height: 200px;
+  max-height: 280px;
+  object-fit: cover;
 }
 
 .about__photo--secondary img {
-  min-height: 140px;
+  min-height: 160px;
+  max-height: 220px;
+  object-fit: cover;
 }
 
 .about__card {
@@ -105,7 +123,6 @@
   font-size: 2rem;
   margin-bottom: 1rem;
   display: inline-block;
-  animation: float-slow 4s ease-in-out infinite;
 }
 
 .about__card h3 {

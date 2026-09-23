@@ -11,8 +11,9 @@ export const site = {
 export const contact = {
   phone: '+91 94208 11484',
   phoneLink: '919420811484',
-  email: 'info@galaxyenglishschool.com',
+  email: 'galaxyenglishschool55@gmail.com',
   address: 'Galaxy English School, Chh. Sambhajinagar, Maharashtra',
+  mapsLink: 'https://maps.app.goo.gl/w5EcSTzNe2gYXBXf6',
   hours: 'Mon – Sat: School Hours (Contact office for timings)',
   whatsappMessage: 'Hi! I would like to enquire about admission at Galaxy English School.',
 }
@@ -38,6 +39,10 @@ export const photoCaptions = {
   'Photo3.jpg': {
     caption: 'Ribbon-cutting ceremony',
     alt: 'Ribbon-cutting ceremony at Galaxy English School inauguration',
+  },
+  'SchoolBus.jpg': {
+    caption: 'Galaxy English School bus facility',
+    alt: 'Galaxy English School yellow bus for student transport',
   },
 }
 

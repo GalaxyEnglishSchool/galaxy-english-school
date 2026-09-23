@@ -198,6 +198,27 @@
   }
 
   .hero {
-    padding: 3rem 0 4rem;
+    padding: 2rem 0 2.5rem;
+  }
+
+  .hero__title {
+    font-size: 1.75rem;
+  }
+
+  .hero__text {
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero__visual {
+    min-height: 240px;
+  }
+
+  .hero__image-wrap {
+    max-width: 280px;
+  }
+
+  .hero__image-wrap img {
+    height: 220px;
   }
 }

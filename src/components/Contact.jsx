@@ -2,8 +2,28 @@ import Reveal from './Reveal'
 import { contact, courses, site } from '../data/siteData'
 import './Contact.css'
 
+function buildWhatsAppUrl(message) {
+  return `https://wa.me/${contact.phoneLink}?text=${encodeURIComponent(message)}`
+}
+
 function Contact() {
-  const whatsappUrl = `https://wa.me/${contact.phoneLink}?text=${encodeURIComponent(contact.whatsappMessage)}`
+  const whatsappUrl = buildWhatsAppUrl(contact.whatsappMessage)
+
+  const handleEnquirySubmit = (e) => {
+    e.preventDefault()
+    const form = e.target
+    const name = form.name.value.trim()
+    const phone = form.phone.value.trim()
+    const grade = form.grade.value
+
+    const message = `Hello! I would like to enquire about admission at ${site.name}.
+
+Name: ${name}
+Phone: ${phone}
+Grade: ${grade}`
+
+    window.open(buildWhatsAppUrl(message), '_blank', 'noopener,noreferrer')
+  }
 
   return (
     <section id="contact" className="contact section">
@@ -34,7 +54,14 @@ function Contact() {
               <span className="contact__icon" aria-hidden="true">📍</span>
               <div>
                 <strong>Address</strong>
-                <span>{contact.address}</span>
+                <a
+                  href={contact.mapsLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact__map-link"
+                >
+                  {contact.address}
+                </a>
               </div>
             </li>
             <li>
@@ -45,24 +72,23 @@ function Contact() {
               </div>
             </li>
           </ul>
-          <a href={whatsappUrl} className="btn btn--whatsapp" target="_blank" rel="noopener noreferrer">
-            Chat on WhatsApp
-          </a>
+          <div className="contact__actions">
+            <a href={whatsappUrl} className="btn btn--whatsapp" target="_blank" rel="noopener noreferrer">
+              Chat on WhatsApp
+            </a>
+            <a
+              href={contact.mapsLink}
+              className="btn btn--secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get Directions
+            </a>
+          </div>
         </Reveal>
 
         <Reveal direction="right" delay={150}>
-          <form
-            className="contact__form hover-lift"
-            onSubmit={(e) => {
-              e.preventDefault()
-              const form = e.target
-              const name = form.name.value
-              const phone = form.phone.value
-              const grade = form.grade.value
-              const body = `Name: ${name}%0APhone: ${phone}%0AGrade/Program: ${grade}`
-              window.location.href = `mailto:${contact.email}?subject=Admission Enquiry - ${site.name}&body=${body}`
-            }}
-          >
+          <form className="contact__form hover-lift" onSubmit={handleEnquirySubmit}>
             <h3>Admission enquiry form</h3>
             <label>
               Parent / Student Name
@@ -83,11 +109,28 @@ function Contact() {
                 ))}
               </select>
             </label>
-            <button type="submit" className="btn btn--primary btn--full">
-              Send Enquiry
+            <button type="submit" className="btn btn--whatsapp btn--full">
+              Send Enquiry on WhatsApp
             </button>
           </form>
         </Reveal>
+      </div>
+
+      <div className="container contact__map-wrap">
+        <a
+          href={contact.mapsLink}
+          className="contact__map-card"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open Galaxy English School location in Google Maps"
+        >
+          <div className="contact__map-pin" aria-hidden="true">📍</div>
+          <div>
+            <strong>Find us on Google Maps</strong>
+            <p>Tap to open location, get directions, or share with parents</p>
+          </div>
+          <span className="contact__map-arrow" aria-hidden="true">→</span>
+        </a>
       </div>
     </section>
   )

@@ -48,8 +48,67 @@
   text-decoration: none;
 }
 
-.contact__details a:hover {
+.contact__details a:hover,
+.contact__map-link:hover {
   color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.contact__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.contact__actions .btn--whatsapp {
+  margin-top: 0;
+}
+
+.contact__map-wrap {
+  margin-top: 2.5rem;
+}
+
+.contact__map-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary-light), #f8fafc);
+  border: 1px solid #c7d2fe;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.contact__map-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.contact__map-pin {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.contact__map-card strong {
+  display: block;
+  color: var(--color-text-heading);
+  margin-bottom: 0.25rem;
+}
+
+.contact__map-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.contact__map-arrow {
+  margin-left: auto;
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 .contact__form {

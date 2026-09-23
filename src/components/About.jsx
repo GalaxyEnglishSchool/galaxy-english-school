@@ -1,10 +1,28 @@
+import { useState } from 'react'
+import allInOneFrame from '../assets/Allin1frame.JPG'
+import photos from '../assets/Photos.jpg'
 import Reveal from './Reveal'
 import { aboutStory, site } from '../data/siteData'
-import { loadGalleryPhotos } from '../utils/loadPhotos'
 import './About.css'
 
+const aboutPhotos = [
+  {
+    id: 'allin1frame',
+    src: allInOneFrame,
+    alt: 'Galaxy English School staff, students, and dignitaries group photo',
+  },
+  {
+    id: 'photos',
+    src: photos,
+    alt: 'Galaxy Kids Annual Day celebration at Galaxy English School',
+  },
+]
+
 function About() {
-  const aboutPhotos = loadGalleryPhotos().slice(1, 3)
+  const [expanded, setExpanded] = useState(false)
+  const visibleParagraphs = expanded
+    ? aboutStory.paragraphs
+    : aboutStory.paragraphs.slice(0, 2)
 
   return (
     <section id="about" className="about section">
@@ -13,9 +31,18 @@ function About() {
           <span className="section-label">About Us</span>
           <h2 className="section-title">{aboutStory.title}</h2>
           <p className="about__board-badge">{site.board} · {site.grades}</p>
-          {aboutStory.paragraphs.map((paragraph) => (
+          {visibleParagraphs.map((paragraph) => (
             <p key={paragraph.slice(0, 40)}>{paragraph}</p>
           ))}
+          {aboutStory.paragraphs.length > 2 && (
+            <button
+              type="button"
+              className="about__read-more"
+              onClick={() => setExpanded((open) => !open)}
+            >
+              {expanded ? 'Show less ↑' : 'Read full story ↓'}
+            </button>
+          )}
           <ul className="about__list">
             {aboutStory.highlights.map((item) => (
               <li key={item}>{item}</li>
@@ -24,18 +51,16 @@ function About() {
         </Reveal>
 
         <Reveal className="about__visual" direction="right" delay={150}>
-          {aboutPhotos.length > 0 && (
-            <div className={`about__photos about__photos--count-${aboutPhotos.length}`}>
-              {aboutPhotos.map((photo, index) => (
-                <div
-                  key={photo.id}
-                  className={`about__photo ${index === 0 ? 'about__photo--main' : 'about__photo--secondary'} img-zoom hover-lift`}
-                >
-                  <img src={photo.src} alt={photo.alt} loading="lazy" />
-                </div>
-              ))}
-            </div>
-          )}
+          <div className={`about__photos about__photos--count-${aboutPhotos.length}`}>
+            {aboutPhotos.map((photo, index) => (
+              <div
+                key={photo.id}
+                className={`about__photo ${index === 0 ? 'about__photo--main' : 'about__photo--secondary'} img-zoom hover-lift`}
+              >
+                <img src={photo.src} alt={photo.alt} loading="lazy" />
+              </div>
+            ))}
+          </div>
           <div className="about__card hover-lift">
             <div className="about__card-icon" aria-hidden="true">🌟</div>
             <h3>Our Founding Family</h3>
