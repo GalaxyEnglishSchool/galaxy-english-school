@@ -1,5 +1,6 @@
 import schoolLogo from '../assets/school.png'
 import { contact, footerLinks, site } from '../data/siteData'
+import { getOfficeUrl } from '../utils/officeUrl'
 import './Footer.css'
 
 function Footer() {
@@ -9,13 +10,23 @@ function Footer() {
         <div className="footer__brand">
           <span className="footer__logo">
             <img src={schoolLogo} alt="" />
-            {site.name}
+            <span className="footer__logo-text">
+              <span className="footer__logo-name">{site.name}</span>
+              <span className="footer__logo-udise">UDISE NO. {site.udiseNumber}</span>
+            </span>
           </span>
           <p>{site.tagline}</p>
         </div>
         <nav className="footer__nav" aria-label="Footer navigation">
           {footerLinks.map((link) => (
-            <a key={link.href} href={link.href}>{link.label}</a>
+            <a
+              key={link.href}
+              href={link.openInNewTab ? getOfficeUrl() : link.href}
+              target={link.openInNewTab ? '_blank' : undefined}
+              rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+            >
+              {link.label}
+            </a>
           ))}
         </nav>
         <div className="footer__contact">

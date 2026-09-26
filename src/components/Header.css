@@ -30,6 +30,25 @@
   transform: scale(1.02);
 }
 
+.header__logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.2;
+}
+
+.header__logo-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.header__logo-udise {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+}
+
 .header__logo-img {
   width: 42px;
   height: 42px;

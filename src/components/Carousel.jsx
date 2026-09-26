@@ -8,12 +8,15 @@ function Carousel({
   autoPlay = true,
   interval = 3500,
   mode = 'slide', // 'slide' | 'marquee'
+  marqueeSecondsPerSlide = 8,
 }) {
   const trackRef = useRef(null)
   const slides = Children.toArray(children)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [marqueePaused, setMarqueePaused] = useState(false)
   const activeIndexRef = useRef(0)
   const pausedRef = useRef(false)
+  const marqueeResumeTimerRef = useRef(null)
 
   const isMarquee = mode === 'marquee' && slides.length > 1
   const displaySlides = isMarquee ? [...slides, ...slides] : slides
@@ -47,6 +50,29 @@ function Carousel({
     pause()
     setTimeout(() => resume(), interval * 2)
   }
+
+  const pauseMarquee = () => {
+    if (marqueeResumeTimerRef.current) {
+      clearTimeout(marqueeResumeTimerRef.current)
+    }
+    setMarqueePaused(true)
+  }
+
+  const resumeMarqueeAfterDelay = (delayMs = 4000) => {
+    if (marqueeResumeTimerRef.current) {
+      clearTimeout(marqueeResumeTimerRef.current)
+    }
+    marqueeResumeTimerRef.current = setTimeout(() => {
+      setMarqueePaused(false)
+      marqueeResumeTimerRef.current = null
+    }, delayMs)
+  }
+
+  useEffect(() => () => {
+    if (marqueeResumeTimerRef.current) {
+      clearTimeout(marqueeResumeTimerRef.current)
+    }
+  }, [])
 
   // Auto-advance for slide mode
   useEffect(() => {
@@ -104,19 +130,26 @@ function Carousel({
   if (slides.length === 0) return null
 
   if (isMarquee) {
+    const marqueeDuration = Math.max(slides.length * marqueeSecondsPerSlide, 48)
+
     return (
       <div
-        className={`carousel carousel--marquee ${className}`.trim()}
+        className={[
+          'carousel',
+          'carousel--marquee',
+          className,
+          marqueePaused ? 'carousel--paused' : '',
+        ].filter(Boolean).join(' ')}
         aria-label={ariaLabel}
-        onMouseEnter={pause}
-        onMouseLeave={resume}
-        onTouchStart={pause}
-        onTouchEnd={pauseBriefly}
+        onMouseEnter={pauseMarquee}
+        onMouseLeave={() => setMarqueePaused(false)}
+        onTouchStart={pauseMarquee}
+        onTouchEnd={() => resumeMarqueeAfterDelay(5000)}
       >
         <div className="carousel__marquee-viewport">
           <div
             className="carousel__marquee-track"
-            style={{ '--marquee-duration': `${slides.length * 5}s` }}
+            style={{ '--marquee-duration': `${marqueeDuration}s` }}
           >
             {displaySlides.map((slide, index) => (
               <div key={index} className="carousel__slide">

@@ -1,5 +1,6 @@
 export const site = {
   name: 'Galaxy English School',
+  udiseNumber: '27190117547',
   tagline: 'Founded in 2008 · Vision Since 2002',
   board: 'Maharashtra State Board',
   grades: 'Play Group to 12th Standard',
@@ -12,7 +13,8 @@ export const contact = {
   phone: '+91 94208 11484',
   phoneLink: '919420811484',
   email: 'galaxyenglishschool55@gmail.com',
-  address: 'Galaxy English School, Chh. Sambhajinagar, Maharashtra',
+  address: 'Galaxy English School and JR College, Chh. Sambhajinagar, Maharashtra',
+  mapsPlaceName: 'Galaxy English School and JR College',
   mapsLink: 'https://maps.app.goo.gl/w5EcSTzNe2gYXBXf6',
   hours: 'Mon – Sat: School Hours (Contact office for timings)',
   whatsappMessage: 'Hi! I would like to enquire about admission at Galaxy English School.',
@@ -24,6 +26,7 @@ export const navLinks = [
   { label: 'Gallery', href: '#gallery' },
   { label: 'Academics', href: '#courses' },
   { label: 'Our Journey', href: '#journey' },
+  { label: 'Office Tools', href: 'office', openInNewTab: true },
   { label: 'Contact', href: '#contact' },
 ]
 
@@ -191,5 +194,6 @@ export const footerLinks = [
   { label: 'About Us', href: '#about' },
   { label: 'Gallery', href: '#gallery' },
   { label: 'Academics', href: '#courses' },
+  { label: 'Office Tools', href: 'office', openInNewTab: true },
   { label: 'Contact', href: '#contact' },
 ]

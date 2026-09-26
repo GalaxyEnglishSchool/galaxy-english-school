@@ -1,10 +1,12 @@
 import Carousel from './Carousel'
 import Reveal from './Reveal'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import { loadGalleryPhotos } from '../utils/loadPhotos'
 import './Gallery.css'
 
 function Gallery() {
   const photos = loadGalleryPhotos()
+  const isMobile = useMediaQuery('(max-width: 768px)')
 
   if (photos.length === 0) {
     return null
@@ -23,11 +25,17 @@ function Gallery() {
           </div>
         </Reveal>
 
-        <Carousel ariaLabel="School photo gallery" className="carousel--photos" mode="marquee">
+        <Carousel
+          ariaLabel="School photo gallery"
+          className="carousel--photos"
+          mode={isMobile ? 'slide' : 'marquee'}
+          interval={5500}
+          marqueeSecondsPerSlide={9}
+        >
           {photos.map((photo) => (
             <figure key={photo.id} className="gallery__slide-card hover-lift">
               <div className="gallery__image gallery__image--slide">
-                <img src={photo.src} alt={photo.alt} loading="lazy" />
+                <img src={photo.src} alt={photo.alt} loading={isMobile ? 'eager' : 'lazy'} />
                 <div className="gallery__overlay">
                   <span>{photo.caption}</span>
                 </div>

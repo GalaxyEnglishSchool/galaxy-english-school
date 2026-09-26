@@ -10,8 +10,8 @@
 .carousel__marquee-viewport {
   overflow: hidden;
   width: 100%;
-  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 2%, #000 98%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 2%, #000 98%, transparent);
 }
 
 .carousel__marquee-track {
@@ -23,7 +23,7 @@
 }
 
 .carousel--marquee:hover .carousel__marquee-track,
-.carousel--marquee:active .carousel__marquee-track {
+.carousel--marquee.carousel--paused .carousel__marquee-track {
   animation-play-state: paused;
 }
 
@@ -126,6 +126,18 @@
 .carousel__dot--active {
   background: var(--color-primary);
   transform: scale(1.25);
+}
+
+@media (max-width: 768px) {
+  .carousel--photos .carousel__slide {
+    flex: 0 0 88%;
+  }
+
+  .carousel--photos .carousel__arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+  }
 }
 
 @media (min-width: 769px) {

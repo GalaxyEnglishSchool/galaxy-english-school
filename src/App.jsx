@@ -1,30 +1,17 @@
-import Header from './components/Header'
-import Hero from './components/Hero'
-import Stats from './components/Stats'
-import About from './components/About'
-import Gallery from './components/Gallery'
-import Features from './components/Features'
-import Courses from './components/Courses'
-import Testimonials from './components/Testimonials'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import OfficePage from './pages/OfficePage'
+
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
 
 function App() {
   return (
-    <>
-      <Header />
-      <main>
-        <Hero />
-        <Stats />
-        <About />
-        <Gallery />
-        <Features />
-        <Courses />
-        <Testimonials />
-        <Contact />
-      </main>
-      <Footer />
-    </>
+    <BrowserRouter basename={routerBasename}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/office" element={<OfficePage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

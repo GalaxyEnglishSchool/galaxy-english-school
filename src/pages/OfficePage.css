@@ -1,0 +1,68 @@
+.office-page {
+  min-height: 100vh;
+  background: var(--color-bg-alt);
+}
+
+.office-page__header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.office-page__header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+}
+
+.office-page__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.office-page__brand strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--color-text-heading);
+}
+
+.office-page__brand span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.office-page__logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.office-page__back {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.office-page__back:hover {
+  text-decoration: underline;
+}
+
+.office-page__main {
+  padding-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .office-page__header-inner {
+    flex-wrap: wrap;
+  }
+}
