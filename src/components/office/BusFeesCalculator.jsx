@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   busDistanceSlabs,
   busFeeOptions,
+  busFeeRules,
+  busServiceHighlights,
   getBusFeeForDistance,
-  gradeFees,
 } from '../../data/admissionData'
+import schoolBusImg from '../../assets/SchoolBus.jpg'
 import { schoolOrigin } from '../../utils/busDistance'
 import { formatINR } from '../../utils/formatCurrency'
 import { openWhatsApp } from '../../utils/whatsapp'
@@ -13,19 +15,13 @@ import DirectionsMap from './DirectionsMap'
 import './BusFees.css'
 
 function BusFeesCalculator() {
-  const [studentName, setStudentName] = useState('')
-  const [gradeId, setGradeId] = useState('std1')
   const [destination, setDestination] = useState('')
   const [showMap, setShowMap] = useState(false)
   const [distanceKm, setDistanceKm] = useState('')
-  const [termId, setTermId] = useState('monthly')
   const [tripId, setTripId] = useState('twice')
   const [siblingDiscount, setSiblingDiscount] = useState(false)
-  const [parentPhone, setParentPhone] = useState('')
 
-  const selectedTerm = busFeeOptions.terms.find((term) => term.id === termId)
   const selectedTrip = busFeeOptions.tripOptions.find((trip) => trip.id === tripId)
-  const selectedGrade = gradeFees.find((grade) => grade.id === gradeId)
 
   const parsedKm = distanceKm ? Number(distanceKm) : null
   const hasValidKm = parsedKm != null && !Number.isNaN(parsedKm) && parsedKm > 0
@@ -35,42 +31,58 @@ function BusFeesCalculator() {
     const slabMonthly = feeSlab?.monthlyFee ?? 0
     const tripPercent = selectedTrip?.feePercent ?? 100
     const monthly = Math.round((slabMonthly * tripPercent) / 100)
-    const months = selectedTerm?.months ?? 1
-    const subtotal = monthly * months
     const discount = siblingDiscount
-      ? Math.round((subtotal * busFeeOptions.siblingDiscountPercent) / 100)
+      ? Math.round((monthly * busFeeOptions.siblingDiscountPercent) / 100)
       : 0
-    const total = subtotal - discount
-    return { slabMonthly, tripPercent, monthly, months, subtotal, discount, total }
-  }, [feeSlab, selectedTerm, selectedTrip, siblingDiscount])
+    const total = monthly - discount
+    return { slabMonthly, tripPercent, monthly, discount, total }
+  }, [feeSlab, selectedTrip, siblingDiscount])
 
   const activeSlabIndex = feeSlab
     ? busDistanceSlabs.findIndex((s) => s.label === feeSlab.label)
     : -1
+
+  const handleSuggestedKm = useCallback((km) => {
+    setDistanceKm(String(km))
+  }, [])
 
   const showRoute = () => {
     if (!destination.trim()) return
     setShowMap(true)
   }
 
-  const sendWhatsAppQuote = () => {
-    const message = `🚌 ${site.name} — Bus Fee Quote
+  useEffect(() => {
+    const trimmed = destination.trim()
+    if (!trimmed || trimmed.length < 5) {
+      setShowMap(false)
+      return undefined
+    }
 
-Student: ${studentName || '—'}
-Class: ${selectedGrade?.label ?? '—'}
+    const timer = window.setTimeout(() => setShowMap(true), 700)
+    return () => window.clearTimeout(timer)
+  }, [destination])
+
+  const sendWhatsAppQuote = () => {
+    const rulesText = busFeeRules.map((rule, i) => `${i + 1}. ${rule}`).join('\n')
+    const highlightsText = busServiceHighlights.map((h) => `✓ ${h.title}`).join('\n')
+
+    const message = `🚌 ${site.name} — Bus Fee Report
+
+Our buses: GPS enabled · Proper maintenance · Clean & hygienic
+
 Pickup: ${destination || '—'}
-School: ${schoolOrigin.address}
 Distance: ${parsedKm ? `${parsedKm} km` : '—'}
 Fee slab: ${feeSlab?.label ?? '—'}
-Trip: ${selectedTrip?.label ?? '—'} (${selectedTrip?.feePercent ?? 100}% of slab rate)
-Billing: ${selectedTerm?.label ?? '—'}
+Daily trips: ${selectedTrip?.label ?? '—'} (${selectedTrip?.feePercent ?? 100}% of slab)
 ${siblingDiscount ? `Sibling discount: ${busFeeOptions.siblingDiscountPercent}% (-${formatINR(calculation.discount)})` : ''}
 
-Slab monthly: ${formatINR(calculation.slabMonthly)}
-Monthly fee (${selectedTrip?.feePercent}%): ${formatINR(calculation.monthly)}
-Amount due: ${formatINR(calculation.total)}
+Slab rate: ${formatINR(calculation.slabMonthly)}/month
+Monthly bus fee: ${formatINR(calculation.total)}/month
 
-Contact: ${parentPhone || '—'}
+${highlightsText}
+
+Rules:
+${rulesText}
 
 ${site.name}, ${site.location}`
 
@@ -79,125 +91,80 @@ ${site.name}, ${site.location}`
 
   return (
     <div className="bus-fees">
-      <header className="bus-fees__hero">
-        <div className="bus-fees__hero-text">
-          <span className="bus-fees__hero-icon" aria-hidden="true">🚌</span>
-          <div>
-            <h3>Bus Fee Calculator</h3>
-            <p>Route by distance from school → home. View map, enter km, get instant quote.</p>
-          </div>
+      <header className="bus-fees__header">
+        <img
+          src={schoolBusImg}
+          alt=""
+          className="bus-fees__thumb"
+          aria-hidden="true"
+        />
+        <div className="bus-fees__header-text">
+          <h3>Bus Fee Calculator</h3>
+          <p>Location · distance · fee report — all on one page</p>
         </div>
+        <ul className="bus-fees__chips" aria-label="Bus service features">
+          {busServiceHighlights.map((item) => (
+            <li key={item.title}>
+              <span aria-hidden="true">{item.icon}</span> {item.title}
+            </li>
+          ))}
+        </ul>
       </header>
 
       <div className="bus-fees__layout">
-        <div className="bus-fees__main">
-          {/* Route timeline */}
-          <section className="bus-card">
-            <h4 className="bus-card__title">
-              <span className="bus-card__step">1</span>
-              Route
-            </h4>
-            <div className="bus-route">
-              <div className="bus-route__point bus-route__point--from">
-                <div className="bus-route__dot" />
-                <div className="bus-route__content">
-                  <span className="bus-route__label">Pickup from school</span>
-                  <strong>{schoolOrigin.label}</strong>
-                  <small>{schoolOrigin.address}</small>
-                </div>
-              </div>
-              <div className="bus-route__line" aria-hidden="true">
-                <span className="bus-route__bus">🚌</span>
-              </div>
-              <div className="bus-route__point bus-route__point--to">
-                <div className="bus-route__dot bus-route__dot--home" />
-                <div className="bus-route__content">
-                  <span className="bus-route__label">Drop at student home</span>
-                  <label className="bus-field bus-field--full">
-                    <span className="bus-field__label">Home / pickup address</span>
-                    <input
-                      type="text"
-                      className="bus-field__input"
-                      value={destination}
-                      onChange={(e) => {
-                        setDestination(e.target.value)
-                        setShowMap(false)
-                      }}
-                      placeholder="e.g. CIDCO N-4, Chh. Sambhajinagar"
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    className="bus-btn bus-btn--map"
-                    disabled={!destination.trim()}
-                    onClick={showRoute}
-                  >
-                    <span aria-hidden="true">🗺️</span>
-                    Show route on map
-                  </button>
-                </div>
+        <section className="bus-fees__panel bus-fees__panel--inputs" aria-label="Route details">
+          <h4 className="bus-fees__panel-title">Pickup &amp; distance</h4>
+
+          <div className="bus-route-compact">
+            <div className="bus-route-compact__from">
+              <span>🏫</span>
+              <div>
+                <strong>{schoolOrigin.label}</strong>
+                <small>{schoolOrigin.address}</small>
               </div>
             </div>
+            <div className="bus-route-compact__arrow">↓</div>
+            <label className="bus-field bus-field--full">
+              <span className="bus-field__label">Student home address</span>
+              <input
+                type="text"
+                className="bus-field__input"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    showRoute()
+                  }
+                }}
+                placeholder="e.g. CIDCO N-4, Chh. Sambhajinagar"
+              />
+            </label>
+          </div>
 
-            {showMap && destination.trim() && (
-              <DirectionsMap destination={destination.trim()} />
-            )}
-          </section>
+          <button
+            type="button"
+            className="bus-btn bus-btn--map bus-btn--full"
+            disabled={!destination.trim()}
+            onClick={showRoute}
+          >
+            🗺️ Show route on map
+          </button>
 
-          {/* Student details */}
-          <section className="bus-card">
-            <h4 className="bus-card__title">
-              <span className="bus-card__step">2</span>
-              Student details
-            </h4>
-            <div className="bus-fields">
-              <label className="bus-field">
-                <span className="bus-field__label">Student name</span>
-                <input
-                  type="text"
-                  className="bus-field__input"
-                  value={studentName}
-                  onChange={(e) => setStudentName(e.target.value)}
-                  placeholder="For WhatsApp quote"
-                />
-              </label>
-              <label className="bus-field">
-                <span className="bus-field__label">Class</span>
-                <select
-                  className="bus-field__input"
-                  value={gradeId}
-                  onChange={(e) => setGradeId(e.target.value)}
-                >
-                  {gradeFees.map((grade) => (
-                    <option key={grade.id} value={grade.id}>{grade.label}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="bus-field">
-                <span className="bus-field__label">Parent WhatsApp</span>
-                <input
-                  type="tel"
-                  className="bus-field__input"
-                  value={parentPhone}
-                  onChange={(e) => setParentPhone(e.target.value)}
-                  placeholder="10-digit mobile"
-                />
-              </label>
-            </div>
-          </section>
+          {showMap && destination.trim() && (
+            <DirectionsMap
+              destination={destination.trim()}
+              onSuggestedKm={handleSuggestedKm}
+            />
+          )}
 
-          {/* Distance */}
-          <section className="bus-card">
-            <h4 className="bus-card__title">
-              <span className="bus-card__step">3</span>
-              Distance & fee slab
-            </h4>
-            <p className="bus-card__hint">
-              Read the road distance (km) from the map above and enter it here.
-            </p>
-
+          <div className="bus-fees__distance-block">
+            <label className="bus-fees__distance-label" htmlFor="bus-distance-km">
+              Road distance from map
+            </label>
             <div className="bus-distance-input">
               <input
+                id="bus-distance-km"
                 type="number"
                 min="0"
                 step="0.1"
@@ -209,31 +176,57 @@ ${site.name}, ${site.location}`
               />
               <span className="bus-distance-input__unit">km</span>
             </div>
+          </div>
 
-            <div className="bus-slabs">
-              {busDistanceSlabs.map((slab, index) => (
-                <div
-                  key={slab.label}
-                  className={[
-                    'bus-slab',
-                    index === activeSlabIndex ? 'bus-slab--active' : '',
-                  ].filter(Boolean).join(' ')}
-                >
-                  <span className="bus-slab__range">{slab.label}</span>
-                  <span className="bus-slab__fee">{formatINR(slab.monthlyFee)}/mo</span>
+          <div className="bus-slabs bus-slabs--compact">
+            {busDistanceSlabs.map((slab, index) => (
+              <div
+                key={slab.label}
+                className={[
+                  'bus-slab',
+                  index === activeSlabIndex ? 'bus-slab--active' : '',
+                ].filter(Boolean).join(' ')}
+              >
+                <span className="bus-slab__range">{slab.label}</span>
+                <span className="bus-slab__fee">{formatINR(slab.monthlyFee)}/mo</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="bus-fees__panel bus-fees__panel--report" aria-label="Fee report">
+          <h4 className="bus-fees__panel-title">Fee report</h4>
+
+          <div className="bus-report__route bus-report__route--compact">
+            <div className="bus-report__timeline">
+              <div className="bus-report__stop">
+                <span className="bus-report__dot bus-report__dot--school" aria-hidden="true">🏫</span>
+                <div>
+                  <span className="bus-report__stop-label">School</span>
+                  <span className="bus-report__stop-name">{schoolOrigin.label}</span>
                 </div>
-              ))}
+              </div>
+              <div className="bus-report__line" aria-hidden="true">
+                <span className="bus-report__line-bus">🚌</span>
+                <span className="bus-report__line-km">
+                  {hasValidKm ? `${parsedKm} km` : '— km'}
+                </span>
+              </div>
+              <div className="bus-report__stop">
+                <span className="bus-report__dot bus-report__dot--home" aria-hidden="true">🏠</span>
+                <div>
+                  <span className="bus-report__stop-label">Pickup</span>
+                  <span className="bus-report__stop-name">{destination.trim() || 'Enter address'}</span>
+                </div>
+              </div>
             </div>
-          </section>
+            {feeSlab && (
+              <span className="bus-report__slab-pill">{feeSlab.label} slab</span>
+            )}
+          </div>
 
-          {/* Trip & billing */}
-          <section className="bus-card">
-            <h4 className="bus-card__title">
-              <span className="bus-card__step">4</span>
-              Trip & billing
-            </h4>
-
-            <p className="bus-card__hint bus-card__hint--tight">How many times per day will the student use the bus?</p>
+          <div className="bus-report__section">
+            <p className="bus-report__section-label">Daily trips</p>
             <div className="bus-trip-options" role="group" aria-label="Daily bus trips">
               {busFeeOptions.tripOptions.map((trip) => (
                 <button
@@ -243,111 +236,77 @@ ${site.name}, ${site.location}`
                   onClick={() => setTripId(trip.id)}
                 >
                   <span className="bus-trip-option__label">{trip.label}</span>
-                  <span className="bus-trip-option__percent">{trip.feePercent}% fee</span>
-                  <span className="bus-trip-option__desc">{trip.description}</span>
+                  <span className="bus-trip-option__percent">{trip.feePercent}%</span>
                 </button>
               ))}
             </div>
+          </div>
 
-            <p className="bus-card__hint bus-card__hint--tight">Billing period</p>
-            <div className="bus-pills" role="group" aria-label="Billing period">
-              {busFeeOptions.terms.map((term) => (
-                <button
-                  key={term.id}
-                  type="button"
-                  className={`bus-pill${termId === term.id ? ' bus-pill--active' : ''}`}
-                  onClick={() => setTermId(term.id)}
-                >
-                  {term.label}
-                </button>
-              ))}
+          <button
+            type="button"
+            className={`bus-toggle bus-report__sibling${siblingDiscount ? ' bus-toggle--on' : ''}`}
+            onClick={() => setSiblingDiscount((v) => !v)}
+            aria-pressed={siblingDiscount}
+          >
+            <span className="bus-toggle__track"><span className="bus-toggle__thumb" /></span>
+            <span>Sibling discount ({busFeeOptions.siblingDiscountPercent}%)</span>
+          </button>
+
+          <div className={`bus-report__amount${!hasValidKm ? ' bus-report__amount--empty' : ''}`}>
+            <span className="bus-report__amount-label">Monthly bus fee</span>
+            <div className="bus-report__amount-value">
+              {hasValidKm ? formatINR(calculation.total) : '—'}
             </div>
+            <span className="bus-report__amount-note">
+              {hasValidKm
+                ? `per month · ${selectedTrip?.label} trip`
+                : 'Enter distance to calculate fee'}
+            </span>
+          </div>
 
-            <button
-              type="button"
-              className={`bus-toggle${siblingDiscount ? ' bus-toggle--on' : ''}`}
-              onClick={() => setSiblingDiscount((v) => !v)}
-              aria-pressed={siblingDiscount}
-            >
-              <span className="bus-toggle__track">
-                <span className="bus-toggle__thumb" />
-              </span>
-              <span>
-                Sibling discount ({busFeeOptions.siblingDiscountPercent}%)
-              </span>
-            </button>
-          </section>
-        </div>
-
-        {/* Summary sidebar */}
-        <aside className="bus-fees__summary">
-          <div className="bus-summary">
-            <div className="bus-summary__header">
-              <span>Fee summary</span>
-              {feeSlab && (
-                <span className="bus-summary__slab">{feeSlab.label}</span>
-              )}
-            </div>
-
-            <div className="bus-summary__total-wrap">
-              <span className="bus-summary__total-label">Total bus fee</span>
-              <div className="bus-summary__total">
-                {feeSlab ? formatINR(calculation.total) : '—'}
-              </div>
-              {feeSlab && (
-                <span className="bus-summary__period">{selectedTerm?.label}</span>
-              )}
-            </div>
-
-            <ul className="bus-summary__lines">
+          {hasValidKm && (
+            <ul className="bus-report__breakdown">
               <li>
-                <span>Slab rate</span>
-                <strong>{feeSlab ? formatINR(calculation.slabMonthly) : '—'}</strong>
+                <span>Distance slab rate</span>
+                <strong>{formatINR(calculation.slabMonthly)}/mo</strong>
               </li>
               <li>
                 <span>Trip ({selectedTrip?.label})</span>
                 <strong>{selectedTrip?.feePercent}%</strong>
               </li>
               <li>
-                <span>Monthly rate</span>
-                <strong>{feeSlab ? formatINR(calculation.monthly) : '—'}</strong>
+                <span>Before discount</span>
+                <strong>{formatINR(calculation.monthly)}/mo</strong>
               </li>
-              <li>
-                <span>Distance</span>
-                <strong>{hasValidKm ? `${parsedKm} km` : '—'}</strong>
-              </li>
-              <li>
-                <span>Duration</span>
-                <strong>{calculation.months} mo</strong>
-              </li>
-              <li>
-                <span>Subtotal</span>
-                <strong>{feeSlab ? formatINR(calculation.subtotal) : '—'}</strong>
-              </li>
-              {siblingDiscount && feeSlab && (
-                <li className="bus-summary__discount">
+              {siblingDiscount && (
+                <li className="bus-report__breakdown--discount">
                   <span>Sibling discount</span>
                   <strong>- {formatINR(calculation.discount)}</strong>
                 </li>
               )}
             </ul>
+          )}
 
-            <button
-              type="button"
-              className="btn btn--whatsapp btn--full bus-summary__whatsapp"
-              disabled={!feeSlab}
-              onClick={sendWhatsAppQuote}
-            >
-              Send quote on WhatsApp
-            </button>
-
-            {!feeSlab && (
-              <p className="bus-summary__empty">
-                Enter home address and distance to see the fee quote.
-              </p>
-            )}
+          <div className="bus-report__rules">
+            <h5 className="bus-report__rules-title">
+              <span aria-hidden="true">📋</span> Fee rules &amp; conditions
+            </h5>
+            <ol className="bus-report__rules-list">
+              {busFeeRules.map((rule) => (
+                <li key={rule}>{rule}</li>
+              ))}
+            </ol>
           </div>
-        </aside>
+
+          <button
+            type="button"
+            className="btn btn--whatsapp btn--full bus-fees__whatsapp"
+            disabled={!hasValidKm}
+            onClick={sendWhatsAppQuote}
+          >
+            Send on WhatsApp
+          </button>
+        </section>
       </div>
     </div>
   )

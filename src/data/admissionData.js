@@ -65,10 +65,28 @@ export const busFeeOptions = {
       feePercent: 100,
     },
   ],
-  terms: [
-    { id: 'monthly', label: 'Monthly', months: 1 },
-    { id: 'quarterly', label: 'Quarterly (3 months)', months: 3 },
-    { id: 'halfyearly', label: 'Half-Yearly (6 months)', months: 6 },
-    { id: 'annual', label: 'Annual (10 months)', months: 10 },
-  ],
 }
+
+export const busServiceHighlights = [
+  {
+    icon: '📍',
+    title: 'GPS Enabled',
+    description: 'Real-time bus tracking for safer, accountable school transport.',
+  },
+  {
+    icon: '🔧',
+    title: 'Proper Maintenance',
+    description: 'Regular servicing and safety checks on every school bus.',
+  },
+  {
+    icon: '✨',
+    title: 'Clean & Hygienic',
+    description: 'Daily cleaning and hygiene standards maintained on all routes.',
+  },
+]
+
+export const busFeeRules = [
+  'The original monthly fee will increase by Rs. 200/- per month every new session (June), over the previous year’s fee.',
+  'Fees are subject to further change if petrol/diesel prices rise, as decided by the school.',
+  'If the fee for any month is not paid within that month, a late fine of Rs. 100/- per month will be charged on the decided fees. This fine will not be reduced or waived under any circumstances.',
+]

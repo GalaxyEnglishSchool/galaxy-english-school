@@ -9,6 +9,9 @@ import { formatINR } from '../../utils/formatCurrency'
 import { openWhatsApp } from '../../utils/whatsapp'
 import { contact, site } from '../../data/siteData'
 import AssessmentQuiz from './AssessmentQuiz'
+import OfficeStepBar from './OfficeStepBar'
+
+const ADMISSION_STEPS = ['Details', 'Test', 'Report']
 
 const SCHOLARSHIP_OPTIONS = [
   { scholarshipPercent: 0, label: 'Standard Admission' },
@@ -141,20 +144,7 @@ ${site.name}, ${site.location}
 
   return (
     <div className="office-panel">
-      <div className="office-steps" aria-label="Admission steps">
-        {['Details', 'Test', 'Fees & Report'].map((label, index) => {
-          const stepNum = index + 1
-          return (
-            <div
-              key={label}
-              className={`office-step${step === stepNum ? ' office-step--active' : ''}${step > stepNum ? ' office-step--done' : ''}`}
-            >
-              <span className="office-step__num">{stepNum}</span>
-              <span className="office-step__label">{label}</span>
-            </div>
-          )
-        })}
-      </div>
+      <OfficeStepBar steps={ADMISSION_STEPS} currentStep={step} />
 
       {step === 1 && (
         <div className="office-card">

@@ -34,10 +34,69 @@
   text-decoration: underline;
 }
 
+.directions-map__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.directions-map__distance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 1rem;
+  background: #eff6ff;
+  border-bottom: 1px solid #bfdbfe;
+  font-size: 0.88rem;
+  color: #1e3a8a;
+}
+
+.directions-map__distance strong {
+  font-size: 1.05rem;
+}
+
+.directions-map__distance small {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.directions-map__use-km {
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid #93c5fd;
+  background: #fff;
+  color: #1d4ed8;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.directions-map__use-km:hover {
+  background: #dbeafe;
+}
+
 .directions-map__frame {
   display: block;
   width: 100%;
+  min-height: 360px;
+  height: min(52vh, 480px);
   border: none;
+}
+
+.directions-map__hint {
+  margin: 0;
+  padding: 0.65rem 1rem;
+  font-size: 0.8rem;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+  color: var(--color-text-muted);
+  line-height: 1.45;
 }
 
 .office__badge {
@@ -94,53 +153,92 @@
   margin: 0 auto;
 }
 
-.office-steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+/* Horizontal step bar — mobile & desktop */
+.office-stepbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.25rem;
   margin-bottom: 1.25rem;
+  padding: 0.65rem 0.5rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 
-.office-step {
+.office-stepbar__item {
+  position: relative;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.75rem 0.5rem;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  opacity: 0.65;
+  min-width: 0;
+  opacity: 0.55;
 }
 
-.office-step--active,
-.office-step--done {
+.office-stepbar__item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 0.9rem;
+  left: calc(50% + 0.85rem);
+  width: calc(100% - 1.7rem);
+  height: 2px;
+  background: var(--color-border);
+  z-index: 0;
+}
+
+.office-stepbar__item--active,
+.office-stepbar__item--done {
   opacity: 1;
-  border-color: var(--color-primary);
 }
 
-.office-step--active {
-  background: var(--color-primary-light);
+.office-stepbar__item--done:not(:last-child)::after {
+  background: var(--color-primary);
 }
 
-.office-step__num {
-  width: 1.75rem;
-  height: 1.75rem;
+.office-stepbar__track {
+  position: relative;
+  z-index: 1;
+}
+
+.office-stepbar__num {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 50%;
-  background: var(--color-primary);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
 }
 
-.office-step__label {
-  font-size: 0.75rem;
-  font-weight: 600;
+.office-stepbar__item--active .office-stepbar__num {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.office-stepbar__item--done .office-stepbar__num {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.office-stepbar__label {
+  font-size: 0.68rem;
+  font-weight: 700;
   text-align: center;
   color: var(--color-text-heading);
+  line-height: 1.2;
+  padding: 0 0.15rem;
+}
+
+@media (min-width: 480px) {
+  .office-stepbar__label {
+    font-size: 0.78rem;
+  }
 }
 
 .office-card {
@@ -338,15 +436,19 @@
 
 .quiz__options {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
 }
 
 .quiz__option {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.85rem 1rem;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 4.5rem;
+  padding: 0.65rem 0.5rem;
+  text-align: center;
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   background: #fff;
@@ -379,8 +481,9 @@
 }
 
 .quiz__option-text {
-  flex: 1;
-  line-height: 1.35;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 .quiz__option-badge {
@@ -548,10 +651,6 @@
 }
 
 @media (max-width: 768px) {
-  .office-steps {
-    grid-template-columns: 1fr;
-  }
-
   .office-form-grid {
     grid-template-columns: 1fr;
   }
@@ -560,23 +659,28 @@
     grid-template-columns: 1fr;
   }
 
-  .quiz__options {
-    grid-template-columns: 1fr;
+  .quiz__option {
+    min-height: 4rem;
+    padding: 0.55rem 0.4rem;
+  }
+
+  .quiz__option-text {
+    font-size: 0.78rem;
   }
 
   .quiz__nav {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
   }
 
   .quiz__dots {
-    order: -1;
-    width: 100%;
-    max-width: none;
-    margin-bottom: 0.25rem;
+    display: none;
   }
 
   .quiz__nav .btn {
-    flex: 1;
+    flex: 0 0 auto;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.8rem;
   }
 
   .office-card__actions {
@@ -592,4 +696,13 @@
     justify-content: center;
   }
 
+  .office-score-pill {
+    width: 100%;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  .office-card__header {
+    flex-direction: column;
+  }
 }

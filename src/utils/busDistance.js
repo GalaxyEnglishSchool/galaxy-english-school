@@ -23,8 +23,9 @@ export function getDirectionsEmbedUrl(destination) {
     saddr: schoolOrigin.address,
     daddr: destination,
     hl: 'en',
-    z: '13',
+    dirflg: 'd',
     output: 'embed',
   })
+  // Omit fixed zoom — Google fits the full route so distance is visible in the panel.
   return `https://maps.google.com/maps?${params.toString()}`
 }
