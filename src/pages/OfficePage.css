@@ -45,6 +45,13 @@
   object-fit: contain;
 }
 
+.office-page__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
 .office-page__back {
   font-size: 0.875rem;
   font-weight: 600;

@@ -2,6 +2,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import schoolLogo from '../assets/school.png'
 import OfficeGate from '../components/office/OfficeGate'
 import OfficeTools from '../components/office/OfficeTools'
+import LanguageTranslator from '../components/LanguageTranslator'
 import { site } from '../data/siteData'
 import './OfficePage.css'
 
@@ -20,9 +21,12 @@ function OfficePage() {
               <span>School Office Portal</span>
             </div>
           </div>
-          <Link to="/" className="office-page__back">
-            ← Back to website
-          </Link>
+          <div className="office-page__header-actions">
+            <LanguageTranslator className="lang-translator--office" />
+            <Link to="/" className="office-page__back">
+              ← Back to website
+            </Link>
+          </div>
         </div>
       </header>
 

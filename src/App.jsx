@@ -6,12 +6,15 @@ const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
 
 function App() {
   return (
-    <BrowserRouter basename={routerBasename}>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/office" element={<OfficePage />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <div id="google_translate_element" aria-hidden="true" />
+      <BrowserRouter basename={routerBasename}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/office" element={<OfficePage />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   )
 }
 

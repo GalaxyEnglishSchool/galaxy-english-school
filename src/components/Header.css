@@ -167,6 +167,12 @@
     animation-delay: var(--nav-delay, 0ms);
   }
 
+  .header__nav .lang-translator {
+    margin-top: 0.75rem;
+    width: 100%;
+    justify-content: center;
+  }
+
   .header__nav .btn {
     margin-top: 1rem;
     text-align: center;

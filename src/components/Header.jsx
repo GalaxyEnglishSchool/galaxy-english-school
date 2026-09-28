@@ -2,6 +2,7 @@ import { useState } from 'react'
 import schoolLogo from '../assets/school.png'
 import { navLinks, site } from '../data/siteData'
 import { getOfficeUrl } from '../utils/officeUrl'
+import LanguageTranslator from './LanguageTranslator'
 import './Header.css'
 
 function Header() {
@@ -45,9 +46,7 @@ function Header() {
               {link.label}
             </a>
           ))}
-          <a href="#contact" className="btn btn--primary btn--sm" onClick={closeMenu}>
-            Enroll Now
-          </a>
+          <LanguageTranslator className="lang-translator--header" onClick={closeMenu} />
         </nav>
       </div>
     </header>
