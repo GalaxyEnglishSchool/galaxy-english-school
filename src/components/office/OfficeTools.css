@@ -407,6 +407,12 @@
   margin-bottom: 0.85rem;
 }
 
+.quiz__card--visual {
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  border-color: #c7d2fe;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+}
+
 .quiz__display {
   display: flex;
   align-items: center;
@@ -422,6 +428,136 @@
   color: var(--color-primary-dark);
   letter-spacing: 0.05em;
   text-align: center;
+}
+
+.quiz__display--animated {
+  animation: quiz-pop 0.45s ease;
+}
+
+.quiz__display--fraction {
+  font-size: clamp(1.5rem, 6vw, 2.25rem);
+  letter-spacing: 0.02em;
+}
+
+@keyframes quiz-pop {
+  0% { transform: scale(0.92); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.quiz__shapes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid var(--color-border);
+}
+
+.quiz__shape {
+  display: block;
+  background: var(--color-primary);
+}
+
+.quiz__shape--circle {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+}
+
+.quiz__shape--square {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 4px;
+}
+
+.quiz__shape--triangle {
+  width: 0;
+  height: 0;
+  border-left: 1.5rem solid transparent;
+  border-right: 1.5rem solid transparent;
+  border-bottom: 2.6rem solid var(--color-primary);
+  background: transparent;
+}
+
+.quiz__options--visual .quiz__option--picture {
+  min-height: 5.5rem;
+  padding-top: 0.5rem;
+}
+
+.quiz__option-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.quiz__option--picture .quiz__option-letter {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  font-size: 0.7rem;
+}
+
+.quiz__option--picture {
+  position: relative;
+}
+
+.quiz__option--correct {
+  animation: quiz-correct 0.35s ease;
+}
+
+@keyframes quiz-correct {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.quiz__section-tag--reading {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.quiz__passage {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: #fff;
+}
+
+.quiz__passage--marathi {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, #fffbeb 0%, #fff 100%);
+}
+
+.quiz__passage--english {
+  border-color: #6366f1;
+  background: linear-gradient(180deg, #eef2ff 0%, #fff 100%);
+}
+
+.quiz__passage-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.quiz__passage-text {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--color-text-heading);
+  font-weight: 500;
+}
+
+.quiz__passage--marathi .quiz__passage-text {
+  font-size: 1.05rem;
 }
 
 .quiz__staff-note {
@@ -461,9 +597,38 @@
   transition: border-color 0.15s, background 0.15s, transform 0.12s;
 }
 
-.quiz__option:hover {
+.quiz__option:hover:not(:disabled) {
   border-color: var(--color-primary);
   transform: translateY(-1px);
+}
+
+.quiz__locked-note {
+  margin: 0 0 0.65rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: #f1f5f9;
+  border: 1px solid var(--color-border);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.quiz__options--locked {
+  pointer-events: none;
+}
+
+.quiz__option--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.quiz__option:disabled {
+  cursor: not-allowed;
+}
+
+.quiz__option--selected:disabled {
+  opacity: 1;
 }
 
 .quiz__option-letter {
@@ -585,9 +750,157 @@
 
 .office-result-banner {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.office-condition-summary {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #0c4a6e;
+}
+
+.office-student-report {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.office-student-report__title {
+  margin: 0 0 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-text-heading);
+}
+
+.office-student-report__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.office-student-report__box {
+  padding: 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.office-student-report__box--strong {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.office-student-report__box--weak {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+.office-student-report__box h5 {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.office-student-report__box ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--color-text-heading);
+}
+
+.office-student-report__empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.office-student-report__reading h5 {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.office-student-report__reading-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.office-reading-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.office-reading-score--mr {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.office-reading-score--en {
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #3730a3;
+}
+
+.office-reading-score strong {
+  font-size: 1rem;
+}
+
+.office-student-report__details {
+  margin-top: 0.85rem;
+  font-size: 0.82rem;
+}
+
+.office-student-report__details summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--color-primary);
+  padding: 0.35rem 0;
+}
+
+.office-section-scores {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.office-section-scores li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  font-size: 0.8rem;
+}
+
+.office-section-scores--good {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.office-section-scores--low {
+  color: #c2410c;
+  font-weight: 700;
 }
 
 .office-result-banner > div {
@@ -650,12 +963,315 @@
   color: var(--color-text-muted);
 }
 
+/* Progress rings */
+.office-progress-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+}
+
+.office-progress-ring {
+  --ring-color: var(--color-primary);
+  --progress: 0;
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--ring-color) calc(var(--progress) * 1%),
+    #e5e7eb 0
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.office-progress-ring__inner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.office-progress-ring__icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.office-progress-item__text {
+  min-width: 0;
+  flex: 1;
+}
+
+.office-progress-item__label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+}
+
+.office-progress-item__value {
+  display: block;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-text-heading);
+  line-height: 1.2;
+}
+
+.office-progress-item__sub {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  margin-top: 0.1rem;
+}
+
+.office-progress-item--good { --ring-color: #22c55e; }
+.office-progress-item--mid { --ring-color: #f59e0b; }
+.office-progress-item--low { --ring-color: #ef4444; }
+.office-progress-item--primary { --ring-color: var(--color-primary); }
+
+/* Admission report */
+.office-card--report {
+  padding: 0;
+  overflow: hidden;
+}
+
+.admission-report__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.15rem 1.25rem;
+  background: linear-gradient(135deg, #1e3a5f 0%, #4f46e5 100%);
+  color: #fff;
+}
+
+.admission-report__badge {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.admission-report__header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.admission-report__header p {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.admission-report__header .office-progress-item {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  min-width: 11rem;
+}
+
+.admission-report__section {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admission-report__section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-heading);
+}
+
+.admission-report__condition {
+  margin: 0 0 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-md);
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #0c4a6e;
+}
+
+.admission-report__progress-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+}
+
+.admission-report__insights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.admission-report__insight {
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+}
+
+.admission-report__insight h5 {
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.admission-report__insight ul {
+  margin: 0;
+  padding-left: 1rem;
+  line-height: 1.45;
+}
+
+.admission-report__insight--strong {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+}
+
+.admission-report__insight--weak {
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+}
+
+.admission-report__scholarship-card {
+  padding: 0.85rem;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+  border: 1px solid #fde047;
+}
+
+.admission-report__scholarship-note {
+  margin: 0.65rem 0 0;
+  font-size: 0.75rem;
+  color: #854d0e;
+  line-height: 1.4;
+}
+
+.admission-fee__toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+}
+
+.admission-fee__card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid #a5b4fc;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.12);
+}
+
+.admission-fee__total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.15rem;
+  background: linear-gradient(145deg, #4f46e5 0%, #6366f1 100%);
+  color: #fff;
+}
+
+.admission-fee__total span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.admission-fee__total strong {
+  font-size: 1.65rem;
+  font-weight: 800;
+}
+
+.admission-fee__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+.admission-fee__lines li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 1.15rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admission-fee__lines li:last-child {
+  border-bottom: none;
+}
+
+.admission-fee__lines strong {
+  color: var(--color-text-heading);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admission-fee__lines--discount {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.admission-fee__lines--discount strong {
+  color: #15803d;
+}
+
+.admission-fee__lines--highlight {
+  background: var(--color-bg-alt);
+  font-weight: 600;
+}
+
+.office-card--report .office-card__actions {
+  padding: 1rem 1.25rem 1.25rem;
+  margin: 0;
+  background: var(--color-bg-alt);
+}
+
 @media (max-width: 768px) {
   .office-form-grid {
     grid-template-columns: 1fr;
   }
 
   .office-result-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .office-student-report__grid,
+  .office-student-report__reading-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admission-report__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admission-report__progress-grid,
+  .admission-report__insights {
     grid-template-columns: 1fr;
   }
 

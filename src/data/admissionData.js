@@ -20,12 +20,16 @@ export const gradeFees = [
 ]
 
 export const scholarshipTiers = [
-  { minPercent: 90, scholarshipPercent: 30, label: 'Galaxy Star' },
-  { minPercent: 80, scholarshipPercent: 20, label: 'Galaxy Merit' },
-  { minPercent: 70, scholarshipPercent: 10, label: 'Galaxy Encouragement' },
+  { minPercent: 90, scholarshipPercent: 15, label: 'Galaxy Star' },
+  { minPercent: 80, scholarshipPercent: 10, label: 'Galaxy Merit' },
+  { minPercent: 70, scholarshipPercent: 5, label: 'Galaxy Encouragement' },
 ]
 
-export const maxScholarshipPercent = 30
+export const maxScholarshipPercent = 15
+
+export const admissionDiscounts = {
+  siblingPercent: 10,
+}
 
 export function getScholarshipForScore(percent) {
   const tier = scholarshipTiers.find((t) => percent >= t.minPercent)
@@ -56,7 +60,7 @@ export const busFeeOptions = {
       id: 'once',
       label: '1 Time',
       description: 'One-way — morning OR evening only',
-      feePercent: 60,
+      feePercent: 70,
     },
     {
       id: 'twice',

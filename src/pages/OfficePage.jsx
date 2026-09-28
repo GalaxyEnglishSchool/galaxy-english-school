@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import schoolLogo from '../assets/school.png'
+import OfficeGate from '../components/office/OfficeGate'
 import OfficeTools from '../components/office/OfficeTools'
 import { site } from '../data/siteData'
 import './OfficePage.css'
@@ -26,7 +27,9 @@ function OfficePage() {
       </header>
 
       <main className="office-page__main">
-        <OfficeTools initialTab={initialTab} standalone />
+        <OfficeGate>
+          <OfficeTools initialTab={initialTab} standalone />
+        </OfficeGate>
       </main>
     </div>
   )
