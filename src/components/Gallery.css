@@ -43,7 +43,7 @@
   font-size: 0.95rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .gallery__overlay {
     opacity: 1;
     transform: none;

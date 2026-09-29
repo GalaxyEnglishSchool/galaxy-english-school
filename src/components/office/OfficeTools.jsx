@@ -1,11 +1,28 @@
 import { useState } from 'react'
 import AdmissionAssessment from './AdmissionAssessment'
 import BusFeesCalculator from './BusFeesCalculator'
+import OfficeJoyAssistant from './OfficeJoyAssistant'
 import './OfficeTools.css'
 
-const TABS = [
-  { id: 'admission', label: 'Assessment & Fees', icon: '🎓' },
-  { id: 'bus', label: 'Bus Fees', icon: '🚌' },
+const NAV_ITEMS = [
+  {
+    id: 'admission',
+    label: 'Assessment & Fees',
+    hint: 'Admission test & scholarship',
+    icon: '🎓',
+  },
+  {
+    id: 'bus',
+    label: 'Bus Fees',
+    hint: 'Quotes by distance',
+    icon: '🚌',
+  },
+  {
+    id: 'joy',
+    label: 'Joy Assistant',
+    hint: 'Ask office questions',
+    icon: '🙂',
+  },
 ]
 
 function OfficeTools({ initialTab = 'admission', standalone = false }) {
@@ -19,35 +36,33 @@ function OfficeTools({ initialTab = 'admission', standalone = false }) {
   return (
     <Wrapper {...wrapperProps}>
       <div className="container">
-        <div className="section-header">
-          <span className="section-label">School Office</span>
-          <h2 className="section-title">Assessment & fee tools</h2>
-          <p className="section-subtitle section-subtitle--compact-mobile">
-            Admission readiness test, scholarship calculation, and bus fee quotes
-            by distance from school.
-          </p>
-        </div>
+        <div className="office-shell">
+          <nav className="office-nav" role="tablist" aria-label="Office tools">
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === item.id}
+                className={`office-nav__btn${activeTab === item.id ? ' office-nav__btn--active' : ''}`}
+                onClick={() => setActiveTab(item.id)}
+              >
+                <span className="office-nav__icon" aria-hidden="true">{item.icon}</span>
+                <span className="office-nav__text">
+                  <span className="office-nav__label">{item.label}</span>
+                  <span className="office-nav__hint">{item.hint}</span>
+                </span>
+              </button>
+            ))}
+          </nav>
 
-        <div className="office__badge">Office use only</div>
-
-        <div className="office-tabs" role="tablist" aria-label="Office tools">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              className={`office-tabs__btn${activeTab === tab.id ? ' office-tabs__btn--active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <span aria-hidden="true">{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="office-tabs__panel" role="tabpanel">
-          {activeTab === 'admission' ? <AdmissionAssessment /> : <BusFeesCalculator />}
+          <div className="office-shell__content" role="tabpanel">
+            {activeTab === 'joy' && (
+              <OfficeJoyAssistant onOpenTool={setActiveTab} />
+            )}
+            {activeTab === 'admission' && <AdmissionAssessment />}
+            {activeTab === 'bus' && <BusFeesCalculator />}
+          </div>
         </div>
       </div>
     </Wrapper>

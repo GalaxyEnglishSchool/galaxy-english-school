@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { ADMISSION_JOY_TOUR_STEPS } from '../../data/admissionJoyTourSteps'
 import {
   academicYear,
   admissionDiscounts,
@@ -13,8 +14,11 @@ import { contact, site } from '../../data/siteData'
 import AssessmentQuiz from './AssessmentQuiz'
 import OfficeStepBar from './OfficeStepBar'
 import ProgressIcon from './ProgressIcon'
+import JoyFieldTour from './JoyFieldTour'
+import JoyGuideFab from './JoyGuideFab'
 
 const ADMISSION_STEPS = ['Details', 'Test', 'Report']
+const ADMISSION_JOY_TOUR_KEY = 'galaxy-admission-joy-tour-done'
 
 const SECTION_ICONS = {
   'Reading (Marathi)': '📖',
@@ -51,6 +55,8 @@ function AdmissionAssessment() {
   const [questionIndex, setQuestionIndex] = useState(0)
   const [answers, setAnswers] = useState({})
   const [siblingDiscount, setSiblingDiscount] = useState(false)
+  const [joyTourActive, setJoyTourActive] = useState(false)
+  const [joyTourVisible, setJoyTourVisible] = useState(false)
   const [student, setStudent] = useState({
     name: '',
     dob: '',
@@ -199,15 +205,43 @@ ${site.name}, ${site.location}
     return 'low'
   }
 
+  const closeJoyTour = () => {
+    sessionStorage.setItem(ADMISSION_JOY_TOUR_KEY, '1')
+    setJoyTourActive(false)
+    setJoyTourVisible(false)
+  }
+
+  const restartJoyTour = () => {
+    sessionStorage.removeItem(ADMISSION_JOY_TOUR_KEY)
+    setJoyTourActive(true)
+  }
+
+  useEffect(() => {
+    if (sessionStorage.getItem(ADMISSION_JOY_TOUR_KEY) === '1') return undefined
+    const timer = window.setTimeout(() => setJoyTourActive(true), 500)
+    return () => window.clearTimeout(timer)
+  }, [])
+
   return (
     <div className="office-panel">
+      {joyTourActive && (
+        <JoyFieldTour
+          steps={ADMISSION_JOY_TOUR_STEPS}
+          contextStep={step}
+          onClose={closeJoyTour}
+          onVisibleChange={setJoyTourVisible}
+        />
+      )}
+
+      <JoyGuideFab onClick={restartJoyTour} hidden={joyTourVisible} />
+
       <OfficeStepBar steps={ADMISSION_STEPS} currentStep={step} />
 
       {step === 1 && (
         <div className="office-card">
           <h3>Student & parent details</h3>
           <div className="office-form-grid">
-            <label>
+            <label data-joy-tour="student-name">
               Student name
               <input
                 type="text"
@@ -217,7 +251,7 @@ ${site.name}, ${site.location}
                 required
               />
             </label>
-            <label>
+            <label data-joy-tour="dob">
               Date of birth
               <input
                 type="date"
@@ -225,7 +259,7 @@ ${site.name}, ${site.location}
                 onChange={(e) => handleStudentChange('dob', e.target.value)}
               />
             </label>
-            <label>
+            <label data-joy-tour="grade">
               Applying for
               <select
                 value={student.gradeId}
@@ -236,7 +270,7 @@ ${site.name}, ${site.location}
                 ))}
               </select>
             </label>
-            <label>
+            <label data-joy-tour="parent-name">
               Parent / guardian name
               <input
                 type="text"
@@ -245,7 +279,7 @@ ${site.name}, ${site.location}
                 placeholder="Parent name"
               />
             </label>
-            <label className="office-form-grid__full">
+            <label className="office-form-grid__full" data-joy-tour="parent-phone">
               Parent WhatsApp number
               <input
                 type="tel"
@@ -262,6 +296,7 @@ ${site.name}, ${site.location}
           <button
             type="button"
             className="btn btn--primary"
+            data-joy-tour="start-test"
             disabled={!student.name.trim()}
             onClick={startAssessment}
           >
@@ -282,14 +317,16 @@ ${site.name}, ${site.location}
             </div>
           </div>
 
-          <AssessmentQuiz
-            assessment={assessment}
-            answers={answers}
-            onAnswer={handleAnswer}
-            currentIndex={questionIndex}
-            onIndexChange={setQuestionIndex}
-            onComplete={() => setStep(3)}
-          />
+          <div data-joy-tour="quiz">
+            <AssessmentQuiz
+              assessment={assessment}
+              answers={answers}
+              onAnswer={handleAnswer}
+              currentIndex={questionIndex}
+              onIndexChange={setQuestionIndex}
+              onComplete={() => setStep(3)}
+            />
+          </div>
 
           <div className="office-card__actions">
             <button type="button" className="btn btn--secondary" onClick={() => setStep(1)}>
@@ -318,7 +355,6 @@ ${site.name}, ${site.location}
             />
           </header>
 
-          {/* Assessment report */}
           <section className="admission-report__section">
             <h4 className="admission-report__section-title">
               <span aria-hidden="true">📊</span> Student assessment
@@ -366,7 +402,6 @@ ${site.name}, ${site.location}
             </div>
           </section>
 
-          {/* Scholarship — fixed from test */}
           <section className="admission-report__section admission-report__scholarship">
             <h4 className="admission-report__section-title">
               <span aria-hidden="true">🏆</span> Scholarship (from test score)
@@ -385,7 +420,6 @@ ${site.name}, ${site.location}
             </div>
           </section>
 
-          {/* Fee calculation */}
           <section className="admission-report__section admission-report__fees">
             <h4 className="admission-report__section-title">
               <span aria-hidden="true">💰</span> Fee calculation
@@ -395,6 +429,7 @@ ${site.name}, ${site.location}
               <button
                 type="button"
                 className={`bus-toggle${siblingDiscount ? ' bus-toggle--on' : ''}`}
+                data-joy-tour="sibling"
                 onClick={() => setSiblingDiscount((v) => !v)}
                 aria-pressed={siblingDiscount}
               >
@@ -403,7 +438,7 @@ ${site.name}, ${site.location}
               </button>
             </div>
 
-            <div className="admission-fee__card">
+            <div className="admission-fee__card" data-joy-tour="fees">
               <div className="admission-fee__total">
                 <span>Estimated 1st year total</span>
                 <strong>{formatINR(feeSummary.firstYearTotal)}</strong>
@@ -446,7 +481,12 @@ ${site.name}, ${site.location}
             <button type="button" className="btn btn--secondary" onClick={() => setStep(2)}>
               Back
             </button>
-            <button type="button" className="btn btn--whatsapp" onClick={sendWhatsAppReport}>
+            <button
+              type="button"
+              className="btn btn--whatsapp"
+              data-joy-tour="whatsapp"
+              onClick={sendWhatsAppReport}
+            >
               Send Report on WhatsApp
             </button>
             <button type="button" className="btn btn--primary" onClick={resetForm}>

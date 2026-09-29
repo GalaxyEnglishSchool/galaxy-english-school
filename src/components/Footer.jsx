@@ -1,6 +1,5 @@
 import schoolLogo from '../assets/school.png'
-import { contact, footerLinks, site } from '../data/siteData'
-import { getOfficeUrl } from '../utils/officeUrl'
+import { contact, site } from '../data/siteData'
 import './Footer.css'
 
 function Footer() {
@@ -8,34 +7,22 @@ function Footer() {
     <footer className="footer">
       <div className="container footer__inner">
         <div className="footer__brand">
-          <span className="footer__logo">
-            <img src={schoolLogo} alt="" />
-            <span className="footer__logo-text">
-              <span className="footer__logo-name">{site.name}</span>
-              <span className="footer__logo-udise">UDISE NO. {site.udiseNumber}</span>
-            </span>
-          </span>
-          <p>{site.tagline}</p>
+          <img src={schoolLogo} alt="" className="footer__logo" width={32} height={32} decoding="async" />
+          <div className="footer__brand-text">
+            <strong>{site.name}</strong>
+            <span>UDISE {site.udiseNumber}</span>
+          </div>
         </div>
-        <nav className="footer__nav" aria-label="Footer navigation">
-          {footerLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.openInNewTab ? getOfficeUrl() : link.href}
-              target={link.openInNewTab ? '_blank' : undefined}
-              rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
+
         <div className="footer__contact">
           <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+          <span className="footer__sep" aria-hidden="true">·</span>
           <a href={`mailto:${contact.email}`}>{contact.email}</a>
         </div>
-      </div>
-      <div className="footer__bottom container">
-        <p>© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+
+        <p className="footer__copy">
+          © {new Date().getFullYear()} {site.name}. All rights reserved.
+        </p>
       </div>
     </footer>
   )

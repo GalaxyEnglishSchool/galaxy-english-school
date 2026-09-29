@@ -1,15 +1,282 @@
-.courses__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+/* Academic tree — sequential left-to-right growth */
+
+.academic-tree {
+  position: relative;
+  margin: 0;
+  padding: 0.25rem 0 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
+
+.academic-tree__stages {
+  list-style: none;
+  margin: 0;
+  padding: 0 0.5rem 1.65rem;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0.65rem;
+  min-width: min(100%, 58rem);
+}
+
+.academic-tree__branch {
+  flex: 1 0 9.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* —— Node (on trunk) —— */
+
+.academic-tree__node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 2.5px solid #22c55e;
+  box-shadow: 0 3px 12px rgba(34, 197, 94, 0.2);
+  transform: scale(0);
+  opacity: 0;
+  z-index: 2;
+}
+
+.academic-tree__node-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid rgba(34, 197, 94, 0.45);
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.academic-tree__node-icon {
+  font-size: 1rem;
+  line-height: 1;
+  transform: scale(0);
+}
+
+.academic-tree__branch--growing .academic-tree__node {
+  animation: tree-node-pop 0.55s cubic-bezier(0.34, 1.45, 0.64, 1) forwards;
+}
+
+.academic-tree__branch--growing .academic-tree__node-ring {
+  animation: tree-node-ring 0.7s ease-out 0.1s forwards;
+}
+
+.academic-tree__branch--growing .academic-tree__node-icon {
+  animation: tree-icon-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;
+}
+
+.academic-tree__branch--revealed:not(.academic-tree__branch--growing) .academic-tree__node,
+.academic-tree__branch--revealed:not(.academic-tree__branch--growing) .academic-tree__node-icon {
+  transform: scale(1);
+  opacity: 1;
+}
+
+@keyframes tree-node-pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes tree-node-ring {
+  0% { opacity: 0.7; transform: scale(0.6); }
+  100% { opacity: 0; transform: scale(1.45); }
+}
+
+@keyframes tree-icon-pop {
+  0% { transform: scale(0) rotate(-20deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* —— Stem —— */
+
+.academic-tree__stem {
+  width: 3px;
+  height: 0;
+  margin: 0.15rem 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #86efac, #22c55e);
+  transform-origin: bottom center;
+}
+
+.academic-tree__branch--growing .academic-tree__stem {
+  animation: tree-stem-grow 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+}
+
+.academic-tree__branch--revealed:not(.academic-tree__branch--growing) .academic-tree__stem {
+  height: 1.15rem;
+}
+
+@keyframes tree-stem-grow {
+  0% { height: 0; }
+  100% { height: 1.15rem; }
+}
+
+/* —— Card (leaf) —— */
+
+.academic-tree__card {
+  width: 100%;
+  min-height: 0;
+  opacity: 0;
+  transform: translateY(0.65rem) scale(0.92);
+  transform-origin: bottom center;
+}
+
+.academic-tree__branch--growing .academic-tree__card {
+  animation: tree-leaf-unfold 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+}
+
+.academic-tree__branch--revealed:not(.academic-tree__branch--growing) .academic-tree__card {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@keyframes tree-leaf-unfold {
+  0% {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.88);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* —— Trunk rail —— */
+
+.academic-tree__rail {
+  position: absolute;
+  left: 1.25rem;
+  right: 0.75rem;
+  bottom: 1.15rem;
+  height: 4px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.academic-tree__roots {
+  position: absolute;
+  left: -0.7rem;
+  top: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: -0.875rem;
+  border-radius: 50% 50% 45% 45%;
+  background: radial-gradient(circle at 45% 40%, #4ade80, #16a34a 60%, #14532d);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+  transform: scale(0);
+  z-index: 1;
+}
+
+.academic-tree__roots--shown {
+  animation: tree-roots-sprout 0.55s cubic-bezier(0.34, 1.45, 0.64, 1) forwards;
+}
+
+@keyframes tree-roots-sprout {
+  0% { transform: scale(0) translateY(6px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.academic-tree__trunk {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: 0.65rem;
+}
+
+.academic-tree__trunk-seg {
+  flex: 1 1 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #15803d, #22c55e 70%, #86efac);
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0.35;
+}
+
+.academic-tree__trunk-seg--grown {
+  animation: tree-trunk-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 1;
+}
+
+@keyframes tree-trunk-grow {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+.academic-tree__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.15rem;
+  margin: 0;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* Compact cards */
+
+.academic-tree__card.course-card {
+  padding: 1rem 0.9rem;
+}
+
+.academic-tree__card h3 {
+  font-size: 0.92rem;
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+
+.course-card__title--bold strong {
+  font-weight: 800;
+  color: var(--color-text-heading);
+}
+
+.academic-tree__card p {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  margin-bottom: 0.65rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.academic-tree__card .course-card__level {
+  font-size: 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.academic-tree__card .course-card__meta {
+  padding-top: 0.55rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.72rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.academic-tree__card .course-card__badge {
+  top: -8px;
+  right: 0.5rem;
+  font-size: 0.62rem;
+  padding: 0.15rem 0.45rem;
+}
+
+/* Shared course card */
 
 .course-card {
   position: relative;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.75rem;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -17,7 +284,7 @@
 
 .course-card--featured {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-md);
+  box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-sm);
 }
 
 .course-card--featured::before {
@@ -25,7 +292,7 @@
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(245,158,11,0.1));
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(245, 158, 11, 0.08));
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -37,73 +304,224 @@
 
 .course-card__badge {
   position: absolute;
-  top: -10px;
-  right: 1rem;
   background: var(--color-accent);
   color: #78350f;
-  font-size: 0.7rem;
   font-weight: 700;
-  padding: 0.25rem 0.65rem;
   border-radius: 999px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 .course-card__level {
   display: inline-block;
-  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-primary);
-  margin-bottom: 0.5rem;
 }
 
-.course-card h3 {
-  font-size: 1.15rem;
-  margin-bottom: 0.6rem;
-}
+@media (min-width: 768px) {
+  .academic-tree {
+    overflow-x: visible;
+  }
 
-.course-card p {
-  font-size: 0.925rem;
-  color: var(--color-text-muted);
-  line-height: 1.65;
-  flex: 1;
-  margin-bottom: 1.25rem;
-}
+  .academic-tree__stages {
+    gap: 0.85rem;
+    padding-bottom: 1.75rem;
+  }
 
-.course-card__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.8rem;
-  color: var(--color-text);
-  font-weight: 500;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-  margin-bottom: 1rem;
-}
+  .academic-tree__branch {
+    flex: 1 1 0;
+  }
 
-.course-card__link {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: none;
-  transition: letter-spacing 0.2s ease;
-}
+  @keyframes tree-stem-grow {
+    0% { height: 0; }
+    100% { height: 1.3rem; }
+  }
 
-.course-card__link:hover {
-  letter-spacing: 0.03em;
-}
+  .academic-tree__branch--revealed:not(.academic-tree__branch--growing) .academic-tree__stem {
+    height: 1.3rem;
+  }
 
-@media (max-width: 900px) {
-  .courses__grid {
-    grid-template-columns: repeat(2, 1fr);
+  .academic-tree__node {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .academic-tree__card.course-card {
+    padding: 1.1rem 1rem;
+  }
+
+  .academic-tree__card h3 {
+    font-size: 0.98rem;
+  }
+
+  .course-card__title--bold strong {
+    font-size: 1.05rem;
+  }
+
+  .academic-tree__card p {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 4;
   }
 }
 
-.carousel--cards .course-card {
-  height: 100%;
-  min-height: 300px;
+@media (max-width: 767px) {
+  .academic-tree {
+    margin: 0;
+    padding: 0.25rem 0 0;
+    overflow-x: visible;
+    scrollbar-width: none;
+  }
+
+  .academic-tree::-webkit-scrollbar {
+    display: none;
+  }
+
+  .academic-tree__stages {
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0;
+    gap: 0;
+    padding: 0 0 0.5rem;
+  }
+
+  .academic-tree__branch {
+    position: relative;
+    flex: none;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0 0 0.85rem 0.15rem;
+  }
+
+  .academic-tree__branch--revealed:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 1.05rem;
+    top: 2.65rem;
+    bottom: 0;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #22c55e, #86efac);
+    transform-origin: top center;
+    animation: tree-mobile-connector 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+  }
+
+  @keyframes tree-mobile-connector {
+    0% { transform: scaleY(0); opacity: 0.4; }
+    100% { transform: scaleY(1); opacity: 1; }
+  }
+
+  .academic-tree__node {
+    order: 1;
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+  }
+
+  .academic-tree__stem {
+    display: none;
+  }
+
+  .academic-tree__card {
+    order: 2;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .academic-tree__card.course-card {
+    padding: 1rem 1rem;
+  }
+
+  .academic-tree__card h3 {
+    font-size: 1rem;
+  }
+
+  .academic-tree__card p {
+    font-size: 0.85rem;
+    -webkit-line-clamp: unset;
+    display: block;
+    overflow: visible;
+  }
+
+  .academic-tree__rail {
+    display: none;
+  }
+
+  .academic-tree__progress {
+    margin-top: 0.35rem;
+  }
+}
+
+/* iPad portrait — academic tree fits without horizontal scroll */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .academic-tree__stages {
+    gap: 0.55rem;
+    padding-bottom: 1.65rem;
+  }
+
+  .academic-tree__branch {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .academic-tree__card.course-card {
+    padding: 0.9rem 0.75rem;
+  }
+
+  .academic-tree__card h3 {
+    font-size: 0.86rem;
+  }
+
+  .academic-tree__card p {
+    font-size: 0.72rem;
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .academic-tree__roots,
+  .academic-tree__trunk-seg,
+  .academic-tree__node,
+  .academic-tree__node-ring,
+  .academic-tree__node-icon,
+  .academic-tree__stem,
+  .academic-tree__card {
+    animation: none !important;
+  }
+
+  .academic-tree__roots--shown {
+    transform: scale(1);
+  }
+
+  .academic-tree__trunk-seg--grown {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  .academic-tree__branch--revealed .academic-tree__node,
+  .academic-tree__branch--revealed .academic-tree__node-icon {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .academic-tree__branch--revealed .academic-tree__stem {
+    height: 1.15rem;
+  }
+
+  .academic-tree__branch--revealed .academic-tree__card {
+    opacity: 1;
+    transform: none;
+  }
+
+  .academic-tree__progress {
+    display: none;
+  }
+
+  .academic-tree__branch--revealed:not(:last-child)::before {
+    animation: none;
+    transform: scaleY(1);
+    opacity: 1;
+  }
 }

@@ -1,8 +1,15 @@
 /* Bus Fee Calculator — single-page UI */
 
 .bus-fees {
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
+}
+
+.bus-fees__layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
 }
 
 .bus-fees__header {
@@ -64,13 +71,6 @@
   font-size: 0.68rem;
   font-weight: 700;
   white-space: nowrap;
-}
-
-.bus-fees__layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  align-items: start;
 }
 
 .bus-fees__panel {
@@ -1023,18 +1023,33 @@
   font-size: 0.78rem;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Responsive — tablet (iPad 6th gen) + mobile */
+@media (max-width: 1024px) {
   .bus-fees__layout {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .bus-fees__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bus-fees__chips {
+    width: 100%;
+  }
+
+  .bus-slabs {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .bus-fees .directions-map__frame {
+    min-height: 280px;
+    height: min(42vh, 360px);
   }
 }
 
-@media (max-width: 560px) {
-  .bus-fields {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 767px) {
   .bus-slabs {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1045,5 +1060,11 @@
 
   .bus-fees__chips li {
     font-size: 0.64rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .bus-fields {
+    grid-template-columns: 1fr;
   }
 }

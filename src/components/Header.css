@@ -42,7 +42,8 @@
   font-size: 1.05rem;
 }
 
-.header__logo-udise {
+.header__logo-udise,
+.header__logo-since {
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -127,7 +128,7 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .header__toggle {
     display: flex;
   }

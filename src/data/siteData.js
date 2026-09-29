@@ -121,51 +121,31 @@ export const features = [
 export const courses = [
   {
     level: 'Early Years',
-    title: 'Play Group & Nursery',
-    description: 'A joyful start to learning through play, stories, rhymes, and activities that build curiosity and social skills.',
-    duration: 'Play Group & Nursery',
+    title: 'Play Group to Sr KG',
+    description: 'A joyful start through play, stories, rhymes, and activities that build curiosity, language, and social skills.',
+    duration: 'Play Group · Nursery · Jr KG · Sr KG',
     schedule: 'State Board',
     highlight: false,
+    icon: '🌱',
   },
   {
-    level: 'Primary',
-    title: 'Std 1st to 4th',
-    description: 'Strong foundation in language, mathematics, and environmental studies with activity-based learning.',
-    duration: 'Std 1 – 4',
-    schedule: 'State Board',
-    highlight: false,
-  },
-  {
-    level: 'Upper Primary',
-    title: 'Std 5th to 7th',
-    description: 'Deeper subject understanding, project work, and introduction to science and mathematics fundamentals.',
-    duration: 'Std 5 – 7',
-    schedule: 'State Board',
-    highlight: false,
-  },
-  {
-    level: 'Secondary',
-    title: 'Std 8th to 10th',
-    description: 'Rigorous state board preparation with focus on SSC examination success and conceptual clarity.',
-    duration: 'Std 8 – 10',
+    level: 'School',
+    title: 'Std 1st to 10th',
+    titleBold: true,
+    description: 'Strong foundation from primary through secondary — activity-based learning, subject mastery, and rigorous SSC preparation.',
+    duration: 'Std 1 – 10',
     schedule: 'State Board · SSC',
     highlight: true,
+    icon: '🌳',
   },
   {
     level: 'Higher Secondary',
     title: 'Std 11th & 12th',
-    description: 'Science, Commerce, and Arts streams with guidance for higher education and competitive exam preparation.',
+    description: 'Science, Commerce, and Arts streams with guidance for higher education and career planning.',
     duration: 'Std 11 – 12',
     schedule: 'State Board · HSC',
     highlight: false,
-  },
-  {
-    level: 'Competitive Prep',
-    title: 'NEET / JEE Foundation',
-    description: 'Dedicated maths and science foundation coaching for students aiming for medical and engineering entrance exams.',
-    duration: 'Std 8 – 12',
-    schedule: 'Integrated Program',
-    highlight: false,
+    icon: '🍃',
   },
 ]
 
@@ -182,18 +162,16 @@ export const milestones = [
     quote:
       'After six years of dedicated effort, Galaxy English School received its official Government affiliation (Private) — turning a long-held dream into realityThe school was inaugurated in Chh. Sambhajinagar with the support of Shri Vijaykumar Kalam-Patil (IAS), Smt. Jaishree Kalam-Patil, and the blessings of the family elders.',
   },
- {
-  year: '2017',
-  title: 'First Student Transport Bus',
-  quote:
-    'With a vision to make education more accessible, we introduced our first school bus service for students.'
-},
-]
-
-export const footerLinks = [
-  { label: 'About Us', href: '#about' },
-  { label: 'Gallery', href: '#gallery' },
-  { label: 'Academics', href: '#courses' },
-  { label: 'Office Tools', href: 'office', openInNewTab: true },
-  { label: 'Contact', href: '#contact' },
+  {
+    year: '2025',
+    title: 'First Student Transport Bus',
+    quote:
+      'With a vision to make education more accessible, we introduced our first school bus service for students.',
+    highlights: [
+      { icon: '🚌', text: 'School bus service for safer, easier access' },
+      { icon: '💻', text: 'E-learning platform for digital classrooms' },
+      { icon: '🔬', text: 'Practical learning — maths & science foundation' },
+      { icon: '💪', text: 'Building confidence in every child' },
+    ],
+  },
 ]

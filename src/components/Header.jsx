@@ -18,6 +18,7 @@ function Header() {
           <span className="header__logo-text">
             <span className="header__logo-name">{site.name}</span>
             <span className="header__logo-udise">UDISE NO. {site.udiseNumber}</span>
+            <span className="header__logo-since">Since 2008</span>
           </span>
         </a>
 

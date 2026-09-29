@@ -11,8 +11,13 @@ import { schoolOrigin } from '../../utils/busDistance'
 import { formatINR } from '../../utils/formatCurrency'
 import { openWhatsApp } from '../../utils/whatsapp'
 import { site } from '../../data/siteData'
+import { BUS_JOY_TOUR_STEPS } from '../../data/busJoyTourSteps'
 import DirectionsMap from './DirectionsMap'
+import JoyFieldTour from './JoyFieldTour'
+import JoyGuideFab from './JoyGuideFab'
 import './BusFees.css'
+
+const BUS_JOY_TOUR_KEY = 'galaxy-bus-joy-tour-done'
 
 function BusFeesCalculator() {
   const [destination, setDestination] = useState('')
@@ -20,6 +25,8 @@ function BusFeesCalculator() {
   const [distanceKm, setDistanceKm] = useState('')
   const [tripId, setTripId] = useState('twice')
   const [siblingDiscount, setSiblingDiscount] = useState(false)
+  const [joyTourActive, setJoyTourActive] = useState(false)
+  const [joyTourVisible, setJoyTourVisible] = useState(false)
 
   const selectedTrip = busFeeOptions.tripOptions.find((trip) => trip.id === tripId)
 
@@ -89,8 +96,36 @@ ${site.name}, ${site.location}`
     openWhatsApp(message)
   }
 
+  const closeJoyTour = () => {
+    sessionStorage.setItem(BUS_JOY_TOUR_KEY, '1')
+    setJoyTourActive(false)
+    setJoyTourVisible(false)
+  }
+
+  const restartJoyTour = () => {
+    sessionStorage.removeItem(BUS_JOY_TOUR_KEY)
+    setJoyTourActive(true)
+  }
+
+  useEffect(() => {
+    if (sessionStorage.getItem(BUS_JOY_TOUR_KEY) === '1') return undefined
+    const timer = window.setTimeout(() => setJoyTourActive(true), 500)
+    return () => window.clearTimeout(timer)
+  }, [])
+
   return (
     <div className="bus-fees">
+      {joyTourActive && (
+        <JoyFieldTour
+          steps={BUS_JOY_TOUR_STEPS}
+          showMap={showMap && Boolean(destination.trim())}
+          onClose={closeJoyTour}
+          onVisibleChange={setJoyTourVisible}
+        />
+      )}
+
+      <JoyGuideFab onClick={restartJoyTour} hidden={joyTourVisible} />
+
       <header className="bus-fees__header">
         <img
           src={schoolBusImg}
@@ -124,7 +159,7 @@ ${site.name}, ${site.location}`
               </div>
             </div>
             <div className="bus-route-compact__arrow">↓</div>
-            <label className="bus-field bus-field--full">
+            <label className="bus-field bus-field--full" data-joy-tour="address">
               <span className="bus-field__label">Student home address</span>
               <input
                 type="text"
@@ -145,6 +180,7 @@ ${site.name}, ${site.location}`
           <button
             type="button"
             className="bus-btn bus-btn--map bus-btn--full"
+            data-joy-tour="show-map"
             disabled={!destination.trim()}
             onClick={showRoute}
           >
@@ -152,13 +188,15 @@ ${site.name}, ${site.location}`
           </button>
 
           {showMap && destination.trim() && (
-            <DirectionsMap
-              destination={destination.trim()}
-              onSuggestedKm={handleSuggestedKm}
-            />
+            <div data-joy-tour="map-km">
+              <DirectionsMap
+                destination={destination.trim()}
+                onSuggestedKm={handleSuggestedKm}
+              />
+            </div>
           )}
 
-          <div className="bus-fees__distance-block">
+          <div className="bus-fees__distance-block" data-joy-tour="km-input">
             <label className="bus-fees__distance-label" htmlFor="bus-distance-km">
               Road distance from map
             </label>
@@ -178,7 +216,7 @@ ${site.name}, ${site.location}`
             </div>
           </div>
 
-          <div className="bus-slabs bus-slabs--compact">
+          <div className="bus-slabs bus-slabs--compact" data-joy-tour="slabs">
             {busDistanceSlabs.map((slab, index) => (
               <div
                 key={slab.label}
@@ -225,7 +263,7 @@ ${site.name}, ${site.location}`
             )}
           </div>
 
-          <div className="bus-report__section">
+          <div className="bus-report__section" data-joy-tour="trips">
             <p className="bus-report__section-label">Daily trips</p>
             <div className="bus-trip-options" role="group" aria-label="Daily bus trips">
               {busFeeOptions.tripOptions.map((trip) => (
@@ -245,6 +283,7 @@ ${site.name}, ${site.location}`
           <button
             type="button"
             className={`bus-toggle bus-report__sibling${siblingDiscount ? ' bus-toggle--on' : ''}`}
+            data-joy-tour="sibling"
             onClick={() => setSiblingDiscount((v) => !v)}
             aria-pressed={siblingDiscount}
           >
@@ -252,7 +291,10 @@ ${site.name}, ${site.location}`
             <span>Sibling discount ({busFeeOptions.siblingDiscountPercent}%)</span>
           </button>
 
-          <div className={`bus-report__amount${!hasValidKm ? ' bus-report__amount--empty' : ''}`}>
+          <div
+            className={`bus-report__amount${!hasValidKm ? ' bus-report__amount--empty' : ''}`}
+            data-joy-tour="monthly-fee"
+          >
             <span className="bus-report__amount-label">Monthly bus fee</span>
             <div className="bus-report__amount-value">
               {hasValidKm ? formatINR(calculation.total) : '—'}
@@ -301,6 +343,7 @@ ${site.name}, ${site.location}`
           <button
             type="button"
             className="btn btn--whatsapp btn--full bus-fees__whatsapp"
+            data-joy-tour="whatsapp"
             disabled={!hasValidKm}
             onClick={sendWhatsAppQuote}
           >

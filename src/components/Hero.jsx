@@ -1,11 +1,9 @@
-import schoolLogo from '../assets/school.png'
-import { site } from '../data/siteData'
-import { getPhotoAt } from '../utils/loadPhotos'
+import heroImage from '../assets/Photo1.jpg'
+import { photoCaptions, site } from '../data/siteData'
+import JoyGuide from './JoyGuide'
 import './Hero.css'
 
 function Hero() {
-  const heroPhoto = getPhotoAt(0)
-
   return (
     <section id="home" className="hero">
       <div className="hero__stars" aria-hidden="true" />
@@ -29,18 +27,22 @@ function Hero() {
           </div>
         </div>
 
-        {heroPhoto && (
-          <div className="hero__visual animate-fade-up delay-4">
-            <div className="hero__logo-float animate-float-slow">
-              <img src={schoolLogo} alt={`${site.name} logo`} />
-            </div>
-            <div className="hero__image-wrap animate-float img-zoom">
-              <img src={heroPhoto.src} alt={heroPhoto.alt} />
-              <div className="hero__image-shine" aria-hidden="true" />
-            </div>
+        <div className="hero__visual animate-fade-up delay-4">
+          <div className="hero__image-wrap animate-float img-zoom">
+            <img
+              src={heroImage}
+              alt={photoCaptions['Photo1.jpg'].alt}
+              fetchPriority="high"
+              decoding="async"
+              width={960}
+              height={720}
+            />
+            <div className="hero__image-shine" aria-hidden="true" />
           </div>
-        )}
+        </div>
       </div>
+
+      <JoyGuide variant="hero" />
     </section>
   )
 }

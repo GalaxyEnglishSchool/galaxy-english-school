@@ -1,6 +1,8 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import HomePage from './pages/HomePage'
-import OfficePage from './pages/OfficePage'
+
+const OfficePage = lazy(() => import('./pages/OfficePage'))
 
 const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
 
@@ -9,10 +11,12 @@ function App() {
     <>
       <div id="google_translate_element" aria-hidden="true" />
       <BrowserRouter basename={routerBasename}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/office" element={<OfficePage />} />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/office" element={<OfficePage />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </>
   )

@@ -1,9 +1,77 @@
 .office--standalone {
-  padding: 2rem 0 3rem;
+  padding: 1.75rem 0 3rem;
 }
 
-.office--standalone .section-header {
-  margin-bottom: 2rem;
+.office-shell {
+  display: grid;
+  grid-template-columns: minmax(210px, 240px) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.office-shell__content {
+  min-width: 0;
+}
+
+.office-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: sticky;
+  top: 5.25rem;
+}
+
+.office-nav__btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-family: inherit;
+  text-align: left;
+  color: var(--color-text-heading);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.office-nav__icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.office-nav__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.office-nav__label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.office-nav__hint {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+}
+
+.office-nav__btn:hover {
+  border-color: var(--color-primary);
+}
+
+.office-nav__btn--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .office-note--warn {
@@ -97,55 +165,6 @@
   background: var(--color-bg-alt);
   color: var(--color-text-muted);
   line-height: 1.45;
-}
-
-.office__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0 auto 1.25rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: 999px;
-  background: var(--color-accent-light);
-  color: #92400e;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.office-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.office-tabs__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.85rem 1.25rem;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--color-text-heading);
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-}
-
-.office-tabs__btn:hover {
-  border-color: var(--color-primary);
-}
-
-.office-tabs__btn--active {
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
-  box-shadow: var(--shadow-sm);
 }
 
 .office-panel {
@@ -1251,7 +1270,47 @@
   background: var(--color-bg-alt);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+  .office-shell {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .office-nav {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .office-nav__btn {
+    flex: 1 1 calc(50% - 0.35rem);
+    min-width: 9rem;
+  }
+
+  .office-panel {
+    max-width: none;
+  }
+
+  .quiz__options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .office-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admission-report__progress-grid,
+  .admission-report__insights {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .office-nav__btn {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-width: 0;
+  }
+
   .office-form-grid {
     grid-template-columns: 1fr;
   }
@@ -1305,11 +1364,6 @@
 
   .office-card__actions .btn {
     width: 100%;
-  }
-
-  .office-tabs__btn {
-    flex: 1 1 calc(50% - 0.375rem);
-    justify-content: center;
   }
 
   .office-score-pill {

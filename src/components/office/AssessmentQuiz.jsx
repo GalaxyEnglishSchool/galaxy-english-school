@@ -192,6 +192,7 @@ function AssessmentQuiz({ assessment, answers, onAnswer, currentIndex, onIndexCh
         <button
           type="button"
           className="btn btn--primary"
+          data-joy-tour="quiz-next"
           onClick={goNext}
           disabled={currentIndex === total - 1}
         >

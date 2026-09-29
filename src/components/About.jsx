@@ -57,7 +57,7 @@ function About() {
                 key={photo.id}
                 className={`about__photo ${index === 0 ? 'about__photo--main' : 'about__photo--secondary'} img-zoom hover-lift`}
               >
-                <img src={photo.src} alt={photo.alt} loading="lazy" />
+                <img src={photo.src} alt={photo.alt} loading="lazy" decoding="async" />
               </div>
             ))}
           </div>

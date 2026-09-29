@@ -1,11 +1,10 @@
-import Carousel from './Carousel'
 import Reveal from './Reveal'
 import { features } from '../data/siteData'
 import './Features.css'
 
 function Features() {
   return (
-    <section id="facilities" className="features section section--alt">
+    <section id="facilities" className="features section section--alt section--compact">
       <div className="container">
         <Reveal>
           <div className="section-header">
@@ -17,15 +16,21 @@ function Features() {
           </div>
         </Reveal>
 
-        <Carousel ariaLabel="School facilities" className="carousel--cards" interval={3000}>
-          {features.map((feature) => (
-            <article key={feature.title} className="feature-card hover-lift">
-              <span className="feature-card__icon" aria-hidden="true">{feature.icon}</span>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </article>
-          ))}
-        </Carousel>
+        <Reveal>
+          <ul className="facilities-grid" aria-label="School facilities">
+            {features.map((feature) => (
+              <li key={feature.title} className="facilities-grid__item">
+                <article className="facility-card hover-lift">
+                  <span className="facility-card__icon" aria-hidden="true">{feature.icon}</span>
+                  <div className="facility-card__body">
+                    <h3>{feature.title}</h3>
+                    <p>{feature.description}</p>
+                  </div>
+                </article>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </div>
     </section>
   )

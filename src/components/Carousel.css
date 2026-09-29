@@ -128,19 +128,23 @@
   transform: scale(1.25);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .carousel--photos .carousel__slide {
-    flex: 0 0 88%;
+    flex: 0 0 min(88%, 520px);
   }
 
   .carousel--photos .carousel__arrow {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     font-size: 1.25rem;
+  }
+
+  .carousel--cards {
+    --carousel-slide-width: min(88%, 340px);
   }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1025px) {
   .carousel--photos {
     --carousel-slide-width: 36%;
   }

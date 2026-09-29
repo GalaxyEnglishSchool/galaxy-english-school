@@ -1,13 +1,15 @@
 import { photoCaptions } from '../data/siteData'
 
-// Auto-detects campus photos: Photo*.jpg and named campus images (e.g. SchoolBus.jpg)
+// Lazy-load campus photos so they are not fetched on first paint.
 const photoModules = import.meta.glob(
   [
     '../assets/Photo*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}',
     '../assets/SchoolBus.{jpg,jpeg,JPG,JPEG}',
   ],
-  { eager: true, import: 'default' },
+  { import: 'default' },
 )
+
+let cachedPhotos = null
 
 function getFilename(path) {
   return path.split('/').pop()
@@ -23,9 +25,12 @@ function defaultAlt(filename) {
   return `Galaxy English School — ${defaultCaption(filename)}`
 }
 
-export function loadGalleryPhotos() {
-  return Object.entries(photoModules)
-    .map(([path, src]) => {
+export async function loadGalleryPhotos() {
+  if (cachedPhotos) return cachedPhotos
+
+  const photos = await Promise.all(
+    Object.entries(photoModules).map(async ([path, loader]) => {
+      const src = await loader()
       const filename = getFilename(path)
       const overrides = photoCaptions[filename] ?? {}
 
@@ -36,12 +41,12 @@ export function loadGalleryPhotos() {
         caption: overrides.caption ?? defaultCaption(filename),
         alt: overrides.alt ?? defaultAlt(filename),
       }
-    })
-    .sort((a, b) =>
-      a.filename.localeCompare(b.filename, undefined, { numeric: true, sensitivity: 'base' }),
-    )
-}
+    }),
+  )
 
-export function getPhotoAt(index) {
-  return loadGalleryPhotos()[index] ?? null
+  cachedPhotos = photos.sort((a, b) =>
+    a.filename.localeCompare(b.filename, undefined, { numeric: true, sensitivity: 'base' }),
+  )
+
+  return cachedPhotos
 }

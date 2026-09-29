@@ -1,0 +1,365 @@
+/* Joy — hero anchor + floating scroll guide */
+
+.joy-guide {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  pointer-events: none;
+}
+
+.joy-guide--hero {
+  position: absolute;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 20;
+  pointer-events: auto;
+  width: min(280px, calc(100% - 2.5rem));
+  flex-direction: row-reverse;
+}
+
+.joy-guide--hero.joy-guide--intro {
+  width: min(230px, calc(100% - 2.5rem));
+  gap: 0.25rem;
+}
+
+.joy-guide--float {
+  position: fixed;
+  bottom: max(1.1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 500;
+  pointer-events: auto;
+  width: min(300px, calc(100vw - 2rem));
+  flex-direction: row-reverse;
+  animation: joy-float-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.joy-guide__character {
+  position: relative;
+  flex-shrink: 0;
+  width: 5.5rem;
+  animation: joy-pop-in 0.55s cubic-bezier(0.34, 1.45, 0.64, 1) both;
+}
+
+.joy-guide--hero .joy-guide__character {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.joy-guide--float .joy-guide__character {
+  width: 5.25rem;
+  align-self: flex-end;
+}
+
+.joy-guide__avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.96);
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+.joy-guide--hero .joy-guide__avatar {
+  padding: 0.3rem;
+}
+
+.joy-guide--float .joy-guide__avatar {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  background: none;
+  overflow: visible;
+}
+
+.joy-guide__image {
+  display: block;
+  animation: joy-wave 2.8s ease-in-out 0.5s infinite;
+  transform-origin: center bottom;
+}
+
+.joy-guide--hero .joy-guide__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  border-radius: 50%;
+}
+
+.joy-guide--float .joy-guide__avatar--standing {
+  width: 100%;
+  height: auto;
+}
+
+.joy-guide--float .joy-guide__image {
+  width: 100%;
+  height: auto;
+  max-height: 8.5rem;
+  object-fit: contain;
+  object-position: bottom center;
+}
+
+.joy-guide__spark {
+  position: absolute;
+  color: #fbbf24;
+  font-size: 0.75rem;
+  opacity: 0;
+  animation: joy-sparkle 1.8s ease-in-out infinite;
+}
+
+.joy-guide__spark--1 {
+  top: 6%;
+  left: 0;
+  animation-delay: 0.6s;
+}
+
+.joy-guide__spark--2 {
+  top: 20%;
+  right: -2%;
+  animation-delay: 1s;
+}
+
+.joy-guide__bubble {
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  animation: joy-bubble-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.joy-guide--hero .joy-guide__bubble {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(199, 210, 254, 0.5);
+}
+
+.joy-guide--float .joy-guide__bubble {
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.joy-guide__label {
+  margin: 0 0 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.joy-guide--hero .joy-guide__label {
+  color: #4f46e5;
+}
+
+.joy-guide__line {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-heading);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: joy-line-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(0.12s + var(--line-index) * 0.18s);
+}
+
+.joy-guide--hero .joy-guide__line {
+  color: #1e293b;
+}
+
+.joy-guide__line:last-child {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.joy-guide--intro .joy-guide__character {
+  width: 4.25rem;
+  height: 4.25rem;
+}
+
+.joy-guide--intro .joy-guide__spark--2 {
+  display: none;
+}
+
+.joy-guide--intro .joy-guide__bubble {
+  padding: 0.5rem 0.65rem;
+  border-radius: 1rem 1rem 0.35rem 1rem;
+  background: linear-gradient(145deg, #ffffff 0%, #f5f3ff 100%);
+  box-shadow: 0 8px 22px rgba(99, 102, 241, 0.18);
+}
+
+.joy-guide--intro .joy-guide__label {
+  margin-bottom: 0.15rem;
+  font-size: 0.6rem;
+}
+
+.joy-guide--intro .joy-guide__line {
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.35;
+  animation-delay: calc(0.08s + var(--line-index) * 0.12s);
+}
+
+.joy-guide--intro .joy-guide__line:last-of-type {
+  margin-bottom: 0;
+  font-weight: 500;
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+}
+
+.joy-guide__cta {
+  pointer-events: auto;
+  margin-top: 0.4rem;
+  width: 100%;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.72rem;
+  border-radius: 999px;
+  opacity: 0;
+  animation: joy-line-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(0.08s + 3 * 0.12s);
+}
+
+@keyframes joy-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.7);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes joy-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes joy-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes joy-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes joy-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-2deg); }
+  75% { transform: rotate(2deg); }
+}
+
+@keyframes joy-sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@media (max-width: 1024px) {
+  .joy-guide--hero {
+    bottom: 1rem;
+    right: 1rem;
+    width: min(250px, calc(100% - 2rem));
+  }
+
+  .joy-guide--hero .joy-guide__character {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .joy-guide--hero.joy-guide--intro {
+    width: min(220px, calc(100% - 2rem));
+  }
+
+  .joy-guide--intro .joy-guide__character {
+    width: 3.85rem;
+    height: 3.85rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .joy-guide--hero {
+    bottom: 0.85rem;
+    right: 0.75rem;
+    width: min(240px, calc(100% - 1.5rem));
+    align-items: flex-end;
+  }
+
+  .joy-guide--hero.joy-guide--intro {
+    width: min(210px, calc(100% - 1.5rem));
+  }
+
+  .joy-guide--hero .joy-guide__character {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .joy-guide--intro .joy-guide__character {
+    width: 3.65rem;
+    height: 3.65rem;
+  }
+
+  .joy-guide--hero .joy-guide__bubble {
+    max-width: calc(100% - 5rem);
+  }
+
+  .joy-guide--float {
+    bottom: 0.85rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+    justify-content: flex-end;
+  }
+
+  .joy-guide--float .joy-guide__bubble {
+    max-width: calc(100% - 5.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .joy-guide__character,
+  .joy-guide__image,
+  .joy-guide__spark,
+  .joy-guide__bubble,
+  .joy-guide__line,
+  .joy-guide__cta,
+  .joy-guide--float {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}

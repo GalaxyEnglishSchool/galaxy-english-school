@@ -8,7 +8,8 @@ import './OfficePage.css'
 
 function OfficePage() {
   const [searchParams] = useSearchParams()
-  const initialTab = searchParams.get('tab') === 'bus' ? 'bus' : 'admission'
+  const tab = searchParams.get('tab')
+  const initialTab = tab === 'bus' ? 'bus' : tab === 'joy' ? 'joy' : 'admission'
 
   return (
     <div className="office-page">
@@ -16,10 +17,7 @@ function OfficePage() {
         <div className="office-page__header-inner container">
           <div className="office-page__brand">
             <img src={schoolLogo} alt="" className="office-page__logo" />
-            <div>
-              <strong>{site.name}</strong>
-              <span>School Office Portal</span>
-            </div>
+            <strong>{site.name}</strong>
           </div>
           <div className="office-page__header-actions">
             <LanguageTranslator className="lang-translator--office" />
