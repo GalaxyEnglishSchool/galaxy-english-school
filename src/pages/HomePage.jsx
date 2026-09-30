@@ -32,7 +32,7 @@ function HomePageContent() {
           <Contact />
         </Suspense>
       </main>
-      {!siteTourActive && <JoyGuide variant="float" />}
+      {!siteTourActive && <JoyGuide variant="float" key="joy-float" />}
       {siteTourActive && (
         <JoyFieldTour
           steps={WEBSITE_JOY_TOUR_STEPS}

@@ -46,16 +46,25 @@ export function JoyGuideProvider({ children }) {
   }, [])
 
   useEffect(() => {
+    if (!pastHero || window.scrollY < 120) return undefined
+    setHeroEntrancePlayed(true)
+    return undefined
+  }, [pastHero])
+
+  useEffect(() => {
     let frame = null
+    let ready = false
 
     const updatePastHero = () => {
+      if (!ready) return
+
       const home = document.getElementById('home')
       if (!home) return
 
       const bottomRatio = home.getBoundingClientRect().bottom / window.innerHeight
 
       setPastHero((prev) => {
-        if (!prev && bottomRatio < HERO_PAST_THRESHOLD) return true
+        if (!prev && bottomRatio < HERO_PAST_THRESHOLD && window.scrollY > 48) return true
         if (prev && bottomRatio > HERO_RETURN_THRESHOLD) return false
         return prev
       })
@@ -66,11 +75,16 @@ export function JoyGuideProvider({ children }) {
       frame = window.requestAnimationFrame(updatePastHero)
     }
 
-    updatePastHero()
+    const readyTimer = window.setTimeout(() => {
+      ready = true
+      updatePastHero()
+    }, 350)
+
     window.addEventListener('scroll', scheduleUpdate, { passive: true })
     window.addEventListener('resize', scheduleUpdate)
 
     return () => {
+      window.clearTimeout(readyTimer)
       if (frame) window.cancelAnimationFrame(frame)
       window.removeEventListener('scroll', scheduleUpdate)
       window.removeEventListener('resize', scheduleUpdate)

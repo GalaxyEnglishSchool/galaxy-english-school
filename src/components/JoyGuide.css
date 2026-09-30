@@ -45,6 +45,10 @@
 .joy-guide--float.joy-guide--settled .joy-guide__cta {
   animation: none;
   opacity: 1;
+}
+
+.joy-guide--float.joy-guide--settled .joy-guide__line,
+.joy-guide--float.joy-guide--settled .joy-guide__cta {
   transform: none;
 }
 
@@ -427,9 +431,11 @@
 }
 
 .joy-guide__bubble--hi-phase {
-  flex: 0 1 auto;
-  min-width: 4.5rem;
-  padding: 0.45rem 0.65rem;
+  flex: 0 0 auto;
+  min-width: 0;
+  width: fit-content;
+  max-width: 4.25rem;
+  padding: 0.28rem 0.45rem;
 }
 
 .joy-guide__bubble--hi-phase .joy-guide__line--hi {
@@ -437,9 +443,11 @@
   transform: none;
   animation: none;
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 700;
+  line-height: 1.1;
   text-align: center;
+  white-space: nowrap;
 }
 
 .joy-guide__bubble--guide-phase .joy-guide__line,
@@ -535,32 +543,321 @@
   }
 }
 
+/* Tablet + iPad — unified bottom dock (768–1024) */
 @media (max-width: 1024px) {
-  .joy-guide--hero {
-    width: min(260px, 94%);
+  .joy-guide {
+    --joy-char-w: 3.75rem;
+    --joy-char-h: 4.25rem;
+    --joy-label: 0.625rem;
+    --joy-line: 0.8125rem;
+    --joy-line-last: 0.75rem;
+    --joy-cta: 0.75rem;
+    --joy-bubble-pad: 0.55rem 0.7rem;
+    --joy-dock-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    --joy-dock-inline: max(0.75rem, env(safe-area-inset-inline-end, env(safe-area-inset-right)));
   }
 
-  .joy-guide--hero.joy-guide--entrance {
-    width: min(260px, 94%);
+  .joy-guide--float,
+  .joy-guide--section {
+    position: fixed;
+    bottom: var(--joy-dock-bottom);
+    right: var(--joy-dock-inline);
+    left: max(0.75rem, env(safe-area-inset-inline-start, env(safe-area-inset-left)));
+    width: auto;
+    z-index: 500;
+    justify-content: flex-end;
+    pointer-events: auto;
   }
 
-  .joy-guide--hero.joy-guide--entrance .joy-guide__character {
-    width: 3.5rem;
-    height: 4.25rem;
+  .joy-guide--float .joy-guide__character,
+  .joy-guide--section .joy-guide__character {
+    width: var(--joy-char-w);
+    height: var(--joy-char-h);
   }
 
-  .joy-guide--hero.joy-guide--entrance .joy-guide__sprite {
-    max-height: 4.25rem;
+  .joy-guide--float .joy-guide__image {
+    max-height: var(--joy-char-h);
   }
 
-  .joy-guide--hero.joy-guide--entrance .joy-guide__bubble--hi-phase,
-  .joy-guide--hero.joy-guide--entrance .joy-guide__bubble--guide-phase {
-    right: 3.85rem;
-    width: min(180px, calc(100% - 4.25rem));
+  .joy-guide--float .joy-guide__bubble,
+  .joy-guide--section .joy-guide__bubble {
+    max-width: min(calc(100vw - var(--joy-char-w) - 2.5rem), calc(100% - var(--joy-char-w) - 0.5rem));
+    padding: var(--joy-bubble-pad);
+  }
+
+  .joy-guide--float .joy-guide__label,
+  .joy-guide--section .joy-guide__label {
+    font-size: var(--joy-label);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.12rem;
+  }
+
+  .joy-guide--float .joy-guide__line,
+  .joy-guide--section .joy-guide__line {
+    font-size: var(--joy-line);
+    line-height: 1.35;
+  }
+
+  .joy-guide--float .joy-guide__line:last-child,
+  .joy-guide--section .joy-guide__line:last-child {
+    font-size: var(--joy-line-last);
+  }
+
+  .joy-guide__cta {
+    padding: 0.38rem 0.65rem;
+    font-size: var(--joy-cta);
+    min-height: 2.125rem;
+  }
+
+  .joy-guide__actions {
+    gap: 0.28rem;
+    margin-top: 0.3rem;
+  }
+
+  /* Entrance sprite sizing on tablet float/section contexts */
+  .joy-guide--entrance .joy-guide__character {
+    width: var(--joy-char-w);
+    height: var(--joy-char-h);
+  }
+
+  .joy-guide--entrance .joy-guide__sprite {
+    max-height: var(--joy-char-h);
   }
 }
 
+/* Phone + iPhone — hero Joy lives at bottom of first section only */
 @media (max-width: 767px) {
+  .joy-guide--hero,
+  .joy-guide--hero.joy-guide--intro {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: auto;
+    width: auto;
+    max-width: calc(100% - 0.35rem);
+    z-index: 20;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    gap: 0.2rem;
+    justify-content: flex-end;
+    pointer-events: auto;
+  }
+
+  .joy-guide--hero.joy-guide--entrance {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: var(--joy-char-w);
+    max-width: none;
+    z-index: 20;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    gap: 0;
+    justify-content: flex-end;
+    pointer-events: auto;
+    overflow: visible;
+    animation: joy-entrance-path-mobile 3s linear forwards;
+    will-change: transform, left;
+  }
+
+  @keyframes joy-entrance-path-mobile {
+    0% {
+      left: 0;
+      transform: translateX(0);
+    }
+    33.33% {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    66.66%,
+    100% {
+      left: 100%;
+      transform: translateX(-100%);
+    }
+  }
+
+  .joy-guide--float {
+    left: auto;
+    width: auto;
+    max-width: calc(100vw - 1rem);
+    gap: 0.2rem;
+  }
+
+  .joy-guide--float .joy-guide__bubble {
+    flex: 0 1 auto;
+    width: auto;
+  }
+
+  .joy-guide--hero .joy-guide__character,
+  .joy-guide--hero.joy-guide--entrance .joy-guide__character {
+    width: var(--joy-char-w);
+    height: var(--joy-char-h);
+  }
+
+  .joy-guide--hero .joy-guide__image {
+    max-height: var(--joy-char-h);
+  }
+
+  .joy-guide {
+    --joy-char-w: 2.85rem;
+    --joy-char-h: 3.25rem;
+    --joy-label: 0.5625rem;
+    --joy-line: 0.6875rem;
+    --joy-line-last: 0.6875rem;
+    --joy-cta: 0.625rem;
+    --joy-bubble-pad: 0.32rem 0.45rem;
+    --joy-dock-bottom: max(0.55rem, env(safe-area-inset-bottom));
+    --joy-dock-inline: max(0.55rem, env(safe-area-inset-inline-end, env(safe-area-inset-right)));
+  }
+
+  .joy-guide--hero .joy-guide__label,
+  .joy-guide--hero.joy-guide--intro .joy-guide__label,
+  .joy-guide--hero.joy-guide--entrance .joy-guide__label {
+    display: none;
+  }
+
+  .joy-guide--hero .joy-guide__bubble,
+  .joy-guide--hero.joy-guide--intro .joy-guide__bubble {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: min(calc(100vw - var(--joy-char-w) - 1.25rem), 15.5rem);
+    padding: var(--joy-bubble-pad);
+    border-radius: 0.65rem 0.65rem 0.2rem 0.65rem;
+  }
+
+  .joy-guide--hero .joy-guide__line,
+  .joy-guide--hero.joy-guide--intro .joy-guide__line {
+    font-size: var(--joy-line);
+    line-height: 1.22;
+  }
+
+  .joy-guide--hero .joy-guide__line + .joy-guide__line {
+    margin-top: 0.08rem;
+  }
+
+  .joy-guide--hero .joy-guide__line:last-child,
+  .joy-guide--hero.joy-guide--intro .joy-guide__line:last-of-type,
+  .joy-guide--hero.joy-guide--entrance .joy-guide__line:last-child {
+    font-size: 0.625rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  .joy-guide--hero .joy-guide__line:first-child:last-child,
+  .joy-guide--hero.joy-guide--intro .joy-guide__line:first-child:last-of-type {
+    font-size: var(--joy-line);
+    color: var(--color-text-heading);
+    font-weight: 600;
+  }
+
+  .joy-guide--hero.joy-guide--entrance .joy-guide__bubble--hi-phase {
+    position: absolute;
+    right: calc(100% + 0.2rem);
+    left: auto;
+    bottom: 0.15rem;
+    flex: none;
+    width: fit-content;
+    max-width: 3.25rem;
+    min-width: 0;
+    padding: 0.16rem 0.32rem;
+    border-radius: 0.55rem;
+    pointer-events: none;
+    animation: joy-bubble-hi-phase-mobile 3s linear forwards;
+  }
+
+  .joy-guide--hero.joy-guide--entrance .joy-guide__bubble--hi-phase .joy-guide__line--hi {
+    font-size: 0.625rem;
+    line-height: 1;
+  }
+
+  @keyframes joy-bubble-hi-phase-mobile {
+    0%, 32.99%, 66%, 100% {
+      display: none;
+      opacity: 0;
+      visibility: hidden;
+    }
+    33%, 65.99% {
+      display: block;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .joy-guide--hero.joy-guide--entrance .joy-guide__bubble--guide-phase {
+    position: absolute;
+    right: calc(100% + 0.2rem);
+    left: auto;
+    bottom: 0;
+    flex: none;
+    width: auto;
+    max-width: min(calc(100vw - var(--joy-char-w) - 1.25rem), 15.5rem);
+    padding: var(--joy-bubble-pad);
+    pointer-events: auto;
+    animation: joy-bubble-guide-phase-mobile 3s linear forwards;
+  }
+
+  @keyframes joy-bubble-guide-phase-mobile {
+    0%, 65.99% {
+      display: none;
+      opacity: 0;
+      visibility: hidden;
+    }
+    66%, 100% {
+      display: block;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .joy-guide--hero .joy-guide__avatar,
+  .joy-guide--hero.joy-guide--entrance .joy-guide__avatar,
+  .joy-guide--float .joy-guide__avatar {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+    overflow: visible;
+  }
+
+  .joy-guide--hero .joy-guide__image,
+  .joy-guide--hero.joy-guide--entrance .joy-guide__sprite,
+  .joy-guide--float .joy-guide__image {
+    object-fit: contain;
+    border-radius: 0;
+  }
+
+  .joy-guide--hero.joy-guide--entrance .joy-guide__line {
+    font-size: var(--joy-line);
+    line-height: 1.22;
+  }
+
+  .joy-guide--hero .joy-guide__actions,
+  .joy-guide--hero.joy-guide--entrance .joy-guide__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.18rem;
+    margin-top: 0.18rem;
+  }
+
+  .joy-guide--hero .joy-guide__cta,
+  .joy-guide--hero.joy-guide--entrance .joy-guide__cta {
+    width: auto;
+    flex: 1 1 calc(50% - 0.1rem);
+    min-height: 1.65rem;
+    padding: 0.18rem 0.35rem;
+    font-size: var(--joy-cta);
+  }
+
+  .joy-guide--hero .joy-guide__cta--dismiss {
+    flex: 0 1 auto;
+  }
+
+  .joy-guide--hero.joy-guide--entrance .joy-guide__sprite {
+    max-height: var(--joy-char-h);
+  }
+
   .about__joy-track {
     position: static;
     min-height: 0;
@@ -571,137 +868,36 @@
     pointer-events: none;
   }
 
-  .joy-guide--hero:not(.joy-guide--entrance),
-  .joy-guide--section {
-    position: fixed;
-    bottom: max(0.55rem, env(safe-area-inset-bottom));
-    right: max(0.5rem, env(safe-area-inset-right));
-    left: max(0.5rem, env(safe-area-inset-left));
-    width: auto;
-    z-index: 500;
-    justify-content: flex-end;
-    pointer-events: auto;
-  }
-
-  .joy-guide--hero.joy-guide--entrance {
-    position: absolute;
-    bottom: 0;
-    right: auto;
-    left: 0;
-    width: min(210px, 96%);
-    z-index: 20;
-    animation: joy-entrance-path 3s linear forwards;
-  }
-
-  .joy-guide--entrance .joy-guide__character {
-    width: 2.75rem;
-    height: 3.15rem;
-  }
-
-  .joy-guide--entrance .joy-guide__sprite {
-    max-height: 3.15rem;
-  }
-
-  .joy-guide--entrance .joy-guide__bubble--hi-phase,
-  .joy-guide--entrance .joy-guide__bubble--guide-phase {
-    right: 3rem;
-    width: min(145px, calc(100% - 3.15rem));
-    padding: 0.35rem 0.45rem;
-    bottom: 0.05rem;
-  }
-
-  .joy-guide--entrance .joy-guide__bubble--hi-phase .joy-guide__line--hi {
-    font-size: 0.72rem;
-  }
-
-  .joy-guide--entrance .joy-guide__label {
-    font-size: 0.5rem;
-    margin-bottom: 0.06rem;
-  }
-
-  .joy-guide--entrance .joy-guide__line {
-    font-size: 0.58rem;
-    line-height: 1.22;
-  }
-
-  .joy-guide--entrance .joy-guide__cta {
-    margin-top: 0.12rem;
-    padding: 0.22rem 0.38rem;
-    font-size: 0.56rem;
-  }
-
-  .joy-guide--float {
-    bottom: 0.55rem;
-    right: 0.5rem;
-    left: 0.5rem;
-    width: auto;
-    justify-content: flex-end;
-  }
-
-  .joy-guide--float .joy-guide__character {
-    width: 2.55rem;
-  }
-
-  .joy-guide--float .joy-guide__image {
-    max-height: 3.5rem;
+  .joy-guide--float .joy-guide__label {
+    display: none;
   }
 
   .joy-guide--float .joy-guide__bubble {
-    max-width: calc(100% - 2.85rem);
-    padding: 0.28rem 0.36rem;
+    max-width: calc(100% - var(--joy-char-w) - 0.35rem);
+    padding: var(--joy-bubble-pad);
+    border-radius: 0.65rem 0.65rem 0.2rem 0.65rem;
   }
 
-  .joy-guide--float .joy-guide__label,
-  .joy-guide--hero:not(.joy-guide--entrance) .joy-guide__label,
-  .joy-guide--section .joy-guide__label {
-    font-size: 0.4rem;
-    letter-spacing: 0.03em;
-    margin-bottom: 0.04rem;
+  .joy-guide--float .joy-guide__line {
+    font-size: var(--joy-line);
+    line-height: 1.22;
   }
 
-  .joy-guide--float .joy-guide__line,
-  .joy-guide--hero:not(.joy-guide--entrance) .joy-guide__line,
-  .joy-guide--section .joy-guide__line,
-  .joy-guide--intro:not(.joy-guide--entrance) .joy-guide__line {
-    font-size: 0.5rem;
-    line-height: 1.18;
+  .joy-guide--float .joy-guide__line + .joy-guide__line {
+    margin-top: 0.08rem;
   }
 
-  .joy-guide--float .joy-guide__line:last-child,
-  .joy-guide--hero:not(.joy-guide--entrance) .joy-guide__line:last-child,
-  .joy-guide--section .joy-guide__line:last-child,
-  .joy-guide--intro:not(.joy-guide--entrance) .joy-guide__line:last-of-type {
-    font-size: 0.48rem;
-  }
-
-  .joy-guide--hero:not(.joy-guide--entrance) .joy-guide__character,
-  .joy-guide--section .joy-guide__character {
-    width: 2.85rem;
-    height: 2.85rem;
-  }
-
-  .joy-guide--hero:not(.joy-guide--entrance) .joy-guide__bubble,
-  .joy-guide--section .joy-guide__bubble,
-  .joy-guide--intro:not(.joy-guide--entrance) .joy-guide__bubble {
-    padding: 0.28rem 0.36rem;
-    max-width: min(calc(100vw - 3.25rem), calc(100% - 3.15rem));
-  }
-
-  .joy-guide--hero:not(.joy-guide--entrance) .joy-guide__cta,
-  .joy-guide--section .joy-guide__cta {
-    margin-top: 0.1rem;
-    padding: 0.18rem 0.34rem;
-    font-size: 0.5rem;
-  }
-
-  .joy-guide__actions {
+  .joy-guide--float .joy-guide__actions {
+    flex-direction: row;
     gap: 0.18rem;
     margin-top: 0.18rem;
   }
 
-  .joy-guide__cta {
-    padding: 0.22rem 0.34rem;
-    font-size: 0.5rem;
+  .joy-guide--float .joy-guide__cta {
+    flex: 1;
+    width: auto;
+    min-height: 1.65rem;
+    padding: 0.18rem 0.35rem;
   }
 }
 

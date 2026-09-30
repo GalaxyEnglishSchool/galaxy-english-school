@@ -60,7 +60,7 @@ function JoyFieldTour({
   }, [])
 
   const applySpotlight = useCallback((target, secondaryTarget, tourStep) => {
-    const isMobile = window.innerWidth <= 767
+    const isMobile = window.innerWidth <= 1024
     const padding = isMobile ? 4 : 10
     const inset = isMobile ? 6 : 12
     const rect = target.getBoundingClientRect()
@@ -135,7 +135,7 @@ function JoyFieldTour({
       ? document.querySelector(`[data-joy-tour="${step.secondaryTarget}"]`)
       : null
 
-    const isMobile = window.innerWidth <= 767
+    const isMobile = window.innerWidth <= 1024
     target.scrollIntoView({
       behavior: 'smooth',
       block: isMobile ? 'start' : 'center',

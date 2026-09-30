@@ -208,15 +208,16 @@
   }
 
   .hero__joy-track {
-    min-height: 5.5rem;
-    margin-top: 0.5rem;
-    padding-bottom: 0.75rem;
-    padding-left: max(0.75rem, env(safe-area-inset-left));
-    padding-right: max(0.75rem, env(safe-area-inset-right));
+    min-height: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    pointer-events: none;
   }
 }
 
-/* Phone only — compact hero + Joy on bottom line */
+/* Phone — restore Joy anchor strip at bottom of hero section */
 @media (max-width: 767px) {
   .hero {
     padding: 1.15rem 0 0;
@@ -281,10 +282,20 @@
   }
 
   .hero__joy-track {
-    min-height: 3.5rem;
-    margin-top: 0.35rem;
-    padding-bottom: 0.5rem;
-    padding-left: max(0.65rem, env(safe-area-inset-left));
-    padding-right: max(0.65rem, env(safe-area-inset-right));
+    position: relative;
+    min-height: 4.25rem;
+    height: auto;
+    margin-top: 0.25rem;
+    padding: 0 max(0.65rem, env(safe-area-inset-right)) 0.45rem max(0.65rem, env(safe-area-inset-left));
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .hero__joy-track:has(.joy-guide--entrance) {
+    min-height: 5rem;
+  }
+
+  .hero__joy-track .joy-guide {
+    pointer-events: auto;
   }
 }

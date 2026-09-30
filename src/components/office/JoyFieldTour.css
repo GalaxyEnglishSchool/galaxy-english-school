@@ -169,6 +169,45 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .joy-tour-spotlight,
+  .joy-tour-spotlight-secondary {
+    scroll-margin: 4.5rem 0.75rem 10rem;
+  }
+
+  .joy-tour__bubble--dock-corner {
+    width: min(300px, calc(100vw - 2rem));
+  }
+
+  .joy-tour__bubble {
+    width: min(280px, calc(100vw - 1.5rem));
+    padding: 0.65rem 0.75rem;
+  }
+
+  .joy-tour__bubble-head strong {
+    font-size: 0.8125rem;
+  }
+
+  .joy-tour__step-count {
+    font-size: 0.6875rem;
+  }
+
+  .joy-tour__message {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .joy-tour__example {
+    font-size: 0.75rem;
+  }
+
+  .joy-tour__btn {
+    padding: 0.38rem 0.65rem;
+    font-size: 0.75rem;
+    min-height: 2.125rem;
+  }
+}
+
 @media (max-width: 767px) {
   .joy-tour__highlight-ring {
     border-width: 2px;
@@ -184,8 +223,8 @@
   }
 
   .joy-tour__bubble {
-    width: min(188px, calc(100vw - 16px));
-    padding: 0.42rem 0.5rem;
+    width: min(240px, calc(100vw - 1.25rem));
+    padding: 0.5rem 0.62rem;
     border-radius: var(--radius-md);
     box-shadow: 0 10px 28px rgba(99, 102, 241, 0.22);
   }
@@ -202,30 +241,30 @@
   }
 
   .joy-tour__avatar {
-    width: 1.35rem;
-    height: 1.35rem;
-    border-width: 1px;
-    padding: 0.05rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-width: 1.5px;
+    padding: 0.08rem;
   }
 
   .joy-tour__bubble-head strong {
-    font-size: 0.62rem;
-    line-height: 1.2;
+    font-size: 0.75rem;
+    line-height: 1.25;
   }
 
   .joy-tour__step-count {
-    font-size: 0.5rem;
+    font-size: 0.625rem;
   }
 
   .joy-tour__message {
-    font-size: 0.6rem;
-    line-height: 1.3;
+    font-size: 0.75rem;
+    line-height: 1.35;
     font-weight: 600;
   }
 
   .joy-tour__example {
-    font-size: 0.56rem;
-    margin-top: 0.2rem;
+    font-size: 0.6875rem;
+    margin-top: 0.25rem;
   }
 
   .joy-tour__actions {
@@ -234,8 +273,9 @@
   }
 
   .joy-tour__btn {
-    padding: 0.22rem 0.42rem;
-    font-size: 0.56rem;
+    padding: 0.34rem 0.55rem;
+    font-size: 0.71875rem;
+    min-height: 2rem;
   }
 
   .joy-tour__btn--highlight {

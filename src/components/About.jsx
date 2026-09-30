@@ -72,7 +72,7 @@ function About() {
       </div>
 
       <div className="about__joy-track">
-        <JoyGuide variant="section" sectionId="about" />
+        <JoyGuide variant="section" sectionId="about" key="joy-about" />
       </div>
     </section>
   )

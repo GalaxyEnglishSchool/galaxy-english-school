@@ -43,7 +43,7 @@ function Hero() {
       </div>
 
       <div className="hero__joy-track">
-        <JoyGuide variant="hero" />
+        <JoyGuide variant="hero" key="joy-hero" />
       </div>
     </section>
   )

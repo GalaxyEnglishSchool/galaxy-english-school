@@ -18,18 +18,14 @@ export const joyGuideMessages = {
   homeFirstVisit: {
     title: 'Joy',
     lines: [
-      'Hi! I\'m Joy 👋',
-      `Welcome to ${site.name}!`,
-      'Tap Start site tour — I\'ll walk you through every section!',
+      `Hi! I'm Joy 👋 Welcome to ${site.name}!`,
+      'Tap Start site tour to explore.',
     ],
   },
   home: {
     title: 'Joy',
     lines: [
-      'Hey! Welcome!',
-      'How are you?',
-      "I'm Joy!",
-      `Welcome to ${site.name}!`,
+      `Hey! I'm Joy 👋 Welcome to ${site.name}!`,
     ],
   },
   about: {

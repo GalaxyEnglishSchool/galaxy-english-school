@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import joyHi from '../assets/joy-hi.png'
 import joyLaptop from '../assets/Showwebsite.png'
 import joyRunning from '../assets/joy-running.png'
@@ -22,22 +22,56 @@ function JoyGuide({ variant = 'float', sectionId = null }) {
   const isHero = variant === 'hero'
   const isSectionAnchor = variant === 'section' && sectionId
   const isFloat = variant === 'float'
-  const wasOnHero = useRef(false)
+  const [heroEntranceDone, setHeroEntranceDone] = useState(false)
   const [floatSettled, setFloatSettled] = useState(false)
   const [sectionChanging, setSectionChanging] = useState(false)
+  const [useFixedDock, setUseFixedDock] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches,
+  )
   const prevActiveSection = useRef(activeSection)
 
   useEffect(() => {
-    if (!isHero) return undefined
-    if (!pastHero) {
-      wasOnHero.current = true
-      return undefined
-    }
-    if (wasOnHero.current) {
-      markHeroEntrancePlayed()
-    }
+    const mediaQuery = window.matchMedia('(max-width: 1024px)')
+    const syncDockMode = () => setUseFixedDock(mediaQuery.matches)
+    syncDockMode()
+    mediaQuery.addEventListener('change', syncDockMode)
+    return () => mediaQuery.removeEventListener('change', syncDockMode)
+  }, [])
+
+  const entranceDone = isHero ? heroEntranceDone : true
+  const showEntrance = isHero && !heroEntranceDone
+  const showIntro = isHero && (showEntrance || (isFirstVisit && !pastHero))
+  const joyImage = isHero ? joyLaptop : joyStanding
+  const entranceGuide = joyGuideMessages.homeFirstVisit
+  const displayGuide = isHero && isFirstVisit ? entranceGuide : guide
+
+  const isVisible = isHero
+    ? !pastHero
+    : isSectionAnchor
+      ? pastHero && activeSection === sectionId && heroEntrancePlayed && !useFixedDock
+      : isFloat
+        ? pastHero
+          && heroEntrancePlayed
+          && (!JOY_ANCHORED_SECTIONS.includes(activeSection) || useFixedDock)
+        : false
+
+  const completeEntrance = useCallback(() => {
+    setHeroEntranceDone(true)
+    markHeroEntrancePlayed()
+  }, [markHeroEntrancePlayed])
+
+  useEffect(() => {
+    if (!isHero || heroEntranceDone) return undefined
+
+    const timer = window.setTimeout(completeEntrance, 3100)
+    return () => window.clearTimeout(timer)
+  }, [isHero, heroEntranceDone, completeEntrance])
+
+  useEffect(() => {
+    if (!isHero || !pastHero || heroEntranceDone || window.scrollY < 120) return undefined
+    completeEntrance()
     return undefined
-  }, [isHero, pastHero, markHeroEntrancePlayed])
+  }, [isHero, pastHero, heroEntranceDone, completeEntrance])
 
   useEffect(() => {
     if (!isFloat || !pastHero) {
@@ -60,17 +94,6 @@ function JoyGuide({ variant = 'float', sectionId = null }) {
     const timer = window.setTimeout(() => setSectionChanging(false), 220)
     return () => window.clearTimeout(timer)
   }, [activeSection, isFloat, floatSettled])
-
-  const isVisible = isHero
-    ? !pastHero
-    : isSectionAnchor
-      ? pastHero && activeSection === sectionId
-      : pastHero && !JOY_ANCHORED_SECTIONS.includes(activeSection)
-  const showEntrance = isHero && !pastHero && !heroEntrancePlayed
-  const showIntro = isHero && !pastHero && (showEntrance || isFirstVisit)
-  const joyImage = isHero ? joyLaptop : joyStanding
-  const entranceGuide = joyGuideMessages.homeFirstVisit
-  const displayGuide = isHero && isFirstVisit ? entranceGuide : guide
 
   if (!isVisible || siteTourActive) return null
 

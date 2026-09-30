@@ -152,6 +152,15 @@
 }
 
 @media (max-width: 1024px) {
+  .about__joy-track {
+    min-height: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
   .about__inner {
     grid-template-columns: 1fr;
   }
