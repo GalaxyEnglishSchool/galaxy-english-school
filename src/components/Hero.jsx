@@ -5,7 +5,7 @@ import './Hero.css'
 
 function Hero() {
   return (
-    <section id="home" className="hero">
+    <section id="home" className="hero" data-joy-tour="home">
       <div className="hero__stars" aria-hidden="true" />
       <div className="hero__orb hero__orb--1" aria-hidden="true" />
       <div className="hero__orb hero__orb--2" aria-hidden="true" />
@@ -42,7 +42,9 @@ function Hero() {
         </div>
       </div>
 
-      <JoyGuide variant="hero" />
+      <div className="hero__joy-track">
+        <JoyGuide variant="hero" />
+      </div>
     </section>
   )
 }

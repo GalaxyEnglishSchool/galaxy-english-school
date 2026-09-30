@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import allInOneFrame from '../assets/Allin1frame.JPG'
 import photos from '../assets/Photos.jpg'
+import JoyGuide from './JoyGuide'
 import Reveal from './Reveal'
 import { aboutStory, site } from '../data/siteData'
 import './About.css'
@@ -25,7 +26,7 @@ function About() {
     : aboutStory.paragraphs.slice(0, 2)
 
   return (
-    <section id="about" className="about section">
+    <section id="about" className="about section" data-joy-tour="about">
       <div className="container about__inner">
         <Reveal className="about__content" direction="left">
           <span className="section-label">About Us</span>
@@ -68,6 +69,10 @@ function About() {
             <a href="#contact" className="btn btn--secondary">Enquire for Admission</a>
           </div>
         </Reveal>
+      </div>
+
+      <div className="about__joy-track">
+        <JoyGuide variant="section" sectionId="about" />
       </div>
     </section>
   )

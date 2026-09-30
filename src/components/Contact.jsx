@@ -26,7 +26,7 @@ Grade: ${grade}`
   }
 
   return (
-    <section id="contact" className="contact section">
+    <section id="contact" className="contact section" data-joy-tour="contact">
       <div className="container contact__inner">
         <Reveal className="contact__info" direction="left">
           <span className="section-label">Get in Touch</span>

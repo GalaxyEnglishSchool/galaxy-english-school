@@ -47,7 +47,7 @@ function Testimonials() {
   const revealedCount = prefersReducedMotion && isActive ? TOTAL_STEPS : grownSteps
 
   return (
-    <section id="journey" className="testimonials section section--alt section--compact">
+    <section id="journey" className="testimonials section section--alt section--compact" data-joy-tour="journey">
       <div className="container">
         <div className="section-header">
           <span className="section-label">Our Journey</span>

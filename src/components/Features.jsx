@@ -4,7 +4,7 @@ import './Features.css'
 
 function Features() {
   return (
-    <section id="facilities" className="features section section--alt section--compact">
+    <section id="facilities" className="features section section--alt section--compact" data-joy-tour="facilities">
       <div className="container">
         <Reveal>
           <div className="section-header">

@@ -1,5 +1,7 @@
 import { site } from './siteData'
 
+export const JOY_ANCHORED_SECTIONS = ['about']
+
 export const JOY_SECTION_IDS = [
   'home',
   'about',
@@ -18,7 +20,7 @@ export const joyGuideMessages = {
     lines: [
       'Hi! I\'m Joy 👋',
       `Welcome to ${site.name}!`,
-      'Scroll down — I\'ll guide you along the way.',
+      'Tap Start site tour — I\'ll walk you through every section!',
     ],
   },
   home: {

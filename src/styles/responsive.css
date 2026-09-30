@@ -19,6 +19,10 @@ body {
     min-height: 44px;
   }
 
+  .hero__actions .btn {
+    min-height: 34px;
+  }
+
   .header__toggle {
     min-width: 44px;
     min-height: 44px;

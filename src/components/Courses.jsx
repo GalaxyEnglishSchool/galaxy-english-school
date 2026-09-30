@@ -41,7 +41,7 @@ function Courses() {
   const revealedCount = prefersReducedMotion && isActive ? courses.length : grownSections
 
   return (
-    <section id="courses" className="courses section section--compact">
+    <section id="courses" className="courses section section--compact" data-joy-tour="courses">
       <div className="container">
         <Reveal>
           <div className="section-header">

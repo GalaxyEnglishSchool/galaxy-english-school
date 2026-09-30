@@ -36,7 +36,7 @@ function StatItem({ item }) {
 
 function Stats() {
   return (
-    <section className="stats" aria-label="School achievements">
+    <section className="stats" aria-label="School achievements" data-joy-tour="stats">
       <div className="container stats__grid">
         {stats.map((item, index) => (
           <div key={item.label} className="stats__wrapper" style={{ '--stat-delay': `${index * 100}ms` }}>

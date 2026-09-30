@@ -1,3 +1,18 @@
+.about {
+  position: relative;
+  overflow: visible;
+}
+
+.about__joy-track {
+  position: relative;
+  width: 100%;
+  min-height: 5rem;
+  margin-top: 0.75rem;
+  padding: 0 max(1rem, env(safe-area-inset-right)) 1rem max(1rem, env(safe-area-inset-left));
+  box-sizing: border-box;
+  z-index: 20;
+}
+
 .about__inner {
   display: grid;
   grid-template-columns: 1fr 1fr;

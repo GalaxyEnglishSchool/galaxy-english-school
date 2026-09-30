@@ -4,7 +4,7 @@
   color: #e2e8f0;
   overflow-x: clip;
   overflow-y: visible;
-  padding: 4rem 0 6.5rem;
+  padding: 4rem 0 0;
 }
 
 .hero__stars {
@@ -149,6 +149,17 @@
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
+.hero__joy-track {
+  position: relative;
+  width: 100%;
+  min-height: 6.25rem;
+  margin-top: 0.75rem;
+  padding: 0 max(1rem, env(safe-area-inset-right)) 1rem max(1rem, env(safe-area-inset-left));
+  box-sizing: border-box;
+  z-index: 20;
+}
+
+/* Tablet + iPad — keep original stacked layout */
 @media (max-width: 1024px) {
   .hero__inner {
     grid-template-columns: 1fr;
@@ -172,7 +183,7 @@
   }
 
   .hero {
-    padding: 2rem 0 2.5rem;
+    padding: 2rem 0 0;
   }
 
   .hero__title {
@@ -189,10 +200,91 @@
   }
 
   .hero__image-wrap {
-    max-width: 280px;
+    max-width: min(280px, 100%);
   }
 
   .hero__image-wrap img {
     height: 220px;
+  }
+
+  .hero__joy-track {
+    min-height: 5.5rem;
+    margin-top: 0.5rem;
+    padding-bottom: 0.75rem;
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+  }
+}
+
+/* Phone only — compact hero + Joy on bottom line */
+@media (max-width: 767px) {
+  .hero {
+    padding: 1.15rem 0 0;
+  }
+
+  .hero__inner {
+    gap: 0.55rem;
+  }
+
+  .hero__badge {
+    margin-bottom: 0.45rem;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.68rem;
+  }
+
+  .hero__title {
+    font-size: 1.45rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .hero__board {
+    font-size: 0.82rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .hero__text {
+    font-size: 0.84rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .hero__actions {
+    gap: 0.45rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .hero__actions .btn {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.74rem;
+    line-height: 1.2;
+    min-height: 34px;
+    border-width: 1.5px;
+    flex: 1 1 auto;
+    max-width: calc(50% - 0.25rem);
+  }
+
+  .hero__visual {
+    min-height: auto;
+    margin-top: 0.1rem;
+  }
+
+  .hero__image-wrap {
+    max-width: min(250px, 86%);
+  }
+
+  .hero__image-wrap img {
+    height: 160px;
+  }
+
+  .hero__joy-track {
+    min-height: 3.5rem;
+    margin-top: 0.35rem;
+    padding-bottom: 0.5rem;
+    padding-left: max(0.65rem, env(safe-area-inset-left));
+    padding-right: max(0.65rem, env(safe-area-inset-right));
   }
 }

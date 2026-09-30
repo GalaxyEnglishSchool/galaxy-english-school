@@ -5,22 +5,26 @@
   pointer-events: none;
 }
 
-.joy-tour__backdrop {
+.joy-tour__highlight-ring {
   position: fixed;
-  inset: 0;
-  z-index: 1050;
-  background: rgba(15, 23, 42, 0.58);
+  z-index: 1100;
+  border: 3px solid #818cf8;
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 0 0 4px rgba(129, 140, 248, 0.4),
+    0 0 0 9999px rgba(15, 23, 42, 0.62);
   pointer-events: none;
+  transition:
+    top 0.28s ease,
+    left 0.28s ease,
+    width 0.28s ease,
+    height 0.28s ease;
 }
 
 .joy-tour-spotlight {
   position: relative;
-  z-index: 1100 !important;
-  box-shadow:
-    0 0 0 3px #818cf8,
-    0 0 0 6px rgba(129, 140, 248, 0.35) !important;
-  border-radius: var(--radius-md);
-  scroll-margin: 6rem 1rem;
+  z-index: 1090 !important;
+  scroll-margin: 5rem 1rem 2rem;
 }
 
 .joy-tour-spotlight-secondary {
@@ -31,6 +35,10 @@
     0 0 0 6px rgba(251, 191, 36, 0.35) !important;
   border-radius: var(--radius-md);
   scroll-margin: 6rem 1rem;
+}
+
+.joy-tour__bubble--dock-corner {
+  width: min(280px, calc(100vw - 2.5rem));
 }
 
 .joy-tour__bubble {
@@ -161,9 +169,85 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .joy-tour__bubble,
+@media (max-width: 767px) {
+  .joy-tour__highlight-ring {
+    border-width: 2px;
+    border-radius: var(--radius-md);
+    box-shadow:
+      0 0 0 2px rgba(129, 140, 248, 0.3),
+      0 0 0 9999px rgba(15, 23, 42, 0.38);
+  }
+
+  .joy-tour-spotlight,
+  .joy-tour-spotlight-secondary {
+    scroll-margin: 3.75rem 0.35rem 9.5rem;
+  }
+
+  .joy-tour__bubble {
+    width: min(188px, calc(100vw - 16px));
+    padding: 0.42rem 0.5rem;
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 28px rgba(99, 102, 241, 0.22);
+  }
+
+  .joy-tour__bubble--dock-bottom {
+    max-height: min(32vh, 9.5rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .joy-tour__bubble-head {
+    gap: 0.32rem;
+    margin-bottom: 0.28rem;
+  }
+
+  .joy-tour__avatar {
+    width: 1.35rem;
+    height: 1.35rem;
+    border-width: 1px;
+    padding: 0.05rem;
+  }
+
+  .joy-tour__bubble-head strong {
+    font-size: 0.62rem;
+    line-height: 1.2;
+  }
+
+  .joy-tour__step-count {
+    font-size: 0.5rem;
+  }
+
+  .joy-tour__message {
+    font-size: 0.6rem;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+
+  .joy-tour__example {
+    font-size: 0.56rem;
+    margin-top: 0.2rem;
+  }
+
+  .joy-tour__actions {
+    margin-top: 0.32rem;
+    gap: 0.22rem;
+  }
+
+  .joy-tour__btn {
+    padding: 0.22rem 0.42rem;
+    font-size: 0.56rem;
+  }
+
   .joy-tour__btn--highlight {
     animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .joy-tour__bubble,
+  .joy-tour__btn--highlight,
+  .joy-tour__highlight-ring {
+    animation: none;
+    transition: none;
   }
 }

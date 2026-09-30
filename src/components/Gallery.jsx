@@ -23,7 +23,7 @@ function Gallery() {
 
   if (photos.length === 0) {
     return (
-      <section id="gallery" className="gallery section section--alt section--compact">
+      <section id="gallery" className="gallery section section--alt section--compact" data-joy-tour="gallery">
         <div className="container">
           <Reveal>
             <div className="section-header">
@@ -37,7 +37,7 @@ function Gallery() {
   }
 
   return (
-    <section id="gallery" className="gallery section section--alt section--compact">
+    <section id="gallery" className="gallery section section--alt section--compact" data-joy-tour="gallery">
       <div className="container">
         <Reveal>
           <div className="section-header">

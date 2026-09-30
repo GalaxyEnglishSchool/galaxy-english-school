@@ -7,7 +7,7 @@ const imageExt = new Set(['.jpg', '.jpeg', '.png', '.webp', '.JPG', '.JPEG', '.P
 
 const rules = [
   { match: /^(Photo|Photos|SchoolBus|Allin1frame|Elearning)/i, maxWidth: 1600, quality: 78 },
-  { match: /^(school|joy-standing|Showwebsite)/i, maxWidth: 512, quality: 80 },
+  { match: /^(school|joy-standing|joy-running|joy-hi|Showwebsite)/i, maxWidth: 512, quality: 80 },
 ]
 
 function getRule(filename) {

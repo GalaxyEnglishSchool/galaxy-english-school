@@ -1,19 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import joyHi from '../assets/joy-hi.png'
 import joyLaptop from '../assets/Showwebsite.png'
+import joyRunning from '../assets/joy-running.png'
 import joyStanding from '../assets/joy-standing.png'
+import { JOY_ANCHORED_SECTIONS, joyGuideMessages } from '../data/joyGuideData'
 import { useJoyGuide } from '../context/JoyGuideContext'
 import './JoyGuide.css'
 
-function JoyGuide({ variant = 'float' }) {
-  const { activeSection, guide, isFirstVisit, dismissIntro } = useJoyGuide()
+function JoyGuide({ variant = 'float', sectionId = null }) {
+  const {
+    activeSection,
+    guide,
+    isFirstVisit,
+    dismissIntro,
+    heroEntrancePlayed,
+    markHeroEntrancePlayed,
+    siteTourActive,
+    startSiteTour,
+  } = useJoyGuide()
   const isHero = variant === 'hero'
+  const isSectionAnchor = variant === 'section' && sectionId
   const [pastHero, setPastHero] = useState(false)
+  const wasOnHero = useRef(false)
 
   useEffect(() => {
     const update = () => {
       const home = document.getElementById('home')
       if (!home) return
-      setPastHero(home.getBoundingClientRect().bottom < window.innerHeight * 0.55)
+      setPastHero(home.getBoundingClientRect().bottom < window.innerHeight * 0.32)
     }
 
     update()
@@ -25,57 +39,130 @@ function JoyGuide({ variant = 'float' }) {
     }
   }, [])
 
-  const isVisible = isHero ? !pastHero : pastHero
-  const showIntro = isHero && isFirstVisit && !pastHero
-  const joyImage = isHero ? joyLaptop : joyStanding
+  useEffect(() => {
+    if (!isHero) return undefined
+    if (!pastHero) {
+      wasOnHero.current = true
+      return undefined
+    }
+    if (wasOnHero.current) {
+      markHeroEntrancePlayed()
+    }
+    return undefined
+  }, [isHero, pastHero, markHeroEntrancePlayed])
 
-  if (!isVisible) return null
+  const isVisible = isHero
+    ? !pastHero
+    : isSectionAnchor
+      ? pastHero && activeSection === sectionId
+      : pastHero && !JOY_ANCHORED_SECTIONS.includes(activeSection)
+  const showEntrance = isHero && !pastHero && !heroEntrancePlayed
+  const showIntro = isHero && !pastHero && (showEntrance || isFirstVisit)
+  const joyImage = isHero ? joyLaptop : joyStanding
+  const entranceGuide = joyGuideMessages.homeFirstVisit
+
+  if (!isVisible || siteTourActive) return null
+
+  const tourButton = (
+    <button
+      type="button"
+      className="joy-guide__cta joy-guide__cta--tour btn btn--primary"
+      onClick={startSiteTour}
+    >
+      Start site tour
+    </button>
+  )
 
   return (
     <div
       className={[
         'joy-guide',
-        `joy-guide--${variant}`,
+        `joy-guide--${isSectionAnchor ? 'section' : variant}`,
+        isSectionAnchor ? `joy-guide--section-${sectionId}` : '',
         showIntro ? 'joy-guide--intro' : '',
-        !isHero ? `joy-guide--section-${activeSection}` : '',
+        showEntrance ? 'joy-guide--entrance' : '',
+        !isHero && !isSectionAnchor ? `joy-guide--section-${activeSection}` : '',
       ].filter(Boolean).join(' ')}
       aria-live="polite"
     >
       <div className="joy-guide__character" aria-hidden="true">
         <span className="joy-guide__spark joy-guide__spark--1">✦</span>
         <span className="joy-guide__spark joy-guide__spark--2">✦</span>
-        <div className={`joy-guide__avatar${isHero ? '' : ' joy-guide__avatar--standing'}`}>
-          <img
-            src={joyImage}
-            alt=""
-            className="joy-guide__image"
-            loading="eager"
-            decoding="async"
-          />
+        <div className={`joy-guide__avatar${isHero && !showEntrance ? '' : ' joy-guide__avatar--standing'}`}>
+          {showEntrance ? (
+            <>
+              <img src={joyRunning} alt="" className="joy-guide__sprite joy-guide__sprite--run" loading="eager" decoding="async" />
+              <img src={joyHi} alt="" className="joy-guide__sprite joy-guide__sprite--hi" loading="eager" decoding="async" />
+              <img src={joyLaptop} alt="" className="joy-guide__sprite joy-guide__sprite--guide" loading="eager" decoding="async" />
+            </>
+          ) : (
+            <img
+              src={joyImage}
+              alt=""
+              className="joy-guide__image"
+              loading="eager"
+              decoding="async"
+            />
+          )}
         </div>
       </div>
 
-      <div className="joy-guide__bubble" key={`${activeSection}-${showIntro ? 'intro' : 'default'}`}>
-        <p className="joy-guide__label">{guide.title}</p>
-        {guide.lines.map((line, index) => (
-          <p
-            key={line}
-            className="joy-guide__line"
-            style={{ '--line-index': index }}
-          >
-            {line}
-          </p>
-        ))}
-        {showIntro && (
-          <button
-            type="button"
-            className="joy-guide__cta btn btn--primary"
-            onClick={dismissIntro}
-          >
-            Got it!
-          </button>
-        )}
-      </div>
+      {showEntrance ? (
+        <>
+          <div className="joy-guide__bubble joy-guide__bubble--hi-phase" aria-hidden="true">
+            <p className="joy-guide__line joy-guide__line--hi">Hi! 👋</p>
+          </div>
+          <div className="joy-guide__bubble joy-guide__bubble--guide-phase">
+            <p className="joy-guide__label">{entranceGuide.title}</p>
+            {entranceGuide.lines.map((line, index) => (
+              <p
+                key={line}
+                className="joy-guide__line"
+                style={{ '--line-index': index }}
+              >
+                {line}
+              </p>
+            ))}
+            <div className="joy-guide__actions">
+              {tourButton}
+              {isFirstVisit && (
+                <button
+                  type="button"
+                  className="joy-guide__cta joy-guide__cta--dismiss btn btn--outline"
+                  onClick={dismissIntro}
+                >
+                  Got it!
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="joy-guide__bubble" key={`${activeSection}-${showIntro ? 'intro' : 'default'}`}>
+          <p className="joy-guide__label">{isHero && isFirstVisit ? entranceGuide.title : guide.title}</p>
+          {(isHero && isFirstVisit ? entranceGuide.lines : guide.lines).map((line, index) => (
+            <p
+              key={line}
+              className="joy-guide__line"
+              style={{ '--line-index': index }}
+            >
+              {line}
+            </p>
+          ))}
+          <div className="joy-guide__actions">
+            {tourButton}
+            {isHero && isFirstVisit && (
+              <button
+                type="button"
+                className="joy-guide__cta joy-guide__cta--dismiss btn btn--outline"
+                onClick={dismissIntro}
+              >
+                Got it!
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

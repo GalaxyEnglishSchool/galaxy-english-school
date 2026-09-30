@@ -9,10 +9,29 @@ export function JoyGuideProvider({ children }) {
   const [introSeen, setIntroSeen] = useState(
     () => localStorage.getItem(JOY_INTRO_STORAGE_KEY) === '1',
   )
+  const [heroEntrancePlayed, setHeroEntrancePlayed] = useState(false)
+  const [siteTourActive, setSiteTourActive] = useState(false)
 
   const dismissIntro = useCallback(() => {
     localStorage.setItem(JOY_INTRO_STORAGE_KEY, '1')
     setIntroSeen(true)
+  }, [])
+
+  const markHeroEntrancePlayed = useCallback(() => {
+    setHeroEntrancePlayed(true)
+  }, [])
+
+  const startSiteTour = useCallback(() => {
+    setSiteTourActive(true)
+    setHeroEntrancePlayed(true)
+    if (!introSeen) {
+      localStorage.setItem(JOY_INTRO_STORAGE_KEY, '1')
+      setIntroSeen(true)
+    }
+  }, [introSeen])
+
+  const endSiteTour = useCallback(() => {
+    setSiteTourActive(false)
   }, [])
 
   useEffect(() => {
@@ -31,7 +50,17 @@ export function JoyGuideProvider({ children }) {
   }, [activeSection, isFirstVisit])
 
   return (
-    <JoyGuideContext.Provider value={{ activeSection, guide, isFirstVisit, dismissIntro }}>
+    <JoyGuideContext.Provider value={{
+      activeSection,
+      guide,
+      isFirstVisit,
+      dismissIntro,
+      heroEntrancePlayed,
+      markHeroEntrancePlayed,
+      siteTourActive,
+      startSiteTour,
+      endSiteTour,
+    }}>
       {children}
     </JoyGuideContext.Provider>
   )

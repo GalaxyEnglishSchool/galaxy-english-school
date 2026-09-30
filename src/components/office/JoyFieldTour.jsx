@@ -15,6 +15,7 @@ function JoyFieldTour({
   title = 'Joy',
   showMap = false,
   contextStep = null,
+  dockBubbleToCorner = false,
   onClose,
   onVisibleChange,
 }) {
@@ -36,6 +37,8 @@ function JoyFieldTour({
   }, [contextStep])
 
   const [bubbleStyle, setBubbleStyle] = useState(FALLBACK_BUBBLE_STYLE)
+  const [bubbleDockMode, setBubbleDockMode] = useState(null)
+  const [highlightStyle, setHighlightStyle] = useState(null)
 
   const step = visibleSteps[stepIndex]
   const isLast = stepIndex >= visibleSteps.length - 1
@@ -51,38 +54,90 @@ function JoyFieldTour({
     })
   }, [])
 
+  const applySpotlight = useCallback((target, secondaryTarget, tourStep) => {
+    const isMobile = window.innerWidth <= 767
+    const padding = isMobile ? 4 : 10
+    const inset = isMobile ? 6 : 12
+    const rect = target.getBoundingClientRect()
+    const dockCorner = dockBubbleToCorner || Boolean(tourStep?.dockBubble)
+
+    setHighlightStyle({
+      top: rect.top - padding,
+      left: Math.max(0, rect.left - padding),
+      width: Math.min(window.innerWidth - inset, rect.width + padding * 2),
+      height: rect.height + padding * 2,
+    })
+
+    if (isMobile) {
+      const bubbleWidth = Math.min(188, window.innerWidth - 16)
+      setBubbleDockMode('bottom')
+      setBubbleStyle({
+        bottom: '0.5rem',
+        left: `${(window.innerWidth - bubbleWidth) / 2}px`,
+        top: 'auto',
+        right: 'auto',
+      })
+    } else if (dockCorner) {
+      setBubbleDockMode('corner')
+      setBubbleStyle({
+        bottom: 'max(1.25rem, env(safe-area-inset-bottom))',
+        right: 'max(1.25rem, env(safe-area-inset-right))',
+        top: 'auto',
+        left: 'auto',
+      })
+    } else {
+      const bubbleWidth = Math.min(300, window.innerWidth - 20)
+      const bubbleLeft = Math.min(
+        Math.max(inset, rect.left),
+        window.innerWidth - bubbleWidth - inset,
+      )
+      const belowTop = rect.bottom + 12
+      const aboveTop = rect.top - 12 - 180
+      const top = belowTop <= window.innerHeight - 160
+        ? belowTop
+        : Math.max(inset, aboveTop)
+
+      setBubbleDockMode(null)
+      setBubbleStyle({ top, left: bubbleLeft, bottom: 'auto', right: 'auto' })
+    }
+
+    if (secondaryTarget) {
+      secondaryTarget.classList.add('joy-tour-spotlight-secondary')
+    }
+  }, [dockBubbleToCorner])
+
   const updateSpotlight = useCallback(() => {
     clearHighlights()
+    setHighlightStyle(null)
 
     if (!step) {
       setBubbleStyle(FALLBACK_BUBBLE_STYLE)
+      setBubbleDockMode(null)
       return
     }
 
     const target = document.querySelector(`[data-joy-tour="${step.target}"]`)
     if (!target) {
       setBubbleStyle(FALLBACK_BUBBLE_STYLE)
+      setBubbleDockMode(null)
       return
     }
 
     target.classList.add('joy-tour-spotlight')
-    target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
 
-    if (step.secondaryTarget) {
-      const secondary = document.querySelector(`[data-joy-tour="${step.secondaryTarget}"]`)
-      secondary?.classList.add('joy-tour-spotlight-secondary')
-    }
+    const secondary = step.secondaryTarget
+      ? document.querySelector(`[data-joy-tour="${step.secondaryTarget}"]`)
+      : null
 
-    const rect = target.getBoundingClientRect()
-    const bubbleWidth = 300
-    const left = Math.min(
-      Math.max(12, rect.left),
-      window.innerWidth - bubbleWidth - 12,
-    )
-    const top = Math.min(rect.bottom + 12, window.innerHeight - 180)
-
-    setBubbleStyle({ top, left, bottom: 'auto', right: 'auto' })
-  }, [step, clearHighlights])
+    const isMobile = window.innerWidth <= 767
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: isMobile ? 'start' : 'center',
+      inline: 'nearest',
+    })
+    applySpotlight(target, secondary, step)
+    window.setTimeout(() => applySpotlight(target, secondary, step), 400)
+  }, [step, clearHighlights, applySpotlight])
 
   useEffect(() => {
     if (!canShowTour) return undefined
@@ -115,8 +170,21 @@ function JoyFieldTour({
 
   return createPortal(
     <div className="joy-tour" role="dialog" aria-label="Joy guided tour">
-      <div className="joy-tour__backdrop" aria-hidden="true" />
-      <div className="joy-tour__bubble" style={bubbleStyle}>
+      {highlightStyle && (
+        <div
+          className="joy-tour__highlight-ring"
+          style={highlightStyle}
+          aria-hidden="true"
+        />
+      )}
+      <div
+        className={[
+          'joy-tour__bubble',
+          bubbleDockMode === 'bottom' ? 'joy-tour__bubble--dock-bottom' : '',
+          bubbleDockMode === 'corner' ? 'joy-tour__bubble--dock-corner' : '',
+        ].filter(Boolean).join(' ')}
+        style={bubbleStyle}
+      >
         <div className="joy-tour__bubble-head">
           <span className="joy-tour__avatar" aria-hidden="true">
             <img src={joyStanding} alt="" decoding="async" />
