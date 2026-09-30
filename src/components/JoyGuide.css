@@ -31,7 +31,25 @@
   pointer-events: auto;
   width: min(300px, calc(100vw - 2rem));
   flex-direction: row-reverse;
+  contain: layout style;
   animation: joy-float-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.joy-guide--float.joy-guide--settled {
+  animation: none;
+}
+
+.joy-guide--float.joy-guide--settled .joy-guide__character,
+.joy-guide--float.joy-guide--settled .joy-guide__bubble,
+.joy-guide--float.joy-guide--settled .joy-guide__line,
+.joy-guide--float.joy-guide--settled .joy-guide__cta {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.joy-guide--float.joy-guide--section-change .joy-guide__bubble {
+  animation: joy-bubble-swap 0.22s ease both;
 }
 
 .joy-guide__character {
@@ -80,6 +98,7 @@
   display: block;
   animation: joy-wave 2.8s ease-in-out 0.5s infinite;
   transform-origin: center bottom;
+  will-change: transform;
 }
 
 .joy-guide--hero .joy-guide__image {
@@ -308,6 +327,17 @@
   0%, 100% { transform: rotate(0deg); }
   25% { transform: rotate(-2deg); }
   75% { transform: rotate(2deg); }
+}
+
+@keyframes joy-bubble-swap {
+  from {
+    opacity: 0.72;
+    transform: translateX(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes joy-sparkle {

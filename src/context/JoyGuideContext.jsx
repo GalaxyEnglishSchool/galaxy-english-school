@@ -1,8 +1,18 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { JOY_INTRO_STORAGE_KEY, JOY_SECTION_IDS, joyGuideMessages } from '../data/joyGuideData'
 import { useActiveSection } from '../hooks/useActiveSection'
 
 const JoyGuideContext = createContext(null)
+
+const HERO_PAST_THRESHOLD = 0.32
+const HERO_RETURN_THRESHOLD = 0.38
 
 export function JoyGuideProvider({ children }) {
   const activeSection = useActiveSection(JOY_SECTION_IDS, 'home')
@@ -11,6 +21,7 @@ export function JoyGuideProvider({ children }) {
   )
   const [heroEntrancePlayed, setHeroEntrancePlayed] = useState(false)
   const [siteTourActive, setSiteTourActive] = useState(false)
+  const [pastHero, setPastHero] = useState(false)
 
   const dismissIntro = useCallback(() => {
     localStorage.setItem(JOY_INTRO_STORAGE_KEY, '1')
@@ -35,6 +46,38 @@ export function JoyGuideProvider({ children }) {
   }, [])
 
   useEffect(() => {
+    let frame = null
+
+    const updatePastHero = () => {
+      const home = document.getElementById('home')
+      if (!home) return
+
+      const bottomRatio = home.getBoundingClientRect().bottom / window.innerHeight
+
+      setPastHero((prev) => {
+        if (!prev && bottomRatio < HERO_PAST_THRESHOLD) return true
+        if (prev && bottomRatio > HERO_RETURN_THRESHOLD) return false
+        return prev
+      })
+    }
+
+    const scheduleUpdate = () => {
+      if (frame) window.cancelAnimationFrame(frame)
+      frame = window.requestAnimationFrame(updatePastHero)
+    }
+
+    updatePastHero()
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+    }
+  }, [])
+
+  useEffect(() => {
     if (introSeen || activeSection === 'home') return undefined
     dismissIntro()
     return undefined
@@ -49,18 +92,32 @@ export function JoyGuideProvider({ children }) {
     return joyGuideMessages[activeSection] ?? joyGuideMessages.home
   }, [activeSection, isFirstVisit])
 
+  const value = useMemo(() => ({
+    activeSection,
+    pastHero,
+    guide,
+    isFirstVisit,
+    dismissIntro,
+    heroEntrancePlayed,
+    markHeroEntrancePlayed,
+    siteTourActive,
+    startSiteTour,
+    endSiteTour,
+  }), [
+    activeSection,
+    pastHero,
+    guide,
+    isFirstVisit,
+    dismissIntro,
+    heroEntrancePlayed,
+    markHeroEntrancePlayed,
+    siteTourActive,
+    startSiteTour,
+    endSiteTour,
+  ])
+
   return (
-    <JoyGuideContext.Provider value={{
-      activeSection,
-      guide,
-      isFirstVisit,
-      dismissIntro,
-      heroEntrancePlayed,
-      markHeroEntrancePlayed,
-      siteTourActive,
-      startSiteTour,
-      endSiteTour,
-    }}>
+    <JoyGuideContext.Provider value={value}>
       {children}
     </JoyGuideContext.Provider>
   )

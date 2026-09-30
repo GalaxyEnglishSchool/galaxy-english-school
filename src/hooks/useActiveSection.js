@@ -9,7 +9,6 @@ export function useActiveSection(sectionIds, fallback = 'home') {
 
   useEffect(() => {
     let frame = null
-    let retryTimer = null
     let cancelled = false
 
     const update = () => {
@@ -18,16 +17,16 @@ export function useActiveSection(sectionIds, fallback = 'home') {
 
       let current = fallback
 
-      sectionIds.forEach((id) => {
+      for (const id of sectionIds) {
         const element = document.getElementById(id)
-        if (!element) return
+        if (!element) continue
 
         if (getSectionTop(element) <= scrollMarker) {
           current = id
         }
-      })
+      }
 
-      setActiveSection(current)
+      setActiveSection((prev) => (prev === current ? prev : current))
     }
 
     const scheduleUpdate = () => {
@@ -39,15 +38,17 @@ export function useActiveSection(sectionIds, fallback = 'home') {
     window.addEventListener('scroll', scheduleUpdate, { passive: true })
     window.addEventListener('resize', scheduleUpdate)
 
-    retryTimer = window.setInterval(() => {
-      if (cancelled) return
-      update()
-    }, 400)
+    // Re-check after lazy sections mount — no continuous polling
+    const retryTimers = [400, 1200, 2500].map((delay) =>
+      window.setTimeout(() => {
+        if (!cancelled) update()
+      }, delay),
+    )
 
     return () => {
       cancelled = true
       if (frame) window.cancelAnimationFrame(frame)
-      if (retryTimer) window.clearInterval(retryTimer)
+      retryTimers.forEach((timer) => window.clearTimeout(timer))
       window.removeEventListener('scroll', scheduleUpdate)
       window.removeEventListener('resize', scheduleUpdate)
     }

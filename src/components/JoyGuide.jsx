@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import joyHi from '../assets/joy-hi.png'
 import joyLaptop from '../assets/Showwebsite.png'
 import joyRunning from '../assets/joy-running.png'
@@ -10,6 +10,7 @@ import './JoyGuide.css'
 function JoyGuide({ variant = 'float', sectionId = null }) {
   const {
     activeSection,
+    pastHero,
     guide,
     isFirstVisit,
     dismissIntro,
@@ -20,24 +21,11 @@ function JoyGuide({ variant = 'float', sectionId = null }) {
   } = useJoyGuide()
   const isHero = variant === 'hero'
   const isSectionAnchor = variant === 'section' && sectionId
-  const [pastHero, setPastHero] = useState(false)
+  const isFloat = variant === 'float'
   const wasOnHero = useRef(false)
-
-  useEffect(() => {
-    const update = () => {
-      const home = document.getElementById('home')
-      if (!home) return
-      setPastHero(home.getBoundingClientRect().bottom < window.innerHeight * 0.32)
-    }
-
-    update()
-    window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    return () => {
-      window.removeEventListener('scroll', update)
-      window.removeEventListener('resize', update)
-    }
-  }, [])
+  const [floatSettled, setFloatSettled] = useState(false)
+  const [sectionChanging, setSectionChanging] = useState(false)
+  const prevActiveSection = useRef(activeSection)
 
   useEffect(() => {
     if (!isHero) return undefined
@@ -51,6 +39,28 @@ function JoyGuide({ variant = 'float', sectionId = null }) {
     return undefined
   }, [isHero, pastHero, markHeroEntrancePlayed])
 
+  useEffect(() => {
+    if (!isFloat || !pastHero) {
+      setFloatSettled(false)
+      return undefined
+    }
+
+    const timer = window.setTimeout(() => setFloatSettled(true), 450)
+    return () => window.clearTimeout(timer)
+  }, [isFloat, pastHero])
+
+  useEffect(() => {
+    if (!isFloat || !floatSettled || prevActiveSection.current === activeSection) {
+      prevActiveSection.current = activeSection
+      return undefined
+    }
+
+    prevActiveSection.current = activeSection
+    setSectionChanging(true)
+    const timer = window.setTimeout(() => setSectionChanging(false), 220)
+    return () => window.clearTimeout(timer)
+  }, [activeSection, isFloat, floatSettled])
+
   const isVisible = isHero
     ? !pastHero
     : isSectionAnchor
@@ -60,6 +70,7 @@ function JoyGuide({ variant = 'float', sectionId = null }) {
   const showIntro = isHero && !pastHero && (showEntrance || isFirstVisit)
   const joyImage = isHero ? joyLaptop : joyStanding
   const entranceGuide = joyGuideMessages.homeFirstVisit
+  const displayGuide = isHero && isFirstVisit ? entranceGuide : guide
 
   if (!isVisible || siteTourActive) return null
 
@@ -81,6 +92,8 @@ function JoyGuide({ variant = 'float', sectionId = null }) {
         isSectionAnchor ? `joy-guide--section-${sectionId}` : '',
         showIntro ? 'joy-guide--intro' : '',
         showEntrance ? 'joy-guide--entrance' : '',
+        isFloat && floatSettled ? 'joy-guide--settled' : '',
+        isFloat && sectionChanging ? 'joy-guide--section-change' : '',
         !isHero && !isSectionAnchor ? `joy-guide--section-${activeSection}` : '',
       ].filter(Boolean).join(' ')}
       aria-live="polite"
@@ -138,11 +151,11 @@ function JoyGuide({ variant = 'float', sectionId = null }) {
           </div>
         </>
       ) : (
-        <div className="joy-guide__bubble" key={`${activeSection}-${showIntro ? 'intro' : 'default'}`}>
-          <p className="joy-guide__label">{isHero && isFirstVisit ? entranceGuide.title : guide.title}</p>
-          {(isHero && isFirstVisit ? entranceGuide.lines : guide.lines).map((line, index) => (
+        <div className="joy-guide__bubble">
+          <p className="joy-guide__label">{displayGuide.title}</p>
+          {displayGuide.lines.map((line, index) => (
             <p
-              key={line}
+              key={`${activeSection}-${line}`}
               className="joy-guide__line"
               style={{ '--line-index': index }}
             >
@@ -167,4 +180,4 @@ function JoyGuide({ variant = 'float', sectionId = null }) {
   )
 }
 
-export default JoyGuide
+export default memo(JoyGuide)

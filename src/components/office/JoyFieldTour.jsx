@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import joyStanding from '../../assets/joy-standing.png'
 import './JoyFieldTour.css'
@@ -8,6 +8,12 @@ const FALLBACK_BUBBLE_STYLE = {
   bottom: '6.5rem',
   right: '1.25rem',
   left: 'auto',
+}
+
+const INITIAL_SPOTLIGHT = {
+  highlight: null,
+  bubble: FALLBACK_BUBBLE_STYLE,
+  dockMode: null,
 }
 
 function JoyFieldTour({
@@ -36,9 +42,8 @@ function JoyFieldTour({
     setStepIndex(0)
   }, [contextStep])
 
-  const [bubbleStyle, setBubbleStyle] = useState(FALLBACK_BUBBLE_STYLE)
-  const [bubbleDockMode, setBubbleDockMode] = useState(null)
-  const [highlightStyle, setHighlightStyle] = useState(null)
+  const [spotlight, setSpotlight] = useState(INITIAL_SPOTLIGHT)
+  const scrollFrame = useRef(null)
 
   const step = visibleSteps[stepIndex]
   const isLast = stepIndex >= visibleSteps.length - 1
@@ -61,30 +66,33 @@ function JoyFieldTour({
     const rect = target.getBoundingClientRect()
     const dockCorner = dockBubbleToCorner || Boolean(tourStep?.dockBubble)
 
-    setHighlightStyle({
+    const highlight = {
       top: rect.top - padding,
       left: Math.max(0, rect.left - padding),
       width: Math.min(window.innerWidth - inset, rect.width + padding * 2),
       height: rect.height + padding * 2,
-    })
+    }
+
+    let bubble = FALLBACK_BUBBLE_STYLE
+    let dockMode = null
 
     if (isMobile) {
       const bubbleWidth = Math.min(188, window.innerWidth - 16)
-      setBubbleDockMode('bottom')
-      setBubbleStyle({
+      dockMode = 'bottom'
+      bubble = {
         bottom: '0.5rem',
         left: `${(window.innerWidth - bubbleWidth) / 2}px`,
         top: 'auto',
         right: 'auto',
-      })
+      }
     } else if (dockCorner) {
-      setBubbleDockMode('corner')
-      setBubbleStyle({
+      dockMode = 'corner'
+      bubble = {
         bottom: 'max(1.25rem, env(safe-area-inset-bottom))',
         right: 'max(1.25rem, env(safe-area-inset-right))',
         top: 'auto',
         left: 'auto',
-      })
+      }
     } else {
       const bubbleWidth = Math.min(300, window.innerWidth - 20)
       const bubbleLeft = Math.min(
@@ -97,29 +105,27 @@ function JoyFieldTour({
         ? belowTop
         : Math.max(inset, aboveTop)
 
-      setBubbleDockMode(null)
-      setBubbleStyle({ top, left: bubbleLeft, bottom: 'auto', right: 'auto' })
+      bubble = { top, left: bubbleLeft, bottom: 'auto', right: 'auto' }
     }
 
     if (secondaryTarget) {
       secondaryTarget.classList.add('joy-tour-spotlight-secondary')
     }
+
+    setSpotlight({ highlight, bubble, dockMode })
   }, [dockBubbleToCorner])
 
   const updateSpotlight = useCallback(() => {
     clearHighlights()
-    setHighlightStyle(null)
 
     if (!step) {
-      setBubbleStyle(FALLBACK_BUBBLE_STYLE)
-      setBubbleDockMode(null)
+      setSpotlight(INITIAL_SPOTLIGHT)
       return
     }
 
     const target = document.querySelector(`[data-joy-tour="${step.target}"]`)
     if (!target) {
-      setBubbleStyle(FALLBACK_BUBBLE_STYLE)
-      setBubbleDockMode(null)
+      setSpotlight(INITIAL_SPOTLIGHT)
       return
     }
 
@@ -142,14 +148,26 @@ function JoyFieldTour({
   useEffect(() => {
     if (!canShowTour) return undefined
 
+    const scheduleSpotlightUpdate = () => {
+      if (scrollFrame.current) return
+      scrollFrame.current = window.requestAnimationFrame(() => {
+        scrollFrame.current = null
+        updateSpotlight()
+      })
+    }
+
     const frame = window.requestAnimationFrame(updateSpotlight)
-    window.addEventListener('resize', updateSpotlight)
-    window.addEventListener('scroll', updateSpotlight, true)
+    window.addEventListener('resize', scheduleSpotlightUpdate)
+    window.addEventListener('scroll', scheduleSpotlightUpdate, { passive: true, capture: true })
 
     return () => {
       window.cancelAnimationFrame(frame)
-      window.removeEventListener('resize', updateSpotlight)
-      window.removeEventListener('scroll', updateSpotlight, true)
+      if (scrollFrame.current) {
+        window.cancelAnimationFrame(scrollFrame.current)
+        scrollFrame.current = null
+      }
+      window.removeEventListener('resize', scheduleSpotlightUpdate)
+      window.removeEventListener('scroll', scheduleSpotlightUpdate, true)
       clearHighlights()
     }
   }, [updateSpotlight, stepIndex, showMap, clearHighlights, canShowTour])
@@ -167,6 +185,8 @@ function JoyFieldTour({
   const goBack = () => {
     setStepIndex((index) => Math.max(index - 1, 0))
   }
+
+  const { highlight: highlightStyle, bubble: bubbleStyle, dockMode: bubbleDockMode } = spotlight
 
   return createPortal(
     <div className="joy-tour" role="dialog" aria-label="Joy guided tour">
