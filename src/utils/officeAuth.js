@@ -1,5 +1,5 @@
 const OFFICE_SESSION_KEY = 'ges-office-unlocked'
-const OFFICE_PASSWORD = 'Galaxy@2008'
+const OFFICE_PASSWORD = 'Galaxy@1970'
 
 export function isOfficeUnlocked() {
   return sessionStorage.getItem(OFFICE_SESSION_KEY) === '1'
