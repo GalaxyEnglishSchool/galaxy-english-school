@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ADMISSION_JOY_TOUR_STEPS } from '../../data/admissionJoyTourSteps'
 import {
   academicYear,
@@ -16,6 +16,8 @@ import OfficeStepBar from './OfficeStepBar'
 import ProgressIcon from './ProgressIcon'
 import JoyFieldTour from './JoyFieldTour'
 import JoyGuideFab from './JoyGuideFab'
+import { isSupabaseConfigured } from '../../lib/supabaseClient'
+import { saveAdmissionRecord } from '../../utils/saveAdmission'
 
 const ADMISSION_STEPS = ['Details', 'Test', 'Report']
 const ADMISSION_JOY_TOUR_KEY = 'galaxy-admission-joy-tour-done'
@@ -57,6 +59,10 @@ function AdmissionAssessment() {
   const [siblingDiscount, setSiblingDiscount] = useState(false)
   const [joyTourActive, setJoyTourActive] = useState(false)
   const [joyTourVisible, setJoyTourVisible] = useState(false)
+  const [saveStatus, setSaveStatus] = useState('idle')
+  const [saveError, setSaveError] = useState('')
+  const savedApplicationRef = useRef('')
+  const [saveAttempt, setSaveAttempt] = useState(0)
   const [student, setStudent] = useState({
     name: '',
     dob: '',
@@ -132,6 +138,9 @@ function AdmissionAssessment() {
     setQuestionIndex(0)
     setAnswers({})
     setSiblingDiscount(false)
+    setSaveStatus('idle')
+    setSaveError('')
+    savedApplicationRef.current = ''
     setStudent({
       name: '',
       dob: '',
@@ -214,6 +223,85 @@ ${site.name}, ${site.location}
   const startJoyTour = () => {
     sessionStorage.removeItem(ADMISSION_JOY_TOUR_KEY)
     setJoyTourActive(true)
+  }
+
+  useEffect(() => {
+    if (step !== 3 || !applicationId || !student.name.trim()) return undefined
+    if (savedApplicationRef.current === applicationId) return undefined
+
+    let cancelled = false
+
+    const persist = async () => {
+      if (!isSupabaseConfigured()) {
+        setSaveStatus('skipped')
+        return
+      }
+
+      setSaveStatus('saving')
+      setSaveError('')
+
+      const result = await saveAdmissionRecord({
+        student_name: student.name.trim(),
+        parent_name: student.parentName.trim() || null,
+        parent_phone: student.parentPhone.trim() || null,
+        grade_id: student.gradeId,
+        grade_label: selectedGrade?.label ?? null,
+        application_id: applicationId,
+        score_percent: percent,
+        earned_marks: earnedMarks,
+        total_marks: totalMarks,
+        scholarship_label: scholarship.label,
+        scholarship_percent: scholarship.scholarshipPercent,
+        first_year_total: feeSummary.firstYearTotal,
+        sibling_discount: siblingDiscount,
+        condition_label: studentReport.conditionLabel,
+      })
+
+      if (cancelled) return undefined
+
+      if (result.skipped) {
+        setSaveStatus('skipped')
+        return undefined
+      }
+
+      if (result.ok) {
+        savedApplicationRef.current = applicationId
+        setSaveStatus('saved')
+        return undefined
+      }
+
+      setSaveStatus('error')
+      setSaveError(result.error || 'Could not save.')
+      return undefined
+    }
+
+    persist()
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    step,
+    applicationId,
+    student.name,
+    student.parentName,
+    student.parentPhone,
+    student.gradeId,
+    selectedGrade?.label,
+    percent,
+    earnedMarks,
+    totalMarks,
+    scholarship.label,
+    scholarship.scholarshipPercent,
+    feeSummary.firstYearTotal,
+    siblingDiscount,
+    studentReport.conditionLabel,
+    saveAttempt,
+  ])
+
+  const retrySave = () => {
+    savedApplicationRef.current = ''
+    setSaveAttempt((count) => count + 1)
   }
 
   return (
@@ -348,6 +436,28 @@ ${site.name}, ${site.location}
               tone={progressTone(percent)}
             />
           </header>
+
+          {saveStatus === 'saving' && (
+            <p className="admission-save-status" role="status">Saving test to school records…</p>
+          )}
+          {saveStatus === 'saved' && (
+            <p className="admission-save-status admission-save-status--ok" role="status">
+              Saved to Supabase (name &amp; phone on file).
+            </p>
+          )}
+          {saveStatus === 'skipped' && isSupabaseConfigured() === false && (
+            <p className="admission-save-status admission-save-status--muted">
+              Cloud save off — add Supabase keys in `.env.local` (see `supabase/README.md`).
+            </p>
+          )}
+          {saveStatus === 'error' && (
+            <p className="admission-save-status admission-save-status--error" role="alert">
+              {saveError}
+              <button type="button" className="admission-save-status__retry" onClick={retrySave}>
+                Try again
+              </button>
+            </p>
+          )}
 
           <section className="admission-report__section">
             <h4 className="admission-report__section-title">
