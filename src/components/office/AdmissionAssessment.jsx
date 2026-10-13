@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ADMISSION_JOY_TOUR_STEPS } from '../../data/admissionJoyTourSteps'
 import {
   academicYear,
@@ -66,7 +66,10 @@ function AdmissionAssessment() {
   })
 
   const selectedGrade = gradeFees.find((g) => g.id === student.gradeId)
-  const assessment = getAssessmentForGrade(student.gradeId)
+  const assessment = useMemo(
+    () => getAssessmentForGrade(student.gradeId),
+    [student.gradeId, applicationId],
+  )
   const questions = assessment.questions
 
   const { earnedMarks, totalMarks, percent } = useMemo(
@@ -104,10 +107,7 @@ function AdmissionAssessment() {
   }, [selectedGrade, scholarship, siblingDiscount])
 
   const handleAnswer = (questionId, optionId) => {
-    setAnswers((prev) => {
-      if (prev[questionId] != null) return prev
-      return { ...prev, [questionId]: optionId }
-    })
+    setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
   }
 
   const handleStudentChange = (field, value) => {
@@ -211,16 +211,10 @@ ${site.name}, ${site.location}
     setJoyTourVisible(false)
   }
 
-  const restartJoyTour = () => {
+  const startJoyTour = () => {
     sessionStorage.removeItem(ADMISSION_JOY_TOUR_KEY)
     setJoyTourActive(true)
   }
-
-  useEffect(() => {
-    if (sessionStorage.getItem(ADMISSION_JOY_TOUR_KEY) === '1') return undefined
-    const timer = window.setTimeout(() => setJoyTourActive(true), 500)
-    return () => window.clearTimeout(timer)
-  }, [])
 
   return (
     <div className="office-panel">
@@ -233,7 +227,7 @@ ${site.name}, ${site.location}
         />
       )}
 
-      <JoyGuideFab onClick={restartJoyTour} hidden={joyTourVisible} />
+      <JoyGuideFab onClick={startJoyTour} hidden={joyTourVisible} />
 
       <OfficeStepBar steps={ADMISSION_STEPS} currentStep={step} />
 

@@ -3,7 +3,7 @@ import { getReadingQuestionsForGrade } from './readingQuestions'
 /** Basic admission MCQ tests — one set per class. Staff taps the student's answer. */
 
 const INSTRUCTIONS =
-  'Visual questions appear on screen — ask aloud if needed. Tap the option the student chooses. Each answer is final and cannot be changed.'
+  'Read the question to the student if needed. Tap their answer — the test moves to the next question automatically. Use Back if you need to change an answer.'
 
 function mcq(id, section, question, choices, correctIndex, extras = {}) {
   const config = typeof extras === 'string' ? { display: extras } : extras
@@ -50,22 +50,56 @@ const playgroupQuestions = [
   }),
 ]
 
+/** Nursery — very basic visuals & readiness (like play group + a little more) */
 const nurseryQuestions = [
-  mcq('n1', 'Numbers', 'How many fingers on one hand?', ['3', '4', '5', '6'], 2, '🖐️'),
-  mcq('n2', 'Letters', 'Which letter is A?', ['A', 'B', 'C', 'D'], 0, 'A'),
-  mcq('n3', 'Numbers', 'What comes after 2?', ['1', '3', '4', '5'], 1),
-  mcq('n4', 'Colours', 'Sky colour?', ['Blue', 'Red', 'Yellow', 'Brown'], 0),
-  mcq('n5', 'Shapes', 'Square has how many sides?', ['3', '4', '5', '6'], 1, '■'),
-  mcq('n6', 'Rhymes', 'Twinkle twinkle little ___', ['Star', 'Car', 'Ball', 'Tree'], 0),
-  mcq('n7', 'Animals', 'Who gives us milk?', ['Cow', 'Lion', 'Snake', 'Fish'], 0, {
-    optionIcons: ['🐄', '🦁', '🐍', '🐟'],
+  mcq('n1', 'Colours', 'Apple colour?', ['Red', 'Blue', 'Black', 'White'], 0, '🍎'),
+  mcq('n2', 'Animals', 'Which is a cat?', ['Cat', 'Dog', 'Cow', 'Fish'], 0, {
+    optionIcons: ['🐈', '🐕', '🐄', '🐟'],
   }),
-  mcq('n8', 'Counting', 'Count the stars', ['2', '3', '4', '5'], 2, '⭐ ⭐ ⭐'),
-  mcq('n9', 'Letters', '"B" for ___', ['Ball', 'Cat', 'Dog', 'Egg'], 0, {
+  mcq('n3', 'Counting', 'How many?', ['1', '2', '3', '4'], 0, '🍎'),
+  mcq('n4', 'Colours', 'Banana colour?', ['Yellow', 'Green', 'Purple', 'Grey'], 0, '🍌'),
+  mcq('n5', 'Shapes', 'Which is round?', ['Circle', 'Square', 'Line', 'Dot'], 0, '⭕'),
+  mcq('n6', 'Body', 'We hear with ___', ['Ears', 'Eyes', 'Nose', 'Feet'], 0, {
+    optionIcons: ['👂', '👀', '👃', '🦶'],
+  }),
+  mcq('n7', 'Animals', 'Dog says ___', ['Woof', 'Meow', 'Moo', 'Tweet'], 0, '🐕'),
+  mcq('n8', 'Listening', 'Follows simple instruction?', ['Yes', 'With help', 'No', 'Not tried'], 0, {
+    staffNote: 'Say: "Clap your hands"',
+    optionIcons: ['👍', '🤝', '👎', '⏳'],
+  }),
+]
+
+/** Jr. KG — colours, counting 1–3, first letters */
+const jrkgQuestions = [
+  mcq('j1', 'Colours', 'Sky colour?', ['Blue', 'Red', 'Pink', 'Brown'], 0, '☁️'),
+  mcq('j2', 'Counting', 'How many balls?', ['1', '2', '3', '4'], 1, '⚽ ⚽'),
+  mcq('j3', 'Letters', 'Which letter is A?', ['A', 'B', 'C', 'D'], 0, 'A'),
+  mcq('j4', 'Animals', 'Who gives milk?', ['Cow', 'Lion', 'Fish', 'Bird'], 0, {
+    optionIcons: ['🐄', '🦁', '🐟', '🐦'],
+  }),
+  mcq('j5', 'Numbers', 'How many fingers on one hand?', ['3', '4', '5', '6'], 2, '🖐️'),
+  mcq('j6', 'Fruits', 'Which is a fruit?', ['Mango', 'Chair', 'Shoe', 'Pen'], 0, {
+    optionIcons: ['🥭', '🪑', '👟', '✏️'],
+  }),
+  mcq('j7', 'Rhymes', 'Jack and ___', ['Jill', 'Ball', 'Car', 'Sun'], 0),
+  mcq('j8', 'Big & Small', 'Which is smaller?', ['Ant', 'Elephant', 'Same', "Don't know"], 0, {
+    optionIcons: ['🐜', '🐘', '⚖️', '❓'],
+  }),
+]
+
+/** Sr. KG — gentle prep: count to 5, A–B, very easy maths */
+const srkgQuestions = [
+  mcq('k1', 'Letters', 'Which letter is B?', ['A', 'B', 'C', 'D'], 1, 'B'),
+  mcq('k2', 'Counting', 'Count the stars', ['2', '3', '4', '5'], 1, '⭐ ⭐ ⭐'),
+  mcq('k3', 'Numbers', 'What comes after 2?', ['1', '3', '4', '5'], 1),
+  mcq('k4', 'Maths', '1 + 1 = ?', ['1', '2', '3', '4'], 1),
+  mcq('k5', 'Colours', 'Leaf colour?', ['Green', 'Orange', 'Pink', 'Gold'], 0, '🍃'),
+  mcq('k6', 'Shapes', 'Ball shape?', ['Round', 'Square', 'Flat', 'Sharp'], 0, '⚽'),
+  mcq('k7', 'English', '"B" is for ___', ['Ball', 'Zoo', 'Queen', 'X-ray'], 0, {
     display: 'B',
-    optionIcons: ['⚽', '🐈', '🐕', '🥚'],
+    optionIcons: ['⚽', '🦁', '👑', '❓'],
   }),
-  mcq('n10', 'Speaking', 'Child speaks in simple words?', ['Yes', 'Few words', 'No', 'Not tried'], 0),
+  mcq('k8', 'GK', 'We drink ___ when thirsty', ['Water', 'Sand', 'Stone', 'Paper'], 0, '💧'),
 ]
 
 const std1Questions = [
@@ -232,19 +266,19 @@ export const assessmentsByGrade = {
     questions: playgroupQuestions,
   },
   nursery: {
-    title: 'Nursery — Basic Readiness Test',
+    title: 'Nursery — Easy Readiness Test',
     instructions: INSTRUCTIONS,
     questions: nurseryQuestions,
   },
   jrkg: {
-    title: 'Jr. KG — Basic Readiness Test',
+    title: 'Jr. KG — Easy Readiness Test',
     instructions: INSTRUCTIONS,
-    questions: nurseryQuestions,
+    questions: jrkgQuestions,
   },
   srkg: {
-    title: 'Sr. KG — Basic Readiness Test',
+    title: 'Sr. KG — Easy Readiness Test',
     instructions: INSTRUCTIONS,
-    questions: std1Questions,
+    questions: srkgQuestions,
   },
   std1: {
     title: '1st — Basic Admission Test',
@@ -298,13 +332,29 @@ export const assessmentsByGrade = {
   },
 }
 
+function shuffleArray(items) {
+  const list = [...items]
+  for (let i = list.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[list[i], list[j]] = [list[j], list[i]]
+  }
+  return list
+}
+
+function shuffleQuestionOptions(question) {
+  return {
+    ...question,
+    options: shuffleArray(question.options),
+  }
+}
+
 export function getAssessmentForGrade(gradeId) {
   const base = assessmentsByGrade[gradeId] ?? assessmentsByGrade.std1
   const readingQuestions = getReadingQuestionsForGrade(gradeId)
 
   return {
     ...base,
-    questions: [...base.questions, ...readingQuestions],
+    questions: [...base.questions, ...readingQuestions].map(shuffleQuestionOptions),
   }
 }
 

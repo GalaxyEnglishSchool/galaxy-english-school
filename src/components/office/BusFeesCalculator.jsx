@@ -102,16 +102,10 @@ ${site.name}, ${site.location}`
     setJoyTourVisible(false)
   }
 
-  const restartJoyTour = () => {
+  const startJoyTour = () => {
     sessionStorage.removeItem(BUS_JOY_TOUR_KEY)
     setJoyTourActive(true)
   }
-
-  useEffect(() => {
-    if (sessionStorage.getItem(BUS_JOY_TOUR_KEY) === '1') return undefined
-    const timer = window.setTimeout(() => setJoyTourActive(true), 500)
-    return () => window.clearTimeout(timer)
-  }, [])
 
   return (
     <div className="bus-fees">
@@ -124,7 +118,7 @@ ${site.name}, ${site.location}`
         />
       )}
 
-      <JoyGuideFab onClick={restartJoyTour} hidden={joyTourVisible} />
+      <JoyGuideFab onClick={startJoyTour} hidden={joyTourVisible} />
 
       <header className="bus-fees__header">
         <img

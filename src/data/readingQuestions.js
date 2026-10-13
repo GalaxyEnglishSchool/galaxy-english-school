@@ -19,6 +19,28 @@ function readingMcq(id, lang, question, choices, correctIndex, passage, extras =
   }
 }
 
+/** Nursery to Sr. KG — one short line each language */
+const preschoolReading = [
+  readingMcq(
+    'read-mr-1',
+    'mr',
+    'मुलाचे नाव काय?',
+    ['राजू', 'गाडी', 'झाड', 'पक्षी'],
+    0,
+    'राजू शाळेत जातो.',
+    { staffNote: 'छोटा वाक्य मुलाला वाचायला सांगा (मदत करून चालेल).' },
+  ),
+  readingMcq(
+    'read-en-1',
+    'en',
+    "What is the boy's name?",
+    ['Raju', 'Car', 'Tree', 'Bird'],
+    0,
+    'Raju goes to school.',
+    { staffNote: 'Read the short line to the child, or help them try.' },
+  ),
+]
+
 const earlyReading = [
   readingMcq(
     'read-mr-1',
@@ -131,14 +153,15 @@ const upperReading = [
 ]
 
 const READING_BY_TIER = {
+  preschool: preschoolReading,
   early: earlyReading,
   primary: primaryReading,
   upper: upperReading,
 }
 
 function getReadingTier(gradeId) {
-  if (['playgroup', 'nursery', 'jrkg'].includes(gradeId)) return 'early'
-  if (['srkg', 'std1', 'std2', 'std3', 'std4', 'std5'].includes(gradeId)) return 'primary'
+  if (['playgroup', 'nursery', 'jrkg', 'srkg'].includes(gradeId)) return 'preschool'
+  if (['std1', 'std2', 'std3', 'std4', 'std5'].includes(gradeId)) return 'primary'
   return 'upper'
 }
 

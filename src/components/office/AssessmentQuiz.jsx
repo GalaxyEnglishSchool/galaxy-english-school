@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 const OPTION_LABELS = ['A', 'B', 'C', 'D']
+const AUTO_ADVANCE_MS = 450
 
 function ShapeDiagram({ shapes }) {
   if (!shapes?.length) return null
@@ -21,10 +22,13 @@ function AssessmentQuiz({ assessment, answers, onAnswer, currentIndex, onIndexCh
   const answeredCount = Object.keys(answers).length
   const progress = Math.round((answeredCount / total) * 100)
   const selected = answers[question.id]
-  const questionLocked = selected != null
   const isVisual = question.visualType === 'visual' || question.visualType === 'fraction' || question.visualType === 'reading' || question.display || question.shapes || question.passage
   const hasIcons = question.options.some((opt) => opt.icon)
+  const isLast = currentIndex >= total - 1
   const advanceTimer = useRef(null)
+  const currentIndexRef = useRef(currentIndex)
+
+  currentIndexRef.current = currentIndex
 
   const goNext = () => {
     if (currentIndex < total - 1) onIndexChange(currentIndex + 1)
@@ -34,35 +38,37 @@ function AssessmentQuiz({ assessment, answers, onAnswer, currentIndex, onIndexCh
     if (currentIndex > 0) onIndexChange(currentIndex - 1)
   }
 
-  const handleSelect = (questionId, optionId) => {
-    if (answers[questionId] != null) return
-
-    onAnswer(questionId, optionId)
-
-    if (advanceTimer.current) clearTimeout(advanceTimer.current)
+  const scheduleAdvance = () => {
+    if (advanceTimer.current) window.clearTimeout(advanceTimer.current)
     advanceTimer.current = window.setTimeout(() => {
-      if (currentIndex < total - 1) {
-        onIndexChange(currentIndex + 1)
+      const index = currentIndexRef.current
+      if (index < total - 1) {
+        onIndexChange(index + 1)
       } else {
         onComplete?.()
       }
-    }, 650)
+    }, AUTO_ADVANCE_MS)
+  }
+
+  const handleSelect = (questionId, optionId) => {
+    onAnswer(questionId, optionId)
+    scheduleAdvance()
   }
 
   useEffect(() => () => {
-    if (advanceTimer.current) clearTimeout(advanceTimer.current)
+    if (advanceTimer.current) window.clearTimeout(advanceTimer.current)
   }, [])
 
   useEffect(() => {
-    if (advanceTimer.current) clearTimeout(advanceTimer.current)
+    if (advanceTimer.current) window.clearTimeout(advanceTimer.current)
   }, [currentIndex])
 
   return (
-    <div className="quiz">
+    <div className="quiz quiz--simple">
       <div className="quiz__progress-wrap">
         <div className="quiz__progress-meta">
-          <span>Question {currentIndex + 1} of {total}</span>
-          <span>{answeredCount} answered</span>
+          <span>Question {currentIndex + 1} / {total}</span>
+          <span>{progress}% done</span>
         </div>
         <div className="quiz__progress-bar" aria-hidden="true">
           <div className="quiz__progress-fill" style={{ width: `${progress}%` }} />
@@ -112,23 +118,17 @@ function AssessmentQuiz({ assessment, answers, onAnswer, currentIndex, onIndexCh
           <p className="quiz__staff-note">💡 {question.staffNote}</p>
         )}
 
-        {questionLocked && (
-          <p className="quiz__locked-note">Answer locked — cannot be changed.</p>
-        )}
-
         <div
           className={[
             'quiz__options',
             hasIcons ? 'quiz__options--visual' : '',
-            questionLocked ? 'quiz__options--locked' : '',
+            'quiz__options--simple',
           ].filter(Boolean).join(' ')}
           role="listbox"
           aria-label="Answer options"
         >
           {question.options.map((option, index) => {
             const isSelected = selected === option.id
-            const isCorrect = option.id === question.correctOptionId
-            const showResult = isSelected
 
             return (
               <button
@@ -140,11 +140,7 @@ function AssessmentQuiz({ assessment, answers, onAnswer, currentIndex, onIndexCh
                   'quiz__option',
                   option.icon ? 'quiz__option--picture' : '',
                   isSelected ? 'quiz__option--selected' : '',
-                  questionLocked && !isSelected ? 'quiz__option--disabled' : '',
-                  showResult && isCorrect ? 'quiz__option--correct' : '',
-                  showResult && !isCorrect ? 'quiz__option--wrong' : '',
                 ].filter(Boolean).join(' ')}
-                disabled={questionLocked}
                 onClick={() => handleSelect(question.id, option.id)}
               >
                 <span className="quiz__option-letter">{OPTION_LABELS[index]}</span>
@@ -152,11 +148,6 @@ function AssessmentQuiz({ assessment, answers, onAnswer, currentIndex, onIndexCh
                   <span className="quiz__option-icon" aria-hidden="true">{option.icon}</span>
                 )}
                 <span className="quiz__option-text">{option.label}</span>
-                {showResult && (
-                  <span className="quiz__option-badge" aria-hidden="true">
-                    {isCorrect ? '✓' : '✗'}
-                  </span>
-                )}
               </button>
             )
           })}
@@ -170,34 +161,29 @@ function AssessmentQuiz({ assessment, answers, onAnswer, currentIndex, onIndexCh
           onClick={goPrev}
           disabled={currentIndex === 0}
         >
-          ← Previous
+          ← Back
         </button>
 
-        <div className="quiz__dots" aria-hidden="true">
-          {questions.map((q, i) => (
-            <button
-              key={q.id}
-              type="button"
-              className={[
-                'quiz__dot',
-                i === currentIndex ? 'quiz__dot--current' : '',
-                answers[q.id] ? 'quiz__dot--answered' : '',
-              ].filter(Boolean).join(' ')}
-              onClick={() => onIndexChange(i)}
-              title={`Question ${i + 1}`}
-            />
-          ))}
-        </div>
-
-        <button
-          type="button"
-          className="btn btn--primary"
-          data-joy-tour="quiz-next"
-          onClick={goNext}
-          disabled={currentIndex === total - 1}
-        >
-          Next →
-        </button>
+        {isLast ? (
+          <button
+            type="button"
+            className="btn btn--primary"
+            data-joy-tour="quiz-next"
+            onClick={() => onComplete?.()}
+            disabled={!selected}
+          >
+            Finish test
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="btn btn--primary"
+            data-joy-tour="quiz-next"
+            onClick={goNext}
+          >
+            Next →
+          </button>
+        )}
       </div>
 
       <p className="quiz__hint">{assessment.instructions}</p>

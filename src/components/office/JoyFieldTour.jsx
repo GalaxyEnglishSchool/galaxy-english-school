@@ -43,7 +43,10 @@ function JoyFieldTour({
   }, [contextStep])
 
   const [spotlight, setSpotlight] = useState(INITIAL_SPOTLIGHT)
+  const [highlightReady, setHighlightReady] = useState(true)
   const scrollFrame = useRef(null)
+  const transitionLock = useRef(false)
+  const transitionTimer = useRef(null)
 
   const step = visibleSteps[stepIndex]
   const isLast = stepIndex >= visibleSteps.length - 1
@@ -115,9 +118,7 @@ function JoyFieldTour({
     setSpotlight({ highlight, bubble, dockMode })
   }, [dockBubbleToCorner])
 
-  const updateSpotlight = useCallback(() => {
-    clearHighlights()
-
+  const measureSpotlight = useCallback(() => {
     if (!step) {
       setSpotlight(INITIAL_SPOTLIGHT)
       return
@@ -135,24 +136,71 @@ function JoyFieldTour({
       ? document.querySelector(`[data-joy-tour="${step.secondaryTarget}"]`)
       : null
 
-    const isMobile = window.innerWidth <= 1024
+    applySpotlight(target, secondary, step)
+  }, [step, applySpotlight])
+
+  const updateSpotlight = useCallback(() => {
+    clearHighlights()
+
+    if (!step) {
+      setSpotlight(INITIAL_SPOTLIGHT)
+      setHighlightReady(true)
+      return
+    }
+
+    const target = document.querySelector(`[data-joy-tour="${step.target}"]`)
+    if (!target) {
+      setSpotlight(INITIAL_SPOTLIGHT)
+      setHighlightReady(true)
+      return
+    }
+
+    const isCompact = window.innerWidth <= 1024
+    transitionLock.current = true
+    setHighlightReady(false)
+
+    if (transitionTimer.current) {
+      window.clearTimeout(transitionTimer.current)
+      transitionTimer.current = null
+    }
+
+    target.classList.add('joy-tour-spotlight')
+
+    const secondary = step.secondaryTarget
+      ? document.querySelector(`[data-joy-tour="${step.secondaryTarget}"]`)
+      : null
+
     target.scrollIntoView({
-      behavior: 'smooth',
-      block: isMobile ? 'start' : 'center',
+      behavior: isCompact ? 'auto' : 'smooth',
+      block: isCompact ? 'start' : 'center',
       inline: 'nearest',
     })
-    applySpotlight(target, secondary, step)
-    window.setTimeout(() => applySpotlight(target, secondary, step), 400)
-  }, [step, clearHighlights, applySpotlight])
+
+    const finishTransition = () => {
+      measureSpotlight()
+      setHighlightReady(true)
+      transitionLock.current = false
+      transitionTimer.current = null
+    }
+
+    if (isCompact) {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(finishTransition)
+      })
+    } else {
+      transitionTimer.current = window.setTimeout(finishTransition, 320)
+    }
+  }, [step, clearHighlights, measureSpotlight])
 
   useEffect(() => {
     if (!canShowTour) return undefined
 
     const scheduleSpotlightUpdate = () => {
+      if (transitionLock.current) return
       if (scrollFrame.current) return
       scrollFrame.current = window.requestAnimationFrame(() => {
         scrollFrame.current = null
-        updateSpotlight()
+        measureSpotlight()
       })
     }
 
@@ -166,11 +214,16 @@ function JoyFieldTour({
         window.cancelAnimationFrame(scrollFrame.current)
         scrollFrame.current = null
       }
+      if (transitionTimer.current) {
+        window.clearTimeout(transitionTimer.current)
+        transitionTimer.current = null
+      }
+      transitionLock.current = false
       window.removeEventListener('resize', scheduleSpotlightUpdate)
       window.removeEventListener('scroll', scheduleSpotlightUpdate, true)
       clearHighlights()
     }
-  }, [updateSpotlight, stepIndex, showMap, clearHighlights, canShowTour])
+  }, [updateSpotlight, measureSpotlight, stepIndex, showMap, clearHighlights, canShowTour])
 
   if (!canShowTour) return null
 
@@ -192,7 +245,10 @@ function JoyFieldTour({
     <div className="joy-tour" role="dialog" aria-label="Joy guided tour">
       {highlightStyle && (
         <div
-          className="joy-tour__highlight-ring"
+          className={[
+            'joy-tour__highlight-ring',
+            highlightReady ? 'joy-tour__highlight-ring--ready' : 'joy-tour__highlight-ring--pending',
+          ].join(' ')}
           style={highlightStyle}
           aria-hidden="true"
         />
@@ -202,6 +258,7 @@ function JoyFieldTour({
           'joy-tour__bubble',
           bubbleDockMode === 'bottom' ? 'joy-tour__bubble--dock-bottom' : '',
           bubbleDockMode === 'corner' ? 'joy-tour__bubble--dock-corner' : '',
+          highlightReady ? 'joy-tour__bubble--step-enter' : '',
         ].filter(Boolean).join(' ')}
         style={bubbleStyle}
       >
