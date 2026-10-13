@@ -1,0 +1,703 @@
+/* —— Toolbar (screen only) —— */
+.office-print__toolbar {
+  margin-bottom: 1.25rem;
+}
+
+.office-print__toolbar h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.office-print__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.office-print__header-copy {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.office-print__lead {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  max-width: 42rem;
+}
+
+.office-print__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.office-print__pill {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: var(--color-surface-alt, #f3f4f6);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.office-print__pill--ok {
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+  color: #047857;
+}
+
+.office-print__actions-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.office-print__action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.office-print__action-row--primary {
+  width: 100%;
+}
+
+.office-print__action-row .btn {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0.65rem 1.15rem;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.office-print__action-row .btn--whatsapp {
+  margin-top: 0;
+}
+
+.office-print__clear {
+  margin-left: auto;
+}
+
+.office-print__hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.office-print__pdf-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: #b91c1c;
+}
+
+.office-print__mode-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.office-print__mode-tab {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-heading);
+  cursor: pointer;
+}
+
+.office-print__mode-tab--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.office-print__walkin-card {
+  margin-bottom: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid #c7d2fe;
+  background: #f8fafc;
+}
+
+.office-print__walkin-card h4 {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+}
+
+.office-print__walkin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.office-print__walkin-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.office-print__walkin-grid input,
+.office-print__walkin-grid select {
+  font: inherit;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 768px) {
+  .office-print__header {
+    align-items: stretch;
+  }
+
+  .office-print__mode-tabs {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .office-print__walkin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .office-print__action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .office-print__clear {
+    margin-left: 0;
+  }
+
+  .office-print__action-row .btn {
+    width: 100%;
+    white-space: normal;
+  }
+}
+
+/* —— A4 document (preview = print) —— */
+.office-print__sheet {
+  --doc-navy: #0f2744;
+  --doc-accent: #1e40af;
+  --doc-border: #d1d5db;
+  --doc-muted: #4b5563;
+
+  box-sizing: border-box;
+  width: 210mm;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 5mm 6mm 5mm;
+  background: #fff;
+  color: #111827;
+  border: 1px solid var(--doc-border);
+  border-radius: 2px;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+  font-size: 9.5pt;
+  line-height: 1.35;
+  font-family: Arial, 'Segoe UI', system-ui, sans-serif;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fixed A4 width while generating PDF (avoids narrow strip + big left gap) */
+/* Off-screen clone for PDF only — not the live page */
+.office-print__capture-host {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 210mm;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 1;
+  background: #fff;
+}
+
+.office-print__sheet--pdf-capture {
+  width: 210mm !important;
+  min-width: 210mm !important;
+  max-width: 210mm !important;
+  margin: 0 !important;
+  padding: 5mm 6mm 5mm 6mm !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  font-size: 9.5pt !important;
+  line-height: 1.35 !important;
+  transform: none !important;
+  letter-spacing: normal !important;
+  box-sizing: border-box !important;
+}
+
+.office-print__sheet--pdf-capture * {
+  transform: none !important;
+}
+
+.office-print__masthead {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.45rem 0.65rem;
+  align-items: center;
+  padding-bottom: 0.45rem;
+  margin-bottom: 0.45rem;
+  border-bottom: 2px solid var(--doc-navy);
+}
+
+.office-print__logo {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.office-print__masthead-text h1 {
+  margin: 0;
+  font-size: 12.5pt;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--doc-navy);
+  line-height: 1.15;
+}
+
+.office-print__masthead-text p {
+  margin: 0.12rem 0 0;
+  font-size: 8pt;
+  color: var(--doc-muted);
+  line-height: 1.35;
+}
+
+.office-print__masthead-ref {
+  text-align: right;
+  font-size: 8pt;
+  color: var(--doc-muted);
+  min-width: 5.5rem;
+}
+
+.office-print__masthead-ref strong {
+  display: block;
+  font-size: 9.5pt;
+  color: var(--doc-navy);
+}
+
+.office-print__masthead-ref code {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 7.5pt;
+  font-family: ui-monospace, monospace;
+  color: var(--doc-accent);
+  word-break: break-all;
+}
+
+.office-print__section {
+  margin-bottom: 0.4rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.office-print__section-title {
+  margin: 0 0 0.25rem;
+  padding: 0.2rem 0.35rem;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: var(--doc-navy);
+}
+
+.office-print__section-body {
+  padding: 0.15rem 0 0;
+}
+
+.office-print__data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 8.5pt;
+}
+
+.office-print__data-table th,
+.office-print__data-table td {
+  border: 1px solid var(--doc-border);
+  padding: 0.28rem 0.4rem;
+  text-align: left;
+  vertical-align: middle;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.office-print__data-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+  color: #374151;
+}
+
+.office-print__data-table--student th {
+  width: 16%;
+}
+
+.office-print__data-table--student td {
+  width: 34%;
+}
+
+.office-print__data-table--amount {
+  font-size: 7.5pt;
+}
+
+.office-print__data-table--amount th,
+.office-print__data-table--amount td {
+  padding: 0.2rem 0.32rem;
+}
+
+.office-print__data-table--amount th {
+  width: 62%;
+  text-align: left;
+}
+
+.office-print__data-table--amount td {
+  width: 38%;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.office-print__data-table--amount tr.office-print__row-total th {
+  text-align: left;
+}
+
+.office-print__data-table tr.office-print__row-total td {
+  background: #eff6ff;
+  font-weight: 700;
+  border-top: 2px solid var(--doc-accent);
+}
+
+.office-print__data-table tr.office-print__row-discount td {
+  color: #047857;
+}
+
+.office-print__assess-row {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 0.4rem;
+  align-items: start;
+  margin-bottom: 0.35rem;
+}
+
+.office-print__ring {
+  --score: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: conic-gradient(var(--ring-color, #1e40af) calc(var(--score) * 1%), #e5e7eb 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.office-print__ring--good { --ring-color: #059669; }
+.office-print__ring--mid { --ring-color: #d97706; }
+.office-print__ring--low { --ring-color: #dc2626; }
+
+.office-print__ring-inner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 8pt;
+  font-weight: 800;
+  color: var(--doc-navy);
+  line-height: 1;
+}
+
+.office-print__ring-inner small {
+  font-size: 5pt;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.office-print__assess-text {
+  font-size: 8.5pt;
+  color: #374151;
+}
+
+.office-print__assess-text p {
+  margin: 0.15rem 0 0;
+}
+
+.office-print__assess-text strong {
+  color: var(--doc-navy);
+}
+
+.office-print__tag {
+  display: inline-block;
+  font-size: 7.5pt;
+  font-weight: 700;
+  padding: 0.12rem 0.35rem;
+  margin-bottom: 0.15rem;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  background: #e0e7ff;
+  color: #1e3a8a;
+}
+
+.office-print__tag--good {
+  background: #ecfdf5;
+  border-color: #059669;
+  color: #047857;
+}
+
+.office-print__tag--mid {
+  background: #fffbeb;
+  border-color: #d97706;
+  color: #b45309;
+}
+
+.office-print__tag--low {
+  background: #fef2f2;
+  border-color: #dc2626;
+  color: #b91c1c;
+}
+
+.office-print__tag--walkin {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.office-print__score-line {
+  margin: 0.1rem 0 0.2rem !important;
+  font-size: 8.5pt;
+}
+
+.office-print__scholarship-callout {
+  margin: 0.35rem 0 0;
+  padding: 0.28rem 0.4rem;
+  border-radius: 3px;
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+}
+
+.office-print__scholarship-callout-title {
+  display: block;
+  font-size: 7pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1d4ed8;
+  margin-bottom: 0.1rem;
+}
+
+.office-print__scholarship-callout p {
+  margin: 0;
+  font-size: 8pt;
+  color: #1e3a8a;
+}
+
+.office-print__dual-lists {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin: 0.3rem 0 0.35rem;
+  font-size: 7.75pt;
+}
+
+.office-print__dual-lists h4 {
+  margin: 0 0 0.12rem;
+  font-size: 7.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+
+.office-print__dual-lists ul {
+  margin: 0;
+  padding-left: 0.9rem;
+}
+
+.office-print__dual-lists li {
+  margin-bottom: 0.08rem;
+}
+
+.office-print__data-table--bus {
+  font-size: 7pt;
+}
+
+.office-print__data-table--bus th,
+.office-print__data-table--bus td {
+  padding: 0.2rem 0.32rem;
+}
+
+.office-print__data-table--bus-grid th {
+  width: 14%;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.office-print__data-table--bus-grid td {
+  width: 36%;
+}
+
+.office-print__data-table--bus-grid tr:first-child td:first-of-type {
+  font-weight: 700;
+  color: #92400e;
+}
+
+.office-print__bus-note {
+  margin: 0.2rem 0 0;
+  font-size: 7.5pt;
+  color: #6b7280;
+}
+
+.office-print__rules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  font-size: 7.75pt;
+  color: #374151;
+  line-height: 1.35;
+}
+
+.office-print__rules-grid h4 {
+  margin: 0 0 0.12rem;
+  font-size: 8pt;
+  font-weight: 700;
+  color: var(--doc-navy);
+}
+
+.office-print__rules-grid ol {
+  margin: 0;
+  padding-left: 0.95rem;
+}
+
+.office-print__rules-grid li {
+  margin-bottom: 0.1rem;
+}
+
+.office-print__rules-grid--single {
+  grid-template-columns: 1fr;
+}
+
+.office-print__footer {
+  margin-top: 0.35rem;
+  padding-top: 0.3rem;
+  border-top: 1px solid var(--doc-border);
+  font-size: 7.5pt;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.office-print__footer p {
+  margin: 0.1rem 0;
+}
+
+.office-print__panel--empty {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.75rem;
+}
+
+/* —— Print —— */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  .office-print__sheet,
+  .office-print__section-title,
+  .office-print__ring,
+  .office-print__bus-line,
+  .office-print__row-total td,
+  .office-print__logo {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  body.office-print-mode {
+    margin: 0;
+    padding: 0;
+    background: #fff !important;
+  }
+
+  body.office-print-mode .office-page__header,
+  body.office-print-mode .office-nav,
+  body.office-print-mode .office-gate,
+  body.office-print-mode .office-print__toolbar,
+  body.office-print-mode .office-tab-panel[hidden],
+  body.office-print-mode .joy-guide-fab {
+    display: none !important;
+  }
+
+  body.office-print-mode .office--standalone,
+  body.office-print-mode .office,
+  body.office-print-mode .container,
+  body.office-print-mode .office-shell,
+  body.office-print-mode .office-shell__content,
+  body.office-print-mode .office-print {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  body.office-print-mode .office-print__sheet {
+    box-sizing: border-box !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 5mm 6mm 5mm 6mm !important;
+    border: none;
+    box-shadow: none;
+    transform: none !important;
+    font-size: 9.5pt !important;
+    line-height: 1.35 !important;
+  }
+
+  body.office-print-mode .office-print__data-table {
+    font-size: 8.5pt !important;
+  }
+
+  body.office-print-mode .office-print__rules-grid {
+    font-size: 7.75pt !important;
+  }
+
+  body.office-print-mode .office-print__panel--empty {
+    display: none !important;
+  }
+}

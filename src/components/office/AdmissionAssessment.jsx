@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ADMISSION_JOY_TOUR_STEPS } from '../../data/admissionJoyTourSteps'
 import {
   academicYear,
@@ -16,9 +16,8 @@ import OfficeStepBar from './OfficeStepBar'
 import ProgressIcon from './ProgressIcon'
 import JoyFieldTour from './JoyFieldTour'
 import JoyGuideFab from './JoyGuideFab'
-import { isSupabaseConfigured } from '../../lib/supabaseClient'
-import { saveAdmissionRecord } from '../../utils/saveAdmission'
-import { getOfficeSupabaseSession } from '../../utils/officeSupabaseAuth'
+import { useOfficeStudent } from '../../context/OfficeStudentContext'
+import { defaultAdmissionDraft } from '../../utils/officeStudentSession'
 
 const ADMISSION_STEPS = ['Details', 'Test', 'Report']
 const ADMISSION_JOY_TOUR_KEY = 'galaxy-admission-joy-tour-done'
@@ -52,25 +51,29 @@ function createApplicationId() {
   return `GES-${year}-${serial}`
 }
 
-function AdmissionAssessment() {
-  const [step, setStep] = useState(1)
-  const [applicationId, setApplicationId] = useState('')
-  const [questionIndex, setQuestionIndex] = useState(0)
-  const [answers, setAnswers] = useState({})
-  const [siblingDiscount, setSiblingDiscount] = useState(false)
+function mergeAdmissionDraft(draft) {
+  const base = defaultAdmissionDraft()
+  if (!draft) return base
+  return {
+    ...base,
+    ...draft,
+    student: { ...base.student, ...(draft.student ?? {}) },
+    answers: draft.answers ?? {},
+  }
+}
+
+function AdmissionAssessment({ onOpenTool }) {
+  const { admissionDraft, setAdmission, setAdmissionDraft, clearPacket } = useOfficeStudent()
+  const restored = mergeAdmissionDraft(admissionDraft)
+
+  const [step, setStep] = useState(restored.step)
+  const [applicationId, setApplicationId] = useState(restored.applicationId)
+  const [questionIndex, setQuestionIndex] = useState(restored.questionIndex)
+  const [answers, setAnswers] = useState(restored.answers)
+  const [siblingDiscount, setSiblingDiscount] = useState(restored.siblingDiscount)
   const [joyTourActive, setJoyTourActive] = useState(false)
   const [joyTourVisible, setJoyTourVisible] = useState(false)
-  const [saveStatus, setSaveStatus] = useState('idle')
-  const [saveError, setSaveError] = useState('')
-  const savedApplicationRef = useRef('')
-  const [saveAttempt, setSaveAttempt] = useState(0)
-  const [student, setStudent] = useState({
-    name: '',
-    dob: '',
-    gradeId: 'std1',
-    parentName: '',
-    parentPhone: '',
-  })
+  const [student, setStudent] = useState(restored.student)
 
   const selectedGrade = gradeFees.find((g) => g.id === student.gradeId)
   const assessment = useMemo(
@@ -134,14 +137,12 @@ function AdmissionAssessment() {
   }
 
   const resetForm = () => {
+    clearPacket()
     setStep(1)
     setApplicationId('')
     setQuestionIndex(0)
     setAnswers({})
     setSiblingDiscount(false)
-    setSaveStatus('idle')
-    setSaveError('')
-    savedApplicationRef.current = ''
     setStudent({
       name: '',
       dob: '',
@@ -227,90 +228,71 @@ ${site.name}, ${site.location}
   }
 
   useEffect(() => {
-    if (step !== 3 || !applicationId || !student.name.trim()) return undefined
-    if (savedApplicationRef.current === applicationId) return undefined
+    const hasStarted = step > 1 || Boolean(applicationId) || Boolean(student.name.trim())
+    if (!hasStarted) return
 
-    let cancelled = false
-
-    const persist = async () => {
-      if (!isSupabaseConfigured()) {
-        setSaveStatus('skipped')
-        return
-      }
-
-      const session = await getOfficeSupabaseSession()
-      if (!session) {
-        setSaveStatus('error')
-        setSaveError('Not signed in to database. Use the yellow “Connect cloud save” bar at the top, or lock office and unlock again.')
-        return undefined
-      }
-
-      setSaveStatus('saving')
-      setSaveError('')
-
-      const result = await saveAdmissionRecord({
-        student_name: student.name.trim(),
-        parent_name: student.parentName.trim() || null,
-        parent_phone: student.parentPhone.trim() || null,
-        grade_id: student.gradeId,
-        grade_label: selectedGrade?.label ?? null,
-        application_id: applicationId,
-        score_percent: percent,
-        earned_marks: earnedMarks,
-        total_marks: totalMarks,
-        scholarship_label: scholarship.label,
-        scholarship_percent: scholarship.scholarshipPercent,
-        first_year_total: feeSummary.firstYearTotal,
-        sibling_discount: siblingDiscount,
-        condition_label: studentReport.conditionLabel,
-      })
-
-      if (cancelled) return undefined
-
-      if (result.skipped) {
-        setSaveStatus('skipped')
-        return undefined
-      }
-
-      if (result.ok) {
-        savedApplicationRef.current = applicationId
-        setSaveStatus('saved')
-        return undefined
-      }
-
-      setSaveStatus('error')
-      setSaveError(result.error || 'Could not save.')
-      return undefined
-    }
-
-    persist()
-
-    return () => {
-      cancelled = true
-    }
+    setAdmissionDraft({
+      step,
+      applicationId,
+      questionIndex,
+      answers,
+      siblingDiscount,
+      student,
+    })
   }, [
     step,
     applicationId,
-    student.name,
-    student.parentName,
-    student.parentPhone,
-    student.gradeId,
+    questionIndex,
+    answers,
+    siblingDiscount,
+    student,
+    setAdmissionDraft,
+  ])
+
+  useEffect(() => {
+    if (step !== 3 || !applicationId || !student.name.trim()) return
+
+    setAdmission({
+      student: {
+        name: student.name.trim(),
+        dob: student.dob,
+        gradeId: student.gradeId,
+        parentName: student.parentName.trim(),
+        parentPhone: student.parentPhone.trim(),
+      },
+      applicationId,
+      gradeLabel: selectedGrade?.label ?? '',
+      scorePercent: percent,
+      earnedMarks,
+      totalMarks,
+      scholarshipLabel: scholarship.label,
+      scholarshipPercent: scholarship.scholarshipPercent,
+      conditionLabel: studentReport.conditionLabel,
+      conditionSummary: studentReport.conditionSummary,
+      strongPoints: studentReport.strongPoints,
+      weakPoints: studentReport.weakPoints,
+      siblingDiscount,
+      tuition: feeSummary.tuition,
+      scholarshipAmount: feeSummary.scholarshipAmount,
+      siblingAmount: feeSummary.siblingAmount,
+      tuitionPayable: feeSummary.tuitionPayable,
+      admissionFee: feeSummary.admissionFee,
+      firstYearTotal: feeSummary.firstYearTotal,
+    })
+  }, [
+    step,
+    applicationId,
+    student,
     selectedGrade?.label,
     percent,
     earnedMarks,
     totalMarks,
-    scholarship.label,
-    scholarship.scholarshipPercent,
-    feeSummary.firstYearTotal,
+    scholarship,
+    studentReport,
     siblingDiscount,
-    studentReport.conditionLabel,
-    saveAttempt,
+    feeSummary,
+    setAdmission,
   ])
-
-  const retrySave = () => {
-    savedApplicationRef.current = ''
-    setSaveAttempt((count) => count + 1)
-  }
 
   return (
     <div className="office-panel">
@@ -445,29 +427,6 @@ ${site.name}, ${site.location}
             />
           </header>
 
-          {saveStatus === 'saving' && (
-            <p className="admission-save-status" role="status">Saving test to school records…</p>
-          )}
-          {saveStatus === 'saved' && (
-            <p className="admission-save-status admission-save-status--ok" role="status">
-              Saved to Supabase (name &amp; phone on file).
-            </p>
-          )}
-          {saveStatus === 'skipped' && isSupabaseConfigured() === false && (
-            <p className="admission-save-status admission-save-status--muted">
-              Cloud save off — on your PC add `.env.local` and restart `npm run dev`. On the live
-              site add GitHub Actions secrets (see `supabase/README.md`), then redeploy.
-            </p>
-          )}
-          {saveStatus === 'error' && (
-            <p className="admission-save-status admission-save-status--error" role="alert">
-              {saveError}
-              <button type="button" className="admission-save-status__retry" onClick={retrySave}>
-                Try again
-              </button>
-            </p>
-          )}
-
           <section className="admission-report__section">
             <h4 className="admission-report__section-title">
               <span aria-hidden="true">📊</span> Student assessment
@@ -590,10 +549,20 @@ ${site.name}, ${site.location}
             </p>
           </section>
 
+          <p className="office-card__meta">
+            Bus fees and a combined A4 PDF are saved in this browser session — use{' '}
+            <strong>Bus Fees</strong>, then <strong>Print / PDF</strong>.
+          </p>
+
           <div className="office-card__actions">
             <button type="button" className="btn btn--secondary" onClick={() => setStep(2)}>
               Back
             </button>
+            {onOpenTool && (
+              <button type="button" className="btn btn--secondary" onClick={() => onOpenTool('bus')}>
+                Continue to Bus fees
+              </button>
+            )}
             <button
               type="button"
               className="btn btn--whatsapp"
@@ -602,7 +571,12 @@ ${site.name}, ${site.location}
             >
               Send Report on WhatsApp
             </button>
-            <button type="button" className="btn btn--primary" onClick={resetForm}>
+            {onOpenTool && (
+              <button type="button" className="btn btn--primary" onClick={() => onOpenTool('print')}>
+                Open Print / PDF
+              </button>
+            )}
+            <button type="button" className="btn btn--secondary" onClick={resetForm}>
               New Admission
             </button>
           </div>

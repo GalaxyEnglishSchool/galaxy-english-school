@@ -1,4 +1,5 @@
 import { contact } from '../data/siteData'
+import { normalizeStudentHomeAddress } from './normalizeHomeAddress'
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search'
 const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving'
@@ -38,13 +39,11 @@ async function getSchoolCoords() {
 
 /** Approximate road distance in km (free OSM routing — no Google API key). */
 export async function getDrivingDistanceKm(destination) {
-  const trimmed = destination?.trim()
+  const trimmed = normalizeStudentHomeAddress(destination)
   if (!trimmed) return null
 
   const origin = await getSchoolCoords()
-  const destQuery = trimmed.includes('Sambhajinagar')
-    ? trimmed
-    : `${trimmed}, Chh. Sambhajinagar, Maharashtra`
+  const destQuery = trimmed.includes('Maharashtra') ? trimmed : `${trimmed}, Maharashtra`
   const dest = await geocode(destQuery)
 
   if (!origin || !dest) return null

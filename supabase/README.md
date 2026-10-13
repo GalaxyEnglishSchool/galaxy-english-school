@@ -1,5 +1,7 @@
 # Supabase setup (free)
 
+> **Not in use:** The website does not connect to Supabase right now. Office tools use browser session storage and Print/PDF only. Keep this folder for a future cloud-save rollout.
+
 ## 1. Create project
 
 1. Go to [supabase.com](https://supabase.com) → sign up (free).

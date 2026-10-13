@@ -1,4 +1,5 @@
 import { contact } from '../data/siteData'
+import { normalizeStudentHomeAddress } from './normalizeHomeAddress'
 
 export const schoolOrigin = {
   label: contact.mapsPlaceName,
@@ -7,10 +8,11 @@ export const schoolOrigin = {
 
 /** Opens full Google Maps directions in a new tab — no API key needed. */
 export function getGoogleMapsDirectionsUrl(destination) {
+  const dest = normalizeStudentHomeAddress(destination)
   const params = new URLSearchParams({
     api: '1',
     origin: schoolOrigin.address,
-    destination,
+    destination: dest,
     travelmode: 'driving',
   })
   return `https://www.google.com/maps/dir/?${params.toString()}`
@@ -18,10 +20,11 @@ export function getGoogleMapsDirectionsUrl(destination) {
 
 /** Embeds driving directions in an iframe — no API key needed. */
 export function getDirectionsEmbedUrl(destination) {
+  const dest = normalizeStudentHomeAddress(destination)
   const params = new URLSearchParams({
     f: 'd',
     saddr: schoolOrigin.address,
-    daddr: destination,
+    daddr: dest,
     hl: 'en',
     dirflg: 'd',
     output: 'embed',

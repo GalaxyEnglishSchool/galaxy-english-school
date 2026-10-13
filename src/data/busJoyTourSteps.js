@@ -2,7 +2,7 @@ export const BUS_JOY_TOUR_STEPS = [
   {
     target: 'address',
     message: 'Enter the student\'s home location here.',
-    example: 'e.g. MIT College, Chh. Sambhajinagar',
+    example: 'e.g. MIT college Sambhajinagar',
   },
   {
     target: 'show-map',

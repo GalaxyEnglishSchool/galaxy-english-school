@@ -13,6 +13,10 @@
   min-width: 0;
 }
 
+.office-tab-panel[hidden] {
+  display: none;
+}
+
 .office-nav {
   display: flex;
   flex-direction: column;

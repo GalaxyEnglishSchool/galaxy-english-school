@@ -682,6 +682,15 @@
   background: #fff;
 }
 
+.bus-field__hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+}
+
 /* Map button */
 .bus-btn {
   display: inline-flex;

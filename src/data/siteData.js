@@ -47,6 +47,66 @@ export const photoCaptions = {
     caption: 'Galaxy English School bus facility',
     alt: 'Galaxy English School yellow bus for student transport',
   },
+  '15agust.jpeg': {
+    caption: 'Independence Day celebration',
+    alt: 'Students performing at Galaxy English School Independence Day programme',
+  },
+  'Abacus.jpg': {
+    caption: 'Abacus class',
+    alt: 'Students learning with abacus at Galaxy English School',
+  },
+  'Assembly.jpg': {
+    caption: 'School assembly',
+    alt: 'Students gathered for assembly at Galaxy English School',
+  },
+  'Beyond academics.png': {
+    caption: 'Beyond academics',
+    alt: 'Galaxy English School students in co-curricular activities',
+  },
+  'Bright Computer Lab Classroom.png': {
+    caption: 'Computer lab',
+    alt: 'Bright computer lab classroom at Galaxy English School',
+  },
+  'Colorful E-Learning Classroom Poster.png': {
+    caption: 'E-learning classroom',
+    alt: 'E-learning and digital classroom at Galaxy English School',
+  },
+  'Music class.png': {
+    caption: 'Music class',
+    alt: 'Music class at Galaxy English School',
+  },
+  'Stuent by students.jpg': {
+    caption: 'Art by students',
+    alt: 'Student artwork display at Galaxy English School',
+  },
+  'Unityin school.JPG': {
+    caption: 'Unity in school',
+    alt: 'Galaxy English School students and staff — unity in diversity',
+  },
+  'dahihandi2026.jpeg': {
+    caption: 'Dahi Handi 2026',
+    alt: 'Dahi Handi celebration at Galaxy English School',
+  },
+  'mandelaart.jpeg': {
+    caption: 'Mandela art activity',
+    alt: 'Students creating Mandela art at Galaxy English School',
+  },
+  'rainy day enjoyment.png': {
+    caption: 'Rainy day fun',
+    alt: 'Students enjoying rainy day activities at Galaxy English School',
+  },
+  'Elearning.jpg': {
+    caption: 'E-learning in class',
+    alt: 'E-learning session at Galaxy English School',
+  },
+  'Ashadi ekadashi .png': {
+    caption: 'Ashadi Ekadashi',
+    alt: 'Ashadi Ekadashi celebration at Galaxy English School',
+  },
+  'dahi handi .png': {
+    caption: 'Dahi Handi',
+    alt: 'Dahi Handi festival at Galaxy English School',
+  },
 }
 
 export const stats = [

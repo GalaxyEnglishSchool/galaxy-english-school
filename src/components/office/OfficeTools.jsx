@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { OfficeStudentProvider } from '../../context/OfficeStudentContext'
 import AdmissionAssessment from './AdmissionAssessment'
 import BusFeesCalculator from './BusFeesCalculator'
-import OfficeJoyAssistant from './OfficeJoyAssistant'
+import OfficePrintSummary from './OfficePrintSummary'
 import './OfficeTools.css'
 
 const NAV_ITEMS = [
@@ -18,15 +19,19 @@ const NAV_ITEMS = [
     icon: '🚌',
   },
   {
-    id: 'joy',
-    label: 'Joy Assistant',
-    hint: 'Ask office questions',
-    icon: '🙂',
+    id: 'print',
+    label: 'Print / PDF',
+    hint: 'Combined parent summary',
+    icon: '📄',
   },
 ]
 
+const OFFICE_TAB_IDS = new Set(NAV_ITEMS.map((item) => item.id))
+
 function OfficeTools({ initialTab = 'admission', standalone = false }) {
-  const [activeTab, setActiveTab] = useState(initialTab)
+  const [activeTab, setActiveTab] = useState(
+    () => (OFFICE_TAB_IDS.has(initialTab) ? initialTab : 'admission'),
+  )
 
   const Wrapper = standalone ? 'div' : 'section'
   const wrapperProps = standalone
@@ -36,6 +41,7 @@ function OfficeTools({ initialTab = 'admission', standalone = false }) {
   return (
     <Wrapper {...wrapperProps}>
       <div className="container">
+        <OfficeStudentProvider>
         <div className="office-shell">
           <nav className="office-nav" role="tablist" aria-label="Office tools">
             {NAV_ITEMS.map((item) => (
@@ -57,13 +63,24 @@ function OfficeTools({ initialTab = 'admission', standalone = false }) {
           </nav>
 
           <div className="office-shell__content" role="tabpanel">
-            {activeTab === 'joy' && (
-              <OfficeJoyAssistant onOpenTool={setActiveTab} />
-            )}
-            {activeTab === 'admission' && <AdmissionAssessment />}
-            {activeTab === 'bus' && <BusFeesCalculator />}
+            <div
+              className="office-tab-panel"
+              hidden={activeTab !== 'admission'}
+              aria-hidden={activeTab !== 'admission'}
+            >
+              <AdmissionAssessment onOpenTool={setActiveTab} />
+            </div>
+            <div
+              className="office-tab-panel"
+              hidden={activeTab !== 'bus'}
+              aria-hidden={activeTab !== 'bus'}
+            >
+              <BusFeesCalculator />
+            </div>
+            {activeTab === 'print' && <OfficePrintSummary onOpenTool={setActiveTab} />}
           </div>
         </div>
+        </OfficeStudentProvider>
       </div>
     </Wrapper>
   )

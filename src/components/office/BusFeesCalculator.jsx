@@ -8,6 +8,7 @@ import {
 } from '../../data/admissionData'
 import schoolBusImg from '../../assets/SchoolBus.jpg'
 import { schoolOrigin } from '../../utils/busDistance'
+import { normalizeStudentHomeAddress } from '../../utils/normalizeHomeAddress'
 import { formatINR } from '../../utils/formatCurrency'
 import { openWhatsApp } from '../../utils/whatsapp'
 import { site } from '../../data/siteData'
@@ -15,11 +16,13 @@ import { BUS_JOY_TOUR_STEPS } from '../../data/busJoyTourSteps'
 import DirectionsMap from './DirectionsMap'
 import JoyFieldTour from './JoyFieldTour'
 import JoyGuideFab from './JoyGuideFab'
+import { useOfficeStudent } from '../../context/OfficeStudentContext'
 import './BusFees.css'
 
 const BUS_JOY_TOUR_KEY = 'galaxy-bus-joy-tour-done'
 
 function BusFeesCalculator() {
+  const { setBus, admission } = useOfficeStudent()
   const [destination, setDestination] = useState('')
   const [showMap, setShowMap] = useState(false)
   const [distanceKm, setDistanceKm] = useState('')
@@ -53,8 +56,15 @@ function BusFeesCalculator() {
     setDistanceKm(String(km))
   }, [])
 
+  const commitDestination = useCallback((value) => {
+    const next = normalizeStudentHomeAddress(value)
+    setDestination(next)
+    return next
+  }, [])
+
   const showRoute = () => {
-    if (!destination.trim()) return
+    const next = commitDestination(destination)
+    if (!next) return
     setShowMap(true)
   }
 
@@ -65,9 +75,41 @@ function BusFeesCalculator() {
       return undefined
     }
 
-    const timer = window.setTimeout(() => setShowMap(true), 700)
+    const timer = window.setTimeout(() => {
+      setDestination((prev) => normalizeStudentHomeAddress(prev))
+      setShowMap(true)
+    }, 700)
     return () => window.clearTimeout(timer)
   }, [destination])
+
+  useEffect(() => {
+    if (!hasValidKm || !feeSlab) return
+
+    setBus({
+      destination: normalizeStudentHomeAddress(destination),
+      distanceKm: parsedKm,
+      feeSlabLabel: feeSlab.label,
+      tripId,
+      tripLabel: selectedTrip?.label ?? '',
+      siblingDiscount,
+      slabMonthly: calculation.slabMonthly,
+      monthlyBeforeDiscount: calculation.monthly,
+      busSiblingDiscount: calculation.discount,
+      monthlyTotal: calculation.total,
+      studentName: admission?.student?.name ?? '',
+    })
+  }, [
+    hasValidKm,
+    feeSlab,
+    destination,
+    parsedKm,
+    tripId,
+    selectedTrip,
+    siblingDiscount,
+    calculation,
+    setBus,
+    admission?.student?.name,
+  ])
 
   const sendWhatsAppQuote = () => {
     const rulesText = busFeeRules.map((rule, i) => `${i + 1}. ${rule}`).join('\n')
@@ -160,14 +202,20 @@ ${site.name}, ${site.location}`
                 className="bus-field__input"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
+                onBlur={() => commitDestination(destination)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
                     showRoute()
                   }
                 }}
-                placeholder="e.g. CIDCO N-4, Chh. Sambhajinagar"
+                placeholder="e.g. MIT college Sambhajinagar"
+                required
+                aria-describedby="bus-address-hint"
               />
+              <span id="bus-address-hint" className="bus-field__hint">
+                Must include Sambhajinagar for correct distance — we add &quot; Sambhajinagar&quot; if it is missing (no comma).
+              </span>
             </label>
           </div>
 

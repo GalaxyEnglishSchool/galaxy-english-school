@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import allInOneFrame from '../assets/Allin1frame.JPG'
+import unityPhoto from '../assets/Unityin school.JPG'
 import photos from '../assets/Photos.jpg'
 import JoyGuide from './JoyGuide'
 import Reveal from './Reveal'
@@ -8,9 +8,9 @@ import './About.css'
 
 const aboutPhotos = [
   {
-    id: 'allin1frame',
-    src: allInOneFrame,
-    alt: 'Galaxy English School staff, students, and dignitaries group photo',
+    id: 'unity',
+    src: unityPhoto,
+    alt: 'Galaxy English School students and staff — unity in school',
   },
   {
     id: 'photos',
