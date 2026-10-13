@@ -447,7 +447,8 @@ ${site.name}, ${site.location}
           )}
           {saveStatus === 'skipped' && isSupabaseConfigured() === false && (
             <p className="admission-save-status admission-save-status--muted">
-              Cloud save off — add Supabase keys in `.env.local` (see `supabase/README.md`).
+              Cloud save off — on your PC add `.env.local` and restart `npm run dev`. On the live
+              site add GitHub Actions secrets (see `supabase/README.md`), then redeploy.
             </p>
           )}
           {saveStatus === 'error' && (

@@ -35,9 +35,28 @@ VITE_SUPABASE_OFFICE_EMAIL=galaxyenglishschool55@gmail.com
 
 Restart `npm run dev` after changing env.
 
-## 6. Production (GitHub Pages / host)
+## 6. Production (GitHub Pages)
 
-Add the same three variables in your host’s **environment variables** / **secrets** for the build, then redeploy.
+`.env.local` works only on your PC. The live site is built on GitHub — add **repository secrets**:
+
+1. GitHub → your repo → **Settings** → **Secrets and variables** → **Actions**
+2. **New repository secret** (create all three):
+
+| Name | Value |
+|------|--------|
+| `VITE_SUPABASE_URL` | `https://xhwgcgfafuxlznreqbfz.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | your `sb_publishable_...` key (not the secret key) |
+| `VITE_SUPABASE_OFFICE_EMAIL` | `galaxyenglishschool55@gmail.com` |
+
+3. **Actions** → **Deploy to GitHub Pages** → **Run workflow** (or push to `main`).
+
+After deploy, office save works on the live URL too.
+
+## 7. Local dev — “Cloud save off”?
+
+1. File `.env.local` in project root (next to `package.json`) with the three `VITE_...` lines.
+2. Stop and restart: `npm run dev` (env is read only at startup).
+3. Use `http://localhost:5173/...` — not the GitHub Pages URL — until secrets are set and redeployed.
 
 ## Viewing saved tests
 
