@@ -26,10 +26,13 @@ export async function signInOfficeStaff(password) {
 
   const { error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) {
+    const hint = error.message === 'Invalid login credentials'
+      ? `Wrong email or password. In Supabase → Authentication → Users, set password to match your office gate password for ${email}.`
+      : error.message
     return {
       ok: false,
       skipped: false,
-      error: 'Could not sign in to database. Use the same password as Supabase staff user.',
+      error: hint,
     }
   }
 

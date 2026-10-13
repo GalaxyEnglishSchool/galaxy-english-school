@@ -1,0 +1,52 @@
+.office-db-connect {
+  margin-bottom: 1rem;
+}
+
+.office-db-connect__inner {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid #fcd34d;
+  background: #fffbeb;
+}
+
+.office-db-connect__title {
+  margin: 0 0 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #92400e;
+}
+
+.office-db-connect__text {
+  margin: 0 0 0.65rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #78350f;
+}
+
+.office-db-connect__text code {
+  font-size: 0.75rem;
+}
+
+.office-db-connect__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.office-db-connect__input {
+  flex: 1 1 10rem;
+  min-width: 0;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.office-db-connect__error {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #b91c1c;
+}

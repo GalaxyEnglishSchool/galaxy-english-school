@@ -18,6 +18,7 @@ import JoyFieldTour from './JoyFieldTour'
 import JoyGuideFab from './JoyGuideFab'
 import { isSupabaseConfigured } from '../../lib/supabaseClient'
 import { saveAdmissionRecord } from '../../utils/saveAdmission'
+import { getOfficeSupabaseSession } from '../../utils/officeSupabaseAuth'
 
 const ADMISSION_STEPS = ['Details', 'Test', 'Report']
 const ADMISSION_JOY_TOUR_KEY = 'galaxy-admission-joy-tour-done'
@@ -235,6 +236,13 @@ ${site.name}, ${site.location}
       if (!isSupabaseConfigured()) {
         setSaveStatus('skipped')
         return
+      }
+
+      const session = await getOfficeSupabaseSession()
+      if (!session) {
+        setSaveStatus('error')
+        setSaveError('Not signed in to database. Use the yellow “Connect cloud save” bar at the top, or lock office and unlock again.')
+        return undefined
       }
 
       setSaveStatus('saving')

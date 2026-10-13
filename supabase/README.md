@@ -15,13 +15,15 @@
 
 1. **Authentication** → **Users** → **Add user** → **Create new user**.
 2. Email: e.g. `office@your-school.org` (any email you control).
-3. Password: use the **same password** as your office tools gate (or note a dedicated one and use that when unlocking office).
-4. Confirm the user (disable “invite” if you set password directly).
+3. Email must match `VITE_SUPABASE_OFFICE_EMAIL` exactly (e.g. `galaxyenglishschool55@gmail.com`).
+4. Password: **exactly the same** as the office gate password (e.g. `Galaxy@1970`).
+5. Turn **Auto Confirm User** **ON**, then create the user.
 
 ## 4. API keys for the website
 
 1. **Project Settings** → **API**.
-2. Copy **Project URL** and **anon public** key (not the `service_role` key).
+2. Copy **Project URL** and **publishable** or **anon public** key (not the **secret** / `service_role` key).
+3. If login fails, try the long `eyJ...` **anon** key instead of `sb_publishable_...` in `VITE_SUPABASE_ANON_KEY`.
 
 ## 5. Local env file
 
