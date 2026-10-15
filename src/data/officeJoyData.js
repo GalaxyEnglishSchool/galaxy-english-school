@@ -1,4 +1,4 @@
-import { academicYear, admissionDiscounts, scholarshipTiers } from './admissionData'
+import { academicYear, admissionDiscounts } from './admissionData'
 import { contact, site } from './siteData'
 
 export const officeJoyGreeting =
@@ -70,11 +70,9 @@ export const officeJoyTopics = [
     toolLabel: 'Assessment & Fees',
     steps: [
       `Scholarships apply to annual tuition for ${academicYear} based on admission test score.`,
-      ...scholarshipTiers.map(
-        (tier) =>
-          `**${tier.label}** — ${tier.minPercent}% and above on test → ${tier.scholarshipPercent}% off tuition.`,
-      ),
-      'Below 70%: no test-based scholarship (standard admission fees apply).',
+      '**Below 90%** — no test-based scholarship (standard admission fees apply).',
+      '**90% to 98%** — **Galaxy Merit**: **5%** off annual tuition.',
+      '**Above 98%** — **Galaxy Star**: **15%** off annual tuition (maximum).',
       'Scholarship is applied in the fee report automatically after the test.',
       'Sibling discount (10%) is separate and can combine after scholarship on tuition.',
     ],

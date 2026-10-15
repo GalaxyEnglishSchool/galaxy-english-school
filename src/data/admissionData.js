@@ -19,10 +19,10 @@ export const gradeFees = [
   { id: 'std10', label: '10th', annualTuition: 36000, admissionFee: 4000 },
 ]
 
+/** Display order for Joy / office help (highest band first). */
 export const scholarshipTiers = [
-  { minPercent: 90, scholarshipPercent: 15, label: 'Galaxy Star' },
-  { minPercent: 80, scholarshipPercent: 10, label: 'Galaxy Merit' },
-  { minPercent: 70, scholarshipPercent: 5, label: 'Galaxy Encouragement' },
+  { minPercent: 98, scholarshipPercent: 15, label: 'Galaxy Star', band: 'Above 98%' },
+  { minPercent: 90, scholarshipPercent: 5, label: 'Galaxy Merit', band: '90% – 98%' },
 ]
 
 export const maxScholarshipPercent = 15
@@ -32,11 +32,14 @@ export const admissionDiscounts = {
 }
 
 export function getScholarshipForScore(percent) {
-  const tier = scholarshipTiers.find((t) => percent >= t.minPercent)
-  if (!tier) {
+  const score = Number(percent)
+  if (Number.isNaN(score) || score < 90) {
     return { scholarshipPercent: 0, label: 'Standard Admission' }
   }
-  return { scholarshipPercent: tier.scholarshipPercent, label: tier.label }
+  if (score > 98) {
+    return { scholarshipPercent: 15, label: 'Galaxy Star' }
+  }
+  return { scholarshipPercent: 5, label: 'Galaxy Merit' }
 }
 
 /** Monthly bus fee by road distance from school (km). Update rates here. */

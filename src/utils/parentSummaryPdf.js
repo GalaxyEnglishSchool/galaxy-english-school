@@ -5,10 +5,14 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { academicYear } from '../data/admissionData'
-import { busPaymentRules, schoolPaymentRules } from '../data/paymentRulesPrint'
+import { busPaymentRules, parentDocumentChecklist, schoolPaymentRules } from '../data/paymentRulesPrint'
 import { contact, site } from '../data/siteData'
+import { buildPrintSchoolFeeRows } from './buildPrintFeeRows'
+
 const MARGIN = 10
+/** A4 portrait (mm) — PDF output is always this size. */
 const PAGE_W = 210
+const PAGE_H = 297
 const CONTENT_W = PAGE_W - MARGIN * 2
 const NAVY = [15, 39, 68]
 /** Coloured title strip height (mm). */
@@ -33,16 +37,71 @@ function loadImageDataUrl(src) {
   })
 }
 
-function sectionBar(doc, title, y) {
+function sectionBar(doc, title, y, { compact = false } = {}) {
   const top = y
+  const barH = compact ? 4.5 : SECTION_BAR_H
+  const gapAfter = compact ? 3.5 : SECTION_BODY_GAP
   doc.setFillColor(...NAVY)
-  doc.rect(MARGIN, top, CONTENT_W, SECTION_BAR_H, 'F')
+  doc.rect(MARGIN, top, CONTENT_W, barH, 'F')
   doc.setTextColor(255, 255, 255)
-  doc.setFontSize(8)
+  doc.setFontSize(compact ? 6.5 : 8)
   doc.setFont('helvetica', 'bold')
-  doc.text(title.toUpperCase(), MARGIN + 2, top + SECTION_BAR_H - 2)
+  doc.text(title.toUpperCase(), MARGIN + 2, top + barH - 1.5)
   doc.setTextColor(0, 0, 0)
-  return top + SECTION_BAR_H + SECTION_BODY_GAP
+  return top + barH + gapAfter
+}
+
+const PDF_DISCLAIMER =
+  'Estimate only — subject to school confirmation. Official receipt required for all payments.'
+
+function drawCenteredDisclaimerBlock(doc, y) {
+  y += 2
+  doc.setDrawColor(203, 213, 225)
+  doc.setLineWidth(0.25)
+  doc.line(MARGIN, y, MARGIN + CONTENT_W, y)
+  y += 5
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(100, 116, 139)
+  const centerX = MARGIN + CONTENT_W / 2
+  const lines = wrapLines(doc, PDF_DISCLAIMER, CONTENT_W - 8)
+  lines.forEach((line) => {
+    doc.text(line, centerX, y, { align: 'center' })
+    y += 3.1
+  })
+  doc.text(`${site.name} · ${contact.email}`, centerX, y, { align: 'center' })
+  doc.setTextColor(0, 0, 0)
+  return y + 5
+}
+
+function drawStudentInfoCompact(doc, y, feeReport) {
+  y = sectionBar(doc, 'Student information', y, { compact: true })
+  const mid = MARGIN + CONTENT_W / 2 + 4
+  const valX = MARGIN + 17
+  const midValX = mid + 11
+
+  doc.setFontSize(7.5)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(55, 65, 81)
+  doc.text('Student', MARGIN, y)
+  doc.text('Class', mid, y)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(15, 39, 68)
+  doc.text(feeReport.student?.name || '—', valX, y)
+  doc.text(feeReport.gradeLabel || '—', midValX, y)
+  y += 4.5
+
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(55, 65, 81)
+  doc.text('Parent', MARGIN, y)
+  doc.text('Phone', mid, y)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(15, 39, 68)
+  doc.text(feeReport.student?.parentName || '—', valX, y)
+  doc.text(feeReport.student?.parentPhone || '—', midValX, y)
+  doc.setTextColor(0, 0, 0)
+
+  return y + 4
 }
 
 function ensureSpace(doc, y, needMm) {
@@ -90,22 +149,24 @@ const TONE_STYLE = {
   low: { fill: [254, 242, 242], border: [220, 38, 38], text: [185, 28, 28] },
 }
 
-function drawScoreBadge(doc, cx, cy, radius, percent, tone) {
-  const ring = TONE_STYLE[tone]?.border ?? [30, 64, 175]
-  doc.setDrawColor(...ring)
-  doc.setLineWidth(1.4)
-  doc.circle(cx, cy, radius, 'S')
-  doc.setFillColor(255, 255, 255)
-  doc.circle(cx, cy, Math.max(1, radius - 2.2), 'F')
+/** Compact score label (replaces large circular badge). */
+function drawScoreChip(doc, x, topY, percent, tone) {
+  const style = TONE_STYLE[tone] ?? TONE_STYLE.mid
   const p = Math.min(100, Math.max(0, Math.round(percent ?? 0)))
+  const chipW = 15
+  const chipH = 8
+  doc.setFillColor(...style.fill)
+  doc.setDrawColor(...style.border)
+  doc.setLineWidth(0.25)
+  doc.roundedRect(x, topY, chipW, chipH, 1, 1, 'FD')
+  doc.setFillColor(...style.border)
+  doc.rect(x, topY, 1.1, chipH, 'F')
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(12)
+  doc.setFontSize(10.5)
   doc.setTextColor(...NAVY)
-  doc.text(String(p), cx, cy + 0.8, { align: 'center' })
-  doc.setFontSize(5.5)
-  doc.setTextColor(107, 114, 128)
-  doc.text('%', cx, cy + 4.2, { align: 'center' })
+  doc.text(`${p}%`, x + chipW / 2, topY + 5.6, { align: 'center' })
   doc.setTextColor(0, 0, 0)
+  return { w: chipW, h: chipH }
 }
 
 function drawConditionTag(doc, x, y, label, tone) {
@@ -133,71 +194,72 @@ function bulletBlock(items) {
 
 function drawAssessmentPanel(doc, y, admission, testScore) {
   const tone = scoreTone(testScore.percent)
-  const badgeR = 8.5
-  const badgeCx = MARGIN + badgeR + 1
-  const badgeTop = y
-  const badgeCy = badgeTop + badgeR + 1
-  const colX = MARGIN + badgeR * 2 + 5
-  const colW = CONTENT_W - (colX - MARGIN)
+  const bandTop = y
+  const leftColW = 17
+  const cornerW = 46
+  const rightEdge = MARGIN + CONTENT_W
+  const midX = MARGIN + leftColW
+  const midW = CONTENT_W - leftColW - cornerW - 2
 
-  drawScoreBadge(doc, badgeCx, badgeCy, badgeR, testScore.percent, tone)
+  const chip = drawScoreChip(doc, MARGIN, bandTop + 1, testScore.percent, tone)
 
-  let textY = badgeTop + 3
-  drawConditionTag(doc, colX, textY, admission.conditionLabel, tone)
-  textY += 8
+  const style = TONE_STYLE[tone] ?? TONE_STYLE.mid
+  let cornerY = bandTop + 3.5
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(9)
+  doc.setFontSize(8)
+  doc.setTextColor(...style.text)
+  doc.text(String(admission.conditionLabel || '—'), rightEdge, cornerY, { align: 'right' })
+  cornerY += 4.2
+  doc.setFontSize(7.5)
   doc.setTextColor(...NAVY)
-  doc.text(formatTestScoreLine(testScore), colX, textY)
-  doc.setFont('helvetica', 'normal')
-  doc.setTextColor(55, 65, 81)
-  textY += 4.5
-  doc.setFontSize(8.5)
-  const summary = wrapLines(doc, admission.conditionSummary || '', colW)
-  doc.text(summary, colX, textY)
-  textY += summary.length * 3.6
-
-  y = Math.max(badgeCy + badgeR + 3, textY + 2)
-
+  doc.text(formatTestScoreLine(testScore), rightEdge, cornerY, { align: 'right' })
+  cornerY += 3.8
   if (admission.scholarshipPercent > 0) {
-    y = ensureSpace(doc, y, 14)
-    const scholText = `${admission.scholarshipLabel} — ${admission.scholarshipPercent}% off annual tuition`
-    doc.setFontSize(8)
-    doc.setFont('helvetica', 'bold')
-    const bodyLines = wrapLines(doc, scholText, CONTENT_W - 8)
-    const boxH = bodyLines.length * 3.4 + 7
-    doc.setFillColor(239, 246, 255)
-    doc.setDrawColor(147, 197, 253)
-    doc.setLineWidth(0.3)
-    doc.roundedRect(MARGIN, y, CONTENT_W, boxH, 1.5, 1.5, 'FD')
-    doc.setTextColor(30, 64, 175)
-    doc.text('Scholarship', MARGIN + 3, y + 4.5)
     doc.setFont('helvetica', 'normal')
-    doc.setTextColor(30, 58, 138)
-    doc.text(bodyLines, MARGIN + 3, y + 8.5)
-    doc.setTextColor(0, 0, 0)
-    y += boxH + 3
+    doc.setFontSize(6.75)
+    doc.setTextColor(30, 64, 175)
+    const scholCorner = `${admission.scholarshipLabel} · ${admission.scholarshipPercent}% off`
+    const scholLines = wrapLines(doc, scholCorner, cornerW)
+    scholLines.forEach((line) => {
+      doc.text(line, rightEdge, cornerY, { align: 'right' })
+      cornerY += 3
+    })
   }
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7.75)
+  doc.setTextColor(55, 65, 81)
+  const summary = wrapLines(doc, admission.conditionSummary || '', midW)
+  doc.text(summary, midX, bandTop + 4)
+
+  const summaryH = summary.length * 3.35
+  y = Math.max(bandTop + 1 + chip.h + 3, bandTop + 4 + summaryH, cornerY + 2) + 2
 
   const strengths = admission.strongPoints || []
   const weak = admission.weakPoints || []
   if (strengths.length || weak.length) {
-    y = ensureSpace(doc, y, 28)
+    y = ensureSpace(doc, y, 26)
     autoTable(doc, {
       startY: y,
       margin: { left: MARGIN, right: MARGIN },
       theme: 'grid',
-      styles: { fontSize: 7.75, cellPadding: 2.2, valign: 'top', lineColor: [229, 231, 235] },
+      styles: { fontSize: 7.25, cellPadding: 2, valign: 'top', textColor: [31, 41, 55] },
       head: [
         [
-          { content: 'Strengths', styles: { fillColor: [236, 253, 245], textColor: [4, 120, 87], fontStyle: 'bold' } },
-          { content: 'To improve', styles: { fillColor: [255, 251, 235], textColor: [146, 64, 14], fontStyle: 'bold' } },
+          {
+            content: 'Strengths',
+            styles: { fillColor: [209, 250, 229], textColor: [4, 120, 87], fontStyle: 'bold', lineColor: [52, 211, 153] },
+          },
+          {
+            content: 'To improve',
+            styles: { fillColor: [254, 240, 138], textColor: [161, 98, 7], fontStyle: 'bold', lineColor: [250, 204, 21] },
+          },
         ],
       ],
       body: [[bulletBlock(strengths), bulletBlock(weak)]],
       columnStyles: {
-        0: { cellWidth: CONTENT_W / 2 },
-        1: { cellWidth: CONTENT_W / 2 },
+        0: { cellWidth: CONTENT_W / 2, fillColor: [236, 253, 245], lineColor: [52, 211, 153] },
+        1: { cellWidth: CONTENT_W / 2, fillColor: [254, 252, 232], lineColor: [250, 204, 21] },
       },
     })
     y = doc.lastAutoTable.finalY + 4
@@ -257,6 +319,28 @@ function drawBusPanel(doc, y, displayBus) {
   return doc.lastAutoTable.finalY + 4
 }
 
+function drawDocumentsChecklist(doc, y) {
+  y = ensureSpace(doc, y, 28)
+  y = sectionBar(doc, 'Documents from parents (please submit)', y)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7.5)
+  doc.setTextColor(55, 65, 81)
+  const box = 3.2
+  const gap = 4.8
+  parentDocumentChecklist.forEach((label) => {
+    y = ensureSpace(doc, y, gap + 2)
+    const top = y - 2.8
+    doc.setDrawColor(120, 53, 15)
+    doc.setLineWidth(0.35)
+    doc.rect(MARGIN, top, box, box)
+    const lines = wrapLines(doc, label, CONTENT_W - box - 4)
+    doc.text(lines, MARGIN + box + 2.5, y)
+    y += Math.max(gap, lines.length * 3.4)
+  })
+  doc.setTextColor(0, 0, 0)
+  return y + 2
+}
+
 function pdfFileNameFromStudent(studentName) {
   const slug = (studentName || 'student')
     .trim()
@@ -286,7 +370,12 @@ export async function buildParentSummaryPdf({
   }
 
   const resolvedFileName = fileName || pdfFileNameFromStudent(feeReport?.student?.name)
-  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' })
+  const doc = new jsPDF({
+    unit: 'mm',
+    format: [PAGE_W, PAGE_H],
+    orientation: 'portrait',
+    compress: true,
+  })
   let y = MARGIN
 
   try {
@@ -325,35 +414,7 @@ export async function buildParentSummaryPdf({
   y += 20
 
   if (feeReport) {
-    y = sectionBar(doc, 'Student information', y)
-    autoTable(doc, {
-      startY: y,
-      margin: { left: MARGIN, right: MARGIN },
-      theme: 'grid',
-      styles: { fontSize: 9, cellPadding: 1.8, valign: 'middle' },
-      headStyles: { fillColor: [243, 244, 246], textColor: 55, fontStyle: 'bold' },
-      body: [
-        [
-          { content: 'Student', styles: { fontStyle: 'bold' } },
-          feeReport.student?.name || '—',
-          { content: 'Class', styles: { fontStyle: 'bold' } },
-          feeReport.gradeLabel || '—',
-        ],
-        [
-          { content: 'Parent', styles: { fontStyle: 'bold' } },
-          feeReport.student?.parentName || '—',
-          { content: 'Phone', styles: { fontStyle: 'bold' } },
-          feeReport.student?.parentPhone || '—',
-        ],
-      ],
-      columnStyles: {
-        0: { cellWidth: 22 },
-        1: { cellWidth: 58 },
-        2: { cellWidth: 22 },
-        3: { cellWidth: 58 },
-      },
-    })
-    y = doc.lastAutoTable.finalY + 4
+    y = drawStudentInfoCompact(doc, y, feeReport)
   }
 
   if (showAssessmentBlock && admission) {
@@ -374,26 +435,9 @@ export async function buildParentSummaryPdf({
   if (feeReport) {
     y = ensureSpace(doc, y, 40)
     y = sectionBar(doc, `School fees (${academicYear})`, y)
-    const feeRows = [
-      ['Annual tuition', formatINRForPdf(feeReport.tuition)],
-    ]
-    if (!isWalkIn && feeReport.scholarshipPercent > 0) {
-      feeRows.push([
-        `Scholarship (${feeReport.scholarshipPercent}%)`,
-        `- ${formatINRForPdf(feeReport.scholarshipAmount)}`,
-      ])
-    }
-    if (!isWalkIn && feeReport.siblingDiscount) {
-      feeRows.push(['Sibling discount', `- ${formatINRForPdf(feeReport.siblingAmount)}`])
-    }
-    if (!isWalkIn && (feeReport.scholarshipPercent > 0 || feeReport.siblingDiscount)) {
-      feeRows.push(['Tuition payable', formatINRForPdf(feeReport.tuitionPayable)])
-    }
-    feeRows.push([
-      'Admission fee (one-time)',
-      feeReport.admissionFee > 0 ? formatINRForPdf(feeReport.admissionFee) : '—',
-    ])
-    feeRows.push(['Estimated 1st year total', formatINRForPdf(feeReport.firstYearTotal)])
+    const { rows: feeRowDefs } = buildPrintSchoolFeeRows(feeReport, isWalkIn, formatINRForPdf)
+    const feeRows = feeRowDefs.map((row) => [row.label, row.amount])
+    const totalRowIndex = feeRows.length - 1
 
     autoTable(doc, {
       startY: y,
@@ -408,12 +452,13 @@ export async function buildParentSummaryPdf({
         1: { cellWidth: 48, halign: 'right', fontStyle: 'bold' },
       },
       didParseCell: (data) => {
-        if (data.row.index === feeRows.length - 1) {
+        if (data.section === 'body' && data.row.index === totalRowIndex) {
           data.cell.styles.fillColor = [239, 246, 255]
         }
       },
     })
     y = doc.lastAutoTable.finalY + 4
+    y = drawDocumentsChecklist(doc, y)
   }
 
   if (displayBus) {
@@ -451,17 +496,51 @@ export async function buildParentSummaryPdf({
     }
   }
 
-  y = ensureSpace(doc, y, 12)
-  doc.setFontSize(7)
-  doc.setTextColor(100, 100, 100)
-  doc.text(
-    'Estimate only — subject to school confirmation. Official receipt required for all payments.',
-    MARGIN,
-    doc.internal.pageSize.getHeight() - MARGIN,
-  )
-  doc.text(`${site.name} · ${contact.email}`, MARGIN, doc.internal.pageSize.getHeight() - MARGIN + 3.5)
+  y = drawDocumentFooter(doc, y, { showDisclaimer: Boolean(feeReport) })
 
   return { doc, fileName: resolvedFileName }
+}
+
+/** Signatures + disclaimer pinned to bottom of the page when there is room. */
+function drawDocumentFooter(doc, contentY, { showDisclaimer = true } = {}) {
+  const pageH = doc.internal.pageSize.getHeight()
+  const blockH = showDisclaimer ? 38 : 22
+  let y = contentY + 5
+
+  if (y + blockH <= pageH - MARGIN) {
+    const pinnedY = pageH - MARGIN - blockH
+    if (y < pinnedY) y = pinnedY
+  } else {
+    y = ensureSpace(doc, y, blockH)
+    const pageH2 = doc.internal.pageSize.getHeight()
+    const pinnedY = pageH2 - MARGIN - blockH
+    if (y < pinnedY) y = pinnedY
+  }
+
+  y = drawSignatureFooter(doc, y, { skipEnsure: true })
+  if (showDisclaimer) drawCenteredDisclaimerBlock(doc, y)
+  return y
+}
+
+function drawSignatureFooter(doc, y, { skipEnsure = false } = {}) {
+  if (!skipEnsure) y = ensureSpace(doc, y, 28)
+  const colW = (CONTENT_W - 12) / 2
+  const leftX = MARGIN
+  const rightX = MARGIN + colW + 12
+  const lineY = y + 10
+
+  doc.setDrawColor(75, 85, 99)
+  doc.setLineWidth(0.35)
+  doc.line(leftX, lineY, leftX + colW, lineY)
+  doc.line(rightX, lineY, rightX + colW, lineY)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8)
+  doc.setTextColor(31, 41, 55)
+  doc.text('Signature of assigned teacher', leftX + colW / 2, lineY + 4.5, { align: 'center' })
+  doc.text('Signature of parent(s)', rightX + colW / 2, lineY + 4.5, { align: 'center' })
+
+  return lineY + 14
 }
 
 export async function buildParentSummaryPdfBlob(opts) {

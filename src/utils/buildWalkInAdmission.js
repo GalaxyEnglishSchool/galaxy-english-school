@@ -1,4 +1,5 @@
 import { gradeFees } from '../data/admissionData'
+import { estimateFirstYearTotal } from '../data/paymentRulesPrint'
 
 export function buildWalkInAdmission({ studentName, parentName, parentPhone, gradeId }) {
   const name = studentName?.trim()
@@ -36,7 +37,10 @@ export function buildWalkInAdmission({ studentName, parentName, parentPhone, gra
     siblingAmount: 0,
     tuitionPayable: tuition,
     admissionFee,
-    firstYearTotal: tuition + admissionFee,
+    firstYearTotal: estimateFirstYearTotal(
+      { tuition, tuitionPayable: tuition, admissionFee },
+      true,
+    ),
     strongPoints: [],
     weakPoints: [],
   }

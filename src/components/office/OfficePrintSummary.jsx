@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from 'react'
 import schoolLogo from '../../assets/school.png'
 import { academicYear, gradeFees } from '../../data/admissionData'
-import { busPaymentRules, schoolPaymentRules } from '../../data/paymentRulesPrint'
+import { busPaymentRules, parentDocumentChecklist, schoolPaymentRules } from '../../data/paymentRulesPrint'
+import { buildPrintSchoolFeeRows } from '../../utils/buildPrintFeeRows'
 import { contact, site } from '../../data/siteData'
 import { formatINR } from '../../utils/formatCurrency'
 import { sharePdfOnWhatsApp } from '../../utils/whatsapp'
@@ -51,17 +52,14 @@ function formatTestScoreLine(testScore) {
   return `Score ${label}`
 }
 
-function ScoreRing({ percent, tone }) {
-  const p = Math.min(100, Math.max(0, percent ?? 0))
+function ScoreChip({ percent, tone }) {
+  const p = Math.min(100, Math.max(0, Math.round(percent ?? 0)))
   return (
     <div
-      className={`office-print__ring office-print__ring--${tone}`}
-      style={{ '--score': p }}
-      aria-hidden="true"
+      className={`office-print__score-chip office-print__score-chip--${tone}`}
+      aria-label={`Score ${p} percent`}
     >
-      <div className="office-print__ring-inner">
-        {p}<small>%</small>
-      </div>
+      {p}%
     </div>
   )
 }
@@ -202,36 +200,32 @@ function OfficePrintSummary({ onOpenTool }) {
   return (
     <div className="office-print">
       <div className="office-card office-print__toolbar">
-        <header className="office-print__header">
-          <div className="office-print__header-copy">
+        <header className="office-print__toolbar-head">
+          <div className="office-print__toolbar-intro">
             <h3>Print / PDF summary</h3>
-            <p className="office-print__lead">
-              Use <strong>From assessment</strong> after a test, or <strong>Classwise fees without assessment</strong>{' '}
-              when parents visit with their child (class fees only, no discounts). Add bus from the Bus tab if needed.
-            </p>
           </div>
           <div className="office-print__mode-tabs" role="tablist" aria-label="Report type">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={reportMode === 'session'}
-            className={`office-print__mode-tab${reportMode === 'session' ? ' office-print__mode-tab--active' : ''}`}
-            onClick={() => setReportMode('session')}
-          >
-            From assessment
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={reportMode === 'walkin'}
-            className={`office-print__mode-tab${reportMode === 'walkin' ? ' office-print__mode-tab--active' : ''}`}
-            onClick={() => {
-              setReportMode('walkin')
-              setWalkInEditorOpen(true)
-            }}
-          >
-            Classwise fees (no assessment)
-          </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={reportMode === 'session'}
+              className={`office-print__mode-tab${reportMode === 'session' ? ' office-print__mode-tab--active' : ''}`}
+              onClick={() => setReportMode('session')}
+            >
+              From assessment
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={reportMode === 'walkin'}
+              className={`office-print__mode-tab${reportMode === 'walkin' ? ' office-print__mode-tab--active' : ''}`}
+              onClick={() => {
+                setReportMode('walkin')
+                setWalkInEditorOpen(true)
+              }}
+            >
+              Classwise fees (no assessment)
+            </button>
           </div>
         </header>
 
@@ -282,72 +276,74 @@ function OfficePrintSummary({ onOpenTool }) {
           </div>
         )}
 
-        <div className="office-print__status">
-          <span className={hasAdmission ? 'office-print__pill office-print__pill--ok' : 'office-print__pill'}>
-            {hasAdmission ? '✓ Assessment in session' : 'No assessment'}
-          </span>
-          <span className={hasWalkIn ? 'office-print__pill office-print__pill--ok' : 'office-print__pill'}>
-            {hasWalkIn ? '✓ Classwise fees ready' : 'Classwise fees not set'}
-          </span>
-          <span className={hasBus ? 'office-print__pill office-print__pill--ok' : 'office-print__pill'}>
-            {hasBus ? '✓ Bus quote saved' : 'Bus optional'}
-          </span>
-        </div>
+        <div className="office-print__toolbar-panel">
+          <div className="office-print__toolbar-row office-print__toolbar-row--status">
+            <span className="office-print__toolbar-label">Session data</span>
+            <div className="office-print__status">
+              <span className={hasAdmission ? 'office-print__pill office-print__pill--ok' : 'office-print__pill'}>
+                {hasAdmission ? 'Assessment in session' : 'No assessment'}
+              </span>
+              <span className={hasWalkIn ? 'office-print__pill office-print__pill--ok' : 'office-print__pill'}>
+                {hasWalkIn ? 'Classwise fees ready' : 'Classwise fees not set'}
+              </span>
+              <span className={hasBus ? 'office-print__pill office-print__pill--ok' : 'office-print__pill'}>
+                {hasBus ? 'Bus quote saved' : 'Bus optional'}
+              </span>
+            </div>
+          </div>
 
-        <div className="office-print__actions-wrap">
           {((reportMode === 'session' && !hasAdmission) || !hasBus) && (
-            <div className="office-print__action-row office-print__action-row--links">
-              {reportMode === 'session' && !hasAdmission && (
-                <button type="button" className="btn btn--secondary" onClick={() => onOpenTool('admission')}>
-                  Go to Assessment
-                </button>
-              )}
-              {!hasBus && (
-                <button type="button" className="btn btn--secondary" onClick={() => onOpenTool('bus')}>
-                  Go to Bus fees
-                </button>
-              )}
+            <div className="office-print__toolbar-row office-print__toolbar-row--links">
+              <span className="office-print__toolbar-label">Next step</span>
+              <div className="office-print__link-actions">
+                {reportMode === 'session' && !hasAdmission && (
+                  <button type="button" className="btn btn--secondary btn--sm" onClick={() => onOpenTool('admission')}>
+                    Go to Assessment
+                  </button>
+                )}
+                {!hasBus && (
+                  <button type="button" className="btn btn--secondary btn--sm" onClick={() => onOpenTool('bus')}>
+                    Go to Bus fees
+                  </button>
+                )}
+              </div>
             </div>
           )}
-          <div className="office-print__action-row office-print__action-row--primary">
-            <button
-              type="button"
-              className="btn btn--primary"
-              disabled={!canExport || pdfBusy}
-              onClick={handleDownloadPdf}
-            >
-              {pdfBusy ? 'Creating PDF…' : 'Download PDF'}
-            </button>
-            <button
-              type="button"
-              className="btn btn--secondary"
-              disabled={!canExport}
-              onClick={handlePrint}
-            >
-              Print
-            </button>
-            <button
-              type="button"
-              className="btn btn--whatsapp"
-              disabled={!canExport || pdfBusy}
-              onClick={sendWhatsAppPdf}
-            >
-              {pdfBusy ? 'Preparing PDF…' : 'Share PDF on WhatsApp'}
-            </button>
-            <button type="button" className="btn btn--secondary office-print__clear" onClick={handleClear}>
+
+          <div className="office-print__toolbar-row office-print__toolbar-row--actions">
+            <span className="office-print__toolbar-label">Export</span>
+            <div className="office-print__export-actions">
+              <button
+                type="button"
+                className="btn btn--primary"
+                disabled={!canExport || pdfBusy}
+                onClick={handleDownloadPdf}
+              >
+                {pdfBusy ? 'Creating PDF…' : 'Download PDF'}
+              </button>
+              <button type="button" className="btn btn--secondary" disabled={!canExport} onClick={handlePrint}>
+                Print
+              </button>
+              <button
+                type="button"
+                className="btn btn--whatsapp"
+                disabled={!canExport || pdfBusy}
+                onClick={sendWhatsAppPdf}
+              >
+                {pdfBusy ? 'Preparing PDF…' : 'Share PDF on WhatsApp'}
+              </button>
+            </div>
+            <button type="button" className="btn btn--outline btn--sm office-print__clear" onClick={handleClear}>
               Clear session data
             </button>
           </div>
         </div>
+
         {pdfError && <p className="office-print__pdf-error" role="alert">{pdfError}</p>}
-        <p className="office-print__hint">
-          <strong>Download PDF</strong> and <strong>Share PDF on WhatsApp</strong> use the same vector PDF.
-          On phones you can pick WhatsApp and attach the file; on desktop the PDF downloads and WhatsApp opens with a short note to attach it.
-          Preview + <strong>Print</strong> use the HTML layout below.
-        </p>
       </div>
 
       <article ref={sheetRef} className="office-print__sheet" aria-label="A4 summary preview">
+        <div className="office-print__sheet-body">
         <header className="office-print__masthead">
           <img
             src={schoolLogo}
@@ -384,25 +380,33 @@ function OfficePrintSummary({ onOpenTool }) {
         )}
 
         {hasSchoolFees && (
-          <section className="office-print__section">
-            <h2 className="office-print__section-title">Student information</h2>
+          <section className="office-print__section office-print__section--student">
+            <h2 className="office-print__section-title office-print__section-title--compact">
+              Student information
+            </h2>
             <div className="office-print__section-body">
-              <table className="office-print__data-table office-print__data-table--student">
-                <tbody>
-                  <tr>
-                    <th>Student</th>
-                    <td>{studentName}</td>
-                    <th>Class</th>
-                    <td>{feeReport?.gradeLabel || '—'}</td>
-                  </tr>
-                  <tr>
-                    <th>Parent</th>
-                    <td>{feeReport?.student?.parentName || '—'}</td>
-                    <th>Phone</th>
-                    <td>{feeReport?.student?.parentPhone || '—'}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="office-print__student-compact">
+                <p>
+                  <span className="office-print__student-label">Student</span>
+                  <span className="office-print__student-value">{studentName}</span>
+                  <span className="office-print__student-label office-print__student-label--right">
+                    Class
+                  </span>
+                  <span className="office-print__student-value">{feeReport?.gradeLabel || '—'}</span>
+                </p>
+                <p>
+                  <span className="office-print__student-label">Parent</span>
+                  <span className="office-print__student-value">
+                    {feeReport?.student?.parentName || '—'}
+                  </span>
+                  <span className="office-print__student-label office-print__student-label--right">
+                    Phone
+                  </span>
+                  <span className="office-print__student-value">
+                    {feeReport?.student?.parentPhone || '—'}
+                  </span>
+                </p>
+              </div>
             </div>
           </section>
         )}
@@ -411,45 +415,46 @@ function OfficePrintSummary({ onOpenTool }) {
           <section className="office-print__section">
             <h2 className="office-print__section-title">Admission assessment</h2>
             <div className="office-print__section-body">
-              <div className="office-print__assess-row">
-                <ScoreRing percent={testScore.percent} tone={tone} />
-                <div className="office-print__assess-text">
+              <div className="office-print__assess-top">
+                <div className="office-print__assess-score">
+                  <ScoreChip percent={testScore.percent} tone={tone} />
+                </div>
+                <p className="office-print__assess-summary">{admission.conditionSummary}</p>
+                <div className={`office-print__assess-corner office-print__assess-corner--${tone}`}>
                   <span className={`office-print__tag office-print__tag--${tone}`}>
                     {admission.conditionLabel}
                   </span>
                   <p className="office-print__score-line">
                     <strong>{formatTestScoreLine(testScore)}</strong>
                   </p>
-                  <p>{admission.conditionSummary}</p>
                   {admission.scholarshipPercent > 0 && (
-                    <div className="office-print__scholarship-callout" role="note">
-                      <span className="office-print__scholarship-callout-title">Scholarship</span>
-                      <p>
-                        {admission.scholarshipLabel} — {admission.scholarshipPercent}% off annual
-                        tuition
-                      </p>
-                    </div>
+                    <p className="office-print__assess-scholarship">
+                      {admission.scholarshipLabel} · {admission.scholarshipPercent}% off tuition
+                    </p>
                   )}
                 </div>
               </div>
               {(admission.strongPoints?.length > 0 || admission.weakPoints?.length > 0) && (
-                <div className="office-print__dual-lists">
-                  {admission.strongPoints?.length > 0 && (
-                    <div>
-                      <h4>Strengths</h4>
-                      <ul>
-                        {admission.strongPoints.map((p) => <li key={p}>{p}</li>)}
-                      </ul>
-                    </div>
-                  )}
-                  {admission.weakPoints?.length > 0 && (
-                    <div>
-                      <h4>To improve</h4>
-                      <ul>
-                        {admission.weakPoints.map((p) => <li key={p}>{p}</li>)}
-                      </ul>
-                    </div>
-                  )}
+                <div className="office-print__dual-lists office-print__dual-lists--assess">
+                  <div className="office-print__assess-col office-print__assess-col--strengths">
+                    <h4>Strengths</h4>
+                    <ul>
+                      {(admission.strongPoints?.length
+                        ? admission.strongPoints
+                        : ['—']
+                      ).map((p) => (
+                        <li key={p}>{p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="office-print__assess-col office-print__assess-col--improve">
+                    <h4>To improve</h4>
+                    <ul>
+                      {(admission.weakPoints?.length ? admission.weakPoints : ['—']).map((p) => (
+                        <li key={p}>{p}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               )}
             </div>
@@ -471,6 +476,17 @@ function OfficePrintSummary({ onOpenTool }) {
             <h2 className="office-print__section-title">School fees ({academicYear})</h2>
             <div className="office-print__section-body">
               {renderFeeTable(feeReport, isWalkIn)}
+              <div className="office-print__doc-checklist-wrap">
+                <h3 className="office-print__doc-checklist-title">Documents from parents (please submit)</h3>
+                <ul className="office-print__doc-checklist">
+                  {parentDocumentChecklist.map((item) => (
+                    <li key={item}>
+                      <span className="office-print__doc-checkbox" aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </section>
         )}
@@ -536,9 +552,25 @@ function OfficePrintSummary({ onOpenTool }) {
           </section>
         )}
 
+        </div>
+
         <footer className="office-print__footer">
-          <p>Estimate only — subject to school confirmation. Official receipt required for all payments.</p>
-          <p>{site.name} · {contact.email}</p>
+          <div className="office-print__signatures" aria-label="Signatures">
+            <div className="office-print__signature">
+              <span className="office-print__signature-line" />
+              <span>Signature of assigned teacher</span>
+            </div>
+            <div className="office-print__signature">
+              <span className="office-print__signature-line" />
+              <span>Signature of parent(s)</span>
+            </div>
+          </div>
+          {hasSchoolFees && (
+            <div className="office-print__page-disclaimer">
+              <p>Estimate only — subject to school confirmation. Official receipt required for all payments.</p>
+              <p>{site.name} · {contact.email}</p>
+            </div>
+          )}
         </footer>
       </article>
     </div>
@@ -546,40 +578,19 @@ function OfficePrintSummary({ onOpenTool }) {
 }
 
 function renderFeeTable(feeReport, walkInOnly) {
-  const showDiscounts = !walkInOnly && (feeReport.scholarshipPercent > 0 || feeReport.siblingDiscount)
+  const { rows } = buildPrintSchoolFeeRows(feeReport, walkInOnly, formatINR)
   return (
     <table className="office-print__data-table office-print__data-table--amount">
       <tbody>
-        <tr>
-          <th>Annual tuition</th>
-          <td>{formatINR(feeReport.tuition)}</td>
-        </tr>
-        {!walkInOnly && feeReport.scholarshipPercent > 0 && (
-          <tr className="office-print__row-discount">
-            <th>Scholarship ({feeReport.scholarshipPercent}%)</th>
-            <td>- {formatINR(feeReport.scholarshipAmount)}</td>
+        {rows.map((row) => (
+          <tr
+            key={row.label}
+            className={row.isTotal ? 'office-print__row-total' : undefined}
+          >
+            <th>{row.label}</th>
+            <td>{row.amount}</td>
           </tr>
-        )}
-        {!walkInOnly && feeReport.siblingDiscount && (
-          <tr className="office-print__row-discount">
-            <th>Sibling discount</th>
-            <td>- {formatINR(feeReport.siblingAmount)}</td>
-          </tr>
-        )}
-        {showDiscounts && (
-          <tr>
-            <th>Tuition payable</th>
-            <td>{formatINR(feeReport.tuitionPayable)}</td>
-          </tr>
-        )}
-        <tr>
-          <th>Admission fee (one-time)</th>
-          <td>{feeReport.admissionFee > 0 ? formatINR(feeReport.admissionFee) : '—'}</td>
-        </tr>
-        <tr className="office-print__row-total">
-          <th>Estimated 1st year total</th>
-          <td>{formatINR(feeReport.firstYearTotal)}</td>
-        </tr>
+        ))}
       </tbody>
     </table>
   )

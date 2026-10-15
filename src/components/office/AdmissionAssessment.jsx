@@ -11,6 +11,7 @@ import { getStudentAssessmentReport } from '../../utils/assessmentReport'
 import { formatINR } from '../../utils/formatCurrency'
 import { openWhatsApp } from '../../utils/whatsapp'
 import { contact, site } from '../../data/siteData'
+import { admissionProcessFees, estimateFirstYearTotal, formatProcessFeeAmount } from '../../data/paymentRulesPrint'
 import AssessmentQuiz from './AssessmentQuiz'
 import OfficeStepBar from './OfficeStepBar'
 import ProgressIcon from './ProgressIcon'
@@ -106,13 +107,16 @@ function AdmissionAssessment({ onOpenTool }) {
       : 0
     const tuitionPayable = afterScholarship - siblingAmount
 
-    return {
+    const partial = {
       tuition,
       admissionFee,
       scholarshipAmount,
       siblingAmount,
       tuitionPayable,
-      firstYearTotal: tuitionPayable + admissionFee,
+    }
+    return {
+      ...partial,
+      firstYearTotal: estimateFirstYearTotal(partial, false),
     }
   }, [selectedGrade, scholarship, siblingDiscount])
 
@@ -541,6 +545,12 @@ ${site.name}, ${site.location}
                     {feeSummary.admissionFee > 0 ? formatINR(feeSummary.admissionFee) : '—'}
                   </strong>
                 </li>
+                {admissionProcessFees.map((fee) => (
+                  <li key={fee.label}>
+                    <span>{fee.label}</span>
+                    <strong>{formatProcessFeeAmount(fee.amount, formatINR)}</strong>
+                  </li>
+                ))}
               </ul>
             </div>
 
