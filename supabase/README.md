@@ -1,6 +1,6 @@
 # Supabase setup (free)
 
-> **Not in use:** The website does not connect to Supabase right now. Office tools use browser session storage and Print/PDF only. Keep this folder for a future cloud-save rollout.
+Office tools still use **browser session storage** for assessments and fees. Supabase is used when you enable **public site analytics** (visits and watch time on the marketing site). `/office` is not tracked.
 
 ## 1. Create project
 
@@ -12,6 +12,7 @@
 
 1. In Supabase: **SQL Editor** → **New query**.
 2. Copy all of `schema.sql` from this folder → **Run**.
+3. For website analytics, run **`analytics.sql`**, then **`analytics_rollups.sql`** in the SQL Editor.
 
 ## 3. Create a staff login
 
@@ -65,6 +66,20 @@ After deploy, office save works on the live URL too.
 ## Viewing saved tests
 
 **Table Editor** → `admissions` — filter/sort by date, phone, class.
+
+## Website analytics (visits & watch time)
+
+1. Run `analytics.sql` (creates `site_analytics_events`), then `analytics_rollups.sql` (daily / monthly / yearly views).
+2. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local` and GitHub Actions secrets (see below).
+3. Redeploy. The React app sends:
+   - **`page_view`** on each public route change
+   - **`engagement`** with seconds spent (tab hidden, leave page, or ~30s heartbeat)
+
+**View stats:** Office → **Analytics** tab (sign in with Supabase staff user) — switch **Daily / Monthly / Yearly**. Or in Supabase **SQL Editor**: `select * from analytics_daily order by period_start desc limit 30;` (same for `analytics_monthly`, `analytics_yearly`). Only **authenticated** staff can read rollups; anonymous visitors can only insert events.
+
+**Privacy:** Each browser gets a random `visitor_id` in `localStorage` (not name/phone). You can add a short note on the Contact/Privacy page that you use analytics to improve the site.
+
+**Spam:** Open insert is limited by RLS checks. If you see junk rows, tighten policies or move inserts to a Supabase Edge Function later.
 
 ## Teachers table
 

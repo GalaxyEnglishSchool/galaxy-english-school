@@ -10,7 +10,13 @@ function OfficePage() {
   const [searchParams] = useSearchParams()
   const tab = searchParams.get('tab')
   const initialTab =
-    tab === 'bus' ? 'bus' : tab === 'print' ? 'print' : 'admission'
+    tab === 'bus'
+      ? 'bus'
+      : tab === 'print'
+        ? 'print'
+        : tab === 'analytics'
+          ? 'analytics'
+          : 'admission'
 
   return (
     <div className="office-page">

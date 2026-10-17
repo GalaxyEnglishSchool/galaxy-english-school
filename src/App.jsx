@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import SiteAnalytics from './components/SiteAnalytics'
 import HomePage from './pages/HomePage'
 
 const OfficePage = lazy(() => import('./pages/OfficePage'))
@@ -11,6 +12,7 @@ function App() {
     <>
       <div id="google_translate_element" aria-hidden="true" />
       <BrowserRouter basename={routerBasename}>
+        <SiteAnalytics />
         <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<HomePage />} />

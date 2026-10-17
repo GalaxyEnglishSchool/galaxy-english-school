@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { OfficeStudentProvider } from '../../context/OfficeStudentContext'
 import AdmissionAssessment from './AdmissionAssessment'
 import BusFeesCalculator from './BusFeesCalculator'
+import OfficeAnalytics from './OfficeAnalytics'
 import OfficePrintSummary from './OfficePrintSummary'
 import './OfficeTools.css'
 
@@ -23,6 +24,12 @@ const NAV_ITEMS = [
     label: 'Print / PDF',
     hint: 'Combined parent summary',
     icon: '📄',
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    hint: 'Daily · monthly · yearly',
+    icon: '📈',
   },
 ]
 
@@ -78,6 +85,13 @@ function OfficeTools({ initialTab = 'admission', standalone = false }) {
               <BusFeesCalculator />
             </div>
             {activeTab === 'print' && <OfficePrintSummary onOpenTool={setActiveTab} />}
+            <div
+              className="office-tab-panel"
+              hidden={activeTab !== 'analytics'}
+              aria-hidden={activeTab !== 'analytics'}
+            >
+              <OfficeAnalytics />
+            </div>
           </div>
         </div>
         </OfficeStudentProvider>
