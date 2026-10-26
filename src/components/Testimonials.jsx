@@ -51,7 +51,7 @@ function Testimonials() {
       <div className="container">
         <div className="section-header">
           <span className="section-label">Our Journey</span>
-          <h2 className="section-title">From vision to a thriving school</h2>
+          <h2 className="section-title">A dream from 2006, a legacy since 2008</h2>
         </div>
 
         <div

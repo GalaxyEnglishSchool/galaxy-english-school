@@ -59,7 +59,7 @@ export const joyGuideMessages = {
   journey: {
     title: 'Our Journey',
     lines: [
-      'Our school has grown since 2002!',
+      'Our school has grown since 2006!',
       'Walk through our milestones with me.',
     ],
   },

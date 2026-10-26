@@ -11,7 +11,7 @@ export const WEBSITE_JOY_TOUR_STEPS = [
   },
   {
     target: 'about',
-    message: 'Learn our story — how a vision from 2002 became a government-affiliated school in 2008.',
+    message: 'Learn our story — how a dream from 2006 became a government-affiliated school in 2008.',
   },
   {
     target: 'gallery',

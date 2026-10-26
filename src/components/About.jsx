@@ -31,10 +31,16 @@ function About() {
         <Reveal className="about__content" direction="left">
           <span className="section-label">About Us</span>
           <h2 className="section-title">{aboutStory.title}</h2>
+          {aboutStory.subtitle && (
+            <p className="about__story-tagline">{aboutStory.subtitle}</p>
+          )}
           <p className="about__board-badge">{site.board} · {site.grades}</p>
           {visibleParagraphs.map((paragraph) => (
             <p key={paragraph.slice(0, 40)}>{paragraph}</p>
           ))}
+          {expanded && aboutStory.closingTagline && (
+            <p className="about__closing-tagline">{aboutStory.closingTagline}</p>
+          )}
           {aboutStory.paragraphs.length > 2 && (
             <button
               type="button"

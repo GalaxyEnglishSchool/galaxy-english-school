@@ -1,7 +1,7 @@
 export const site = {
   name: 'Galaxy English School',
   udiseNumber: '27190117547',
-  tagline: 'Founded in 2008 · Vision Since 2002',
+  tagline: 'Founded in 2008 · A dream since 2006',
   board: 'Maharashtra State Board',
   grades: 'Play Group to 12th Standard',
   description:
@@ -117,14 +117,21 @@ export const stats = [
 ]
 
 export const aboutStory = {
-  title: 'A vision that became a school',
-  subtitle: 'Work began in 2002 — the school was founded in 2008',
+  title: 'Our Journey – The Story of Galaxy English School',
+  subtitle: 'A Dream That Began in 2006, A Legacy That Continues Since 2008',
   paragraphs: [
-    'It all began in the year 2002. Smt. Dhanashree Kalam-Patil Madam and Shri Deelip Nagorao Kalam-Patil (Government Officer, 2000 batch) shared a common vision — to nurture young minds and help every student bring out the very best in themselves. This vision became the seed from which Galaxy English School would eventually grow.',
-    'With great effort, patience and perseverance sustained over six long years, the dream steadily took shape. Finally, in 2008, the day arrived when the school received its official Government affiliation — a moment that turned years of hard work into reality.',
-    'The school was established in Chh. Sambhajinagar, made possible by the generous support extended toward its infrastructure and building by Shri Vijaykumar Kalam-Patil (IAS), who joined the Maharashtra State Government service as a Deputy Collector in 1987, together with Smt. Jaishree Kalam-Patil, and with the blessings of Grandfather "DAD." and Grandmother Puspabai.',
-    'And so, in 2008, Galaxy English School was founded. Its first inauguration ceremony was held with great joy and pride, graced by the presence of all the esteemed dignitaries who had walked alongside this journey from its very beginning in 2002.',
+    'Every great institution begins with a dream.',
+    'In 2006, the Kalam family came together with a shared vision — to nurture young minds, provide quality education, and inspire every child to discover their true potential.',
+    'This noble vision planted the seeds of what would one day become Galaxy English School.',
+    'Through years of dedication, determination, patience, and unwavering perseverance, the dream gradually transformed into reality.',
+    'Finally, in 2008, a remarkable milestone was achieved when the school received its official Government affiliation, marking the beginning of a new chapter in its educational journey.',
+    'Established in Chhatrapati Sambhajinagar, Galaxy English School became a reality through the generous support and invaluable contributions of Shri Vijaykumar Kalam-Patil (IAS), who began his service with the Maharashtra State Government as a Deputy Collector in 1987, and Smt. Jaishree Kalam-Patil. Their support toward the school\'s infrastructure and building played a significant role in laying its foundation.',
+    'The institution was also blessed with the love, wisdom, and guidance of Grandfather, lovingly known as "DADA" (Nagorav Kalam), and Grandmother, Smt. Puspabai Kalam. Their blessings remain an everlasting source of inspiration for the entire Galaxy family.',
+    'And so, in 2008, Galaxy English School was officially established, with its first inauguration ceremony celebrated with immense happiness, pride, and hope.',
+    'What began as a family\'s dream became a place where generations of young minds could learn, grow, and shine.',
   ],
+  closingTagline:
+    'Galaxy English School — Nurturing Young Minds, Building Bright Futures Since 2008.',
   highlights: [
     'Maharashtra State Board curriculum',
     'Play Group to 12th Standard',
@@ -132,7 +139,7 @@ export const aboutStory = {
     'Holistic development — academics, sports & values',
   ],
   foundersNote:
-    'Founded on the vision of Smt. Dhanashree Kalam-Patil & Shri Deelip Nagorao Kalam-Patil, with the support of Shri Vijaykumar Kalam-Patil (IAS) & Smt. Jaishree Kalam-Patil.',
+    'A Kalam family dream, strengthened by Shri Vijaykumar Kalam-Patil (IAS) & Smt. Jaishree Kalam-Patil, and blessed by DADA (Nagorav Kalam) and Smt. Puspabai Kalam.',
 }
 
 export const features = [
@@ -211,16 +218,16 @@ export const courses = [
 
 export const milestones = [
   {
-    year: '2002',
-    title: 'The Vision Begins',
+    year: '2006',
+    title: 'The Dream Takes Root',
     quote:
-      'Smt. Dhanashree Kalam-Patil and Shri Deelip Nagorao Kalam-Patil envisioned a school that would nurture young minds and bring out the best in every student.',
+      'The Kalam family united around a shared vision — to nurture young minds, provide quality education, and inspire every child to discover their true potential.',
   },
   {
     year: '2008',
-    title: 'School Established : Government Affiliation (Private)',
+    title: 'Government Affiliation & Official Establishment',
     quote:
-      'After six years of dedicated effort, Galaxy English School received its official Government affiliation (Private) — turning a long-held dream into realityThe school was inaugurated in Chh. Sambhajinagar with the support of Shri Vijaykumar Kalam-Patil (IAS), Smt. Jaishree Kalam-Patil, and the blessings of the family elders.',
+      'Galaxy English School received Government affiliation and was inaugurated in Chhatrapati Sambhajinagar — with the support of Shri Vijaykumar Kalam-Patil (IAS), Smt. Jaishree Kalam-Patil, and the blessings of DADA (Nagorav Kalam) and Smt. Puspabai Kalam.',
   },
   {
     year: '2025',
