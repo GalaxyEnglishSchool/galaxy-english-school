@@ -25,6 +25,7 @@ export const navLinks = [
   { label: 'About', href: '#about' },
   { label: 'Gallery', href: '#gallery' },
   { label: 'Academics', href: '#courses' },
+  { label: 'Achievements', href: '#achievements' },
   { label: 'Our Journey', href: '#journey' },
   { label: 'Office Tools', href: 'office', openInNewTab: true },
   { label: 'Contact', href: '#contact' },

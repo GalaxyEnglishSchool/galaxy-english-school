@@ -26,6 +26,11 @@ export const WEBSITE_JOY_TOUR_STEPS = [
     message: 'See our academics from Play Group to 12th — early years, school, and higher secondary streams.',
   },
   {
+    target: 'achievements',
+    message:
+      'SSC (Std 10) State Board results — 100% pass rate and 20+ students at 90% and above.',
+  },
+  {
     target: 'journey',
     message: 'Walk through our milestones — from the first vision to a thriving school today.',
   },

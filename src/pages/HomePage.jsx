@@ -6,12 +6,14 @@ import JoyGuide from '../components/JoyGuide'
 import JoyFieldTour from '../components/office/JoyFieldTour'
 import Stats from '../components/Stats'
 import Footer from '../components/Footer'
+import ExcellenceBadge from '../components/ExcellenceBadge'
 import { WEBSITE_JOY_TOUR_STEPS } from '../data/websiteJoyTourSteps'
 
 const About = lazy(() => import('../components/About'))
 const Gallery = lazy(() => import('../components/Gallery'))
 const Features = lazy(() => import('../components/Features'))
 const Courses = lazy(() => import('../components/Courses'))
+const Achievements = lazy(() => import('../components/Achievements'))
 const Testimonials = lazy(() => import('../components/Testimonials'))
 const Contact = lazy(() => import('../components/Contact'))
 function HomePageContent() {
@@ -28,6 +30,7 @@ function HomePageContent() {
           <Gallery />
           <Features />
           <Courses />
+          <Achievements />
           <Testimonials />
           <Contact />
         </Suspense>
@@ -42,6 +45,7 @@ function HomePageContent() {
         />
       )}
       <Footer />
+      <ExcellenceBadge />
     </>
   )
 }

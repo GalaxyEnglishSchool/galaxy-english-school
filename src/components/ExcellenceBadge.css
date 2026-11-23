@@ -1,0 +1,30 @@
+.excellence-badge {
+  position: fixed;
+  top: clamp(5rem, 18vh, 7.5rem);
+  left: max(0.35rem, env(safe-area-inset-left));
+  z-index: 420;
+  width: min(8.5rem, 22vw);
+  pointer-events: none;
+  filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.15));
+}
+
+.excellence-badge__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 1280px) {
+  .excellence-badge {
+    width: min(7rem, 20vw);
+    top: clamp(4.75rem, 15vh, 6.75rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .excellence-badge {
+    width: min(5.25rem, 26vw);
+    top: auto;
+    bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 4.5rem));
+  }
+}

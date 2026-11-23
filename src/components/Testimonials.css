@@ -1,5 +1,9 @@
 /* Our Journey — horizontal ladder, progressive card sizes */
 
+#journey.section--compact {
+  padding-top: 1.25rem;
+}
+
 .journey-ladder {
   display: flex;
   flex-direction: column;
