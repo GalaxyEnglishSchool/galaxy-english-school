@@ -45,6 +45,9 @@ export function OfficeStudentProvider({ children }) {
       hasAdmission: Boolean(packet.admission?.applicationId),
       hasWalkIn: Boolean(packet.walkIn?.applicationId),
       hasBus: Boolean(packet.bus?.distanceKm && packet.bus?.monthlyTotal != null),
+      busOpted: Boolean(
+        packet.bus?.opted && packet.bus?.distanceKm != null && packet.bus?.monthlyTotal != null,
+      ),
     }),
     [packet, setAdmission, setAdmissionDraft, setWalkIn, setBus, clearPacket],
   )

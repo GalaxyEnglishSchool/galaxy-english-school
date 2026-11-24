@@ -3,7 +3,7 @@
 /** One-time fees at admission (edit amounts here). */
 export const admissionProcessFees = [
   { label: 'ID card & diary fees', amount: 350 },
-  { label: 'Form filling process fees (as per Govt. rules)', amount: 350 },
+  { label: 'Nirgam form processing fees', amount: 350 },
 ]
 
 export const parentDocumentChecklist = [
@@ -32,10 +32,48 @@ export function formatProcessFeeAmount(amount, formatFn) {
   return formatFn(amount)
 }
 
+/** Page 2 — tuition payment choice (blank schedule for office to fill). */
+export const schoolInstallmentSectionTitle = 'One-time or installment (max 3 per year)'
+
+export const schoolInstallmentIntro =
+  'Pay the full year in one payment, or in up to 3 installments. School office will note due dates and amounts below.'
+
+export const schoolInstallmentTableHeaders = ['Installment', 'Due date', 'Amount (Rs.)']
+
+/** Blank rows — dates and amounts filled by office at admission. */
+export const schoolInstallmentScheduleRows = [
+  { id: '1', label: '1st installment' },
+  { id: '2', label: '2nd installment' },
+  { id: '3', label: '3rd installment' },
+]
+
+export const schoolInstallmentOneTimeRow = { id: 'one-time', label: 'One-time (full year)' }
+
+export const schoolInstallmentLateFeeNote =
+  'If not paid by the due date, late fee Rs. 100/- per month applies until payment is received.'
+
+export function schoolInstallmentTableBody() {
+  return [
+  [schoolInstallmentOneTimeRow.label, '', ''],
+  ...schoolInstallmentScheduleRows.map((row) => [row.label, '', '']),
+  ]
+}
+
 export const schoolPaymentRules = [
   'School fees should be paid before the half-year deadline communicated by the office.',
-  'Fees may be paid in a single payment or in up to 3 installments, as arranged with the school.',
+  'If payment is not received by the due date, late fee Rs. 100/- per month applies.',
   'A valid payment receipt from the school office is mandatory — parents must collect and keep it.',
+]
+
+/** Page 2 — after UPI QR — parent ethics & compliance (edit text here). */
+export const parentEthicsSectionTitle = 'Parents — ethics & compliance'
+
+export const parentEthicsRules = [
+  'Parents and guardians must follow school policies, circulars, and ethical conduct as notified by the management.',
+  'Every parent is requested to take their child\'s report home and review it with the student.',
+  'The school is responsible for the wellbeing and development of your child, but it is equal responsibility of the parent to take care and guide the child at home.',
+  'If parents disrespect teachers or any concerned staff of the school, legal action will be taken against them.',
+  'Parents must cooperate with the school on attendance, discipline, fees, safety, and all matters as per school rules.',
 ]
 
 export const busPaymentRules = [

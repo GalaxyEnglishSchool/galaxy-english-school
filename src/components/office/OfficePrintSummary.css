@@ -129,6 +129,27 @@
   color: #047857;
 }
 
+.office-print__pill--muted {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #92400e;
+}
+
+.office-print__bus-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  cursor: pointer;
+  max-width: 28rem;
+}
+
+.office-print__bus-opt input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
 .office-print__link-actions,
 .office-print__export-actions {
   display: flex;
@@ -795,6 +816,136 @@
   grid-template-columns: 1fr;
 }
 
+.office-print__page-break {
+  break-before: page;
+  page-break-before: always;
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 2px dashed var(--doc-border);
+}
+
+.office-print__page--2 {
+  display: flex;
+  flex-direction: column;
+  min-height: 277mm;
+  box-sizing: border-box;
+}
+
+.office-print__page2-main {
+  flex: 1 1 auto;
+}
+
+.office-print__page2-title {
+  margin: 0 0 0.4rem;
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--doc-navy);
+}
+
+.office-print__numbered-rules {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 7.5pt;
+  line-height: 1.35;
+}
+
+.office-print__numbered-rules li {
+  margin-bottom: 0.15rem;
+}
+
+.office-print__installment-intro {
+  margin: 0 0 0.35rem;
+  font-size: 7.5pt;
+  color: var(--doc-muted);
+  line-height: 1.35;
+}
+
+.office-print__installment-late {
+  margin: 0.35rem 0 0;
+  font-size: 7.5pt;
+  font-weight: 600;
+  color: var(--doc-navy);
+  line-height: 1.35;
+}
+
+.office-print__data-table--installment {
+  width: 100%;
+  margin-top: 0.2rem;
+}
+
+.office-print__data-table--installment thead th {
+  background: #f3f4f6;
+  font-size: 7.5pt;
+}
+
+.office-print__data-table--installment tbody th {
+  width: 38%;
+  font-size: 7.5pt;
+  font-weight: 700;
+  text-align: left;
+}
+
+.office-print__data-table--installment .office-print__cell-blank {
+  min-height: 1.55rem;
+  height: 1.55rem;
+}
+
+.office-print__qr-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.office-print__qr-row--single {
+  justify-content: center;
+}
+
+.office-print__qr-card {
+  margin: 0;
+  text-align: center;
+}
+
+.office-print__qr-card img {
+  display: block;
+  width: 36mm;
+  height: 36mm;
+  object-fit: contain;
+  margin: 0 auto;
+  border: 1px solid var(--doc-border);
+  border-radius: 4px;
+}
+
+.office-print__qr-card-img--full {
+  width: auto;
+  max-width: 48mm;
+  height: auto;
+  max-height: 68mm;
+  border: none;
+  border-radius: 2px;
+}
+
+.office-print__qr-card figcaption,
+.office-print__qr-card-title {
+  margin: 0 0 0.25rem;
+  font-size: 8pt;
+  font-weight: 700;
+  color: var(--doc-navy);
+}
+
+.office-print__qr-hint {
+  margin: 0.35rem 0 0;
+  font-size: 7pt;
+  color: var(--doc-muted);
+  text-align: center;
+}
+
+.office-print__footer--page2 {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 0.45rem;
+}
+
 .office-print__footer {
   flex-shrink: 0;
   margin-top: auto;
@@ -915,5 +1066,21 @@
     box-shadow: none;
     transform: none !important;
     min-height: auto !important;
+  }
+
+  body.office-print-mode .office-print__page-break {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  body.office-print-mode .office-print__page--2 {
+    min-height: 277mm;
+    page-break-after: avoid;
+  }
+
+  body.office-print-mode .office-print__footer--page2 {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }

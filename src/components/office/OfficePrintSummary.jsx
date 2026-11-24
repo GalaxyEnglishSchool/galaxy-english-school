@@ -1,7 +1,21 @@
 import { useMemo, useRef, useState } from 'react'
 import schoolLogo from '../../assets/school.png'
+import schoolFeesQr from '../../assets/office/school-fees-qr-full.jpg'
+import busFeesQr from '../../assets/office/bus-fees-qr-full.jpg'
 import { academicYear, gradeFees } from '../../data/admissionData'
-import { busPaymentRules, parentDocumentChecklist, schoolPaymentRules } from '../../data/paymentRulesPrint'
+import {
+  busPaymentRules,
+  parentDocumentChecklist,
+  schoolInstallmentIntro,
+  schoolInstallmentLateFeeNote,
+  schoolInstallmentOneTimeRow,
+  schoolInstallmentScheduleRows,
+  schoolInstallmentSectionTitle,
+  schoolInstallmentTableHeaders,
+  schoolPaymentRules,
+  parentEthicsRules,
+  parentEthicsSectionTitle,
+} from '../../data/paymentRulesPrint'
 import { buildPrintSchoolFeeRows } from '../../utils/buildPrintFeeRows'
 import { contact, site } from '../../data/siteData'
 import { formatINR } from '../../utils/formatCurrency'
@@ -74,6 +88,8 @@ function OfficePrintSummary({ onOpenTool }) {
     hasAdmission,
     hasWalkIn,
     hasBus,
+    busOpted,
+    setBus,
     setWalkIn,
     clearPacket,
   } = useOfficeStudent()
@@ -100,7 +116,7 @@ function OfficePrintSummary({ onOpenTool }) {
   const tone = scoreTone(testScore.percent)
 
   const displayBus = useMemo(() => {
-    if (!hasBus) return null
+    if (!hasBus || !busOpted) return null
     if (isWalkIn) {
       return {
         ...bus,
@@ -110,9 +126,14 @@ function OfficePrintSummary({ onOpenTool }) {
       }
     }
     return bus
-  }, [bus, hasBus, isWalkIn])
+  }, [bus, hasBus, busOpted, isWalkIn])
 
-  const canExport = hasSchoolFees || hasBus
+  const canExport = hasSchoolFees || (hasBus && busOpted)
+
+  const setBusOptedForForm = (opted) => {
+    if (!bus) return
+    setBus({ ...bus, opted })
+  }
 
   const applyWalkInReport = () => {
     const built = buildWalkInAdmission(walkInForm)
@@ -137,6 +158,8 @@ function OfficePrintSummary({ onOpenTool }) {
 
   const pdfExportPayload = () => ({
     logoUrl: schoolLogo,
+    schoolQrUrl: schoolFeesQr,
+    busQrUrl: displayBus ? busFeesQr : undefined,
     fileName: pdfFileNameFromStudent(feeReport?.student?.name),
     printDate,
     isWalkIn,
@@ -286,11 +309,33 @@ function OfficePrintSummary({ onOpenTool }) {
               <span className={hasWalkIn ? 'office-print__pill office-print__pill--ok' : 'office-print__pill'}>
                 {hasWalkIn ? 'Classwise fees ready' : 'Classwise fees not set'}
               </span>
-              <span className={hasBus ? 'office-print__pill office-print__pill--ok' : 'office-print__pill'}>
-                {hasBus ? 'Bus quote saved' : 'Bus optional'}
+              <span
+                className={
+                  busOpted
+                    ? 'office-print__pill office-print__pill--ok'
+                    : hasBus
+                      ? 'office-print__pill office-print__pill--muted'
+                      : 'office-print__pill'
+                }
+              >
+                {busOpted ? 'Bus opted' : hasBus ? 'Bus quote (not on form)' : 'Bus optional'}
               </span>
             </div>
           </div>
+
+          {hasBus && (
+            <div className="office-print__toolbar-row office-print__toolbar-row--bus-opt">
+              <span className="office-print__toolbar-label">Bus on form</span>
+              <label className="office-print__bus-opt">
+                <input
+                  type="checkbox"
+                  checked={busOpted}
+                  onChange={(e) => setBusOptedForForm(e.target.checked)}
+                />
+                <span>Bus facility opted (show bus fees, QR &amp; rules on PDF)</span>
+              </label>
+            </div>
+          )}
 
           {((reportMode === 'session' && !hasAdmission) || !hasBus) && (
             <div className="office-print__toolbar-row office-print__toolbar-row--links">
@@ -344,6 +389,7 @@ function OfficePrintSummary({ onOpenTool }) {
 
       <article ref={sheetRef} className="office-print__sheet" aria-label="A4 summary preview">
         <div className="office-print__sheet-body">
+        <div className="office-print__page office-print__page--1">
         <header className="office-print__masthead">
           <img
             src={schoolLogo}
@@ -520,58 +566,166 @@ function OfficePrintSummary({ onOpenTool }) {
           </section>
         )}
 
-        {hasSchoolFees && (
-          <section className="office-print__section">
-            <h2 className="office-print__section-title">Payment rules &amp; conditions</h2>
-            <div className="office-print__section-body">
-              <div
-                className={`office-print__rules-grid${
-                  displayBus ? '' : ' office-print__rules-grid--single'
-                }`}
-              >
-                <div>
-                  <h4>School fees</h4>
-                  <ol>
-                    {schoolPaymentRules.map((rule) => (
-                      <li key={rule}>{rule}</li>
-                    ))}
-                  </ol>
-                </div>
-                {displayBus && (
-                  <div>
-                    <h4>Bus (if opted)</h4>
-                    <ol>
-                      {busPaymentRules.map((rule) => (
-                        <li key={rule}>{rule}</li>
+        </div>
+
+        {(hasSchoolFees || displayBus) && (
+          <div className="office-print__page office-print__page--2 office-print__page-break">
+            <div className="office-print__page2-main">
+            <h2 className="office-print__page2-title">Payment — options, QR &amp; rules</h2>
+
+            {hasSchoolFees && (
+              <section className="office-print__section">
+                <h2 className="office-print__section-title">{schoolInstallmentSectionTitle}</h2>
+                <div className="office-print__section-body">
+                  <p className="office-print__installment-intro">{schoolInstallmentIntro}</p>
+                  <table className="office-print__data-table office-print__data-table--installment">
+                    <thead>
+                      <tr>
+                        {schoolInstallmentTableHeaders.map((heading) => (
+                          <th key={heading} scope="col">
+                            {heading}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">{schoolInstallmentOneTimeRow.label}</th>
+                        <td className="office-print__cell-blank" aria-label="Due date — blank" />
+                        <td className="office-print__cell-blank" aria-label="Amount — blank" />
+                      </tr>
+                      {schoolInstallmentScheduleRows.map((row) => (
+                        <tr key={row.id}>
+                          <th scope="row">{row.label}</th>
+                          <td className="office-print__cell-blank" aria-label="Due date — blank" />
+                          <td className="office-print__cell-blank" aria-label="Amount — blank" />
+                        </tr>
                       ))}
-                    </ol>
-                  </div>
-                )}
+                    </tbody>
+                  </table>
+                  <p className="office-print__installment-late">{schoolInstallmentLateFeeNote}</p>
+                </div>
+              </section>
+            )}
+
+            <section className="office-print__section office-print__section--qr">
+              <h2 className="office-print__section-title">Pay by UPI (scan QR)</h2>
+              <div className="office-print__section-body">
+                <div
+                  className={`office-print__qr-row${
+                    hasSchoolFees && displayBus ? '' : ' office-print__qr-row--single'
+                  }`}
+                >
+                  {hasSchoolFees && (
+                    <figure className="office-print__qr-card">
+                      <figcaption className="office-print__qr-card-title">School fees QR</figcaption>
+                      <img
+                        src={schoolFeesQr}
+                        alt="School fees QR — Pay by UPI"
+                        className="office-print__qr-card-img--full"
+                      />
+                    </figure>
+                  )}
+                  {displayBus && (
+                    <figure className="office-print__qr-card">
+                      <figcaption className="office-print__qr-card-title">Bus fees QR</figcaption>
+                      <img
+                        src={busFeesQr}
+                        alt="Bus fees QR — Pay by UPI"
+                        className="office-print__qr-card-img--full"
+                      />
+                    </figure>
+                  )}
+                </div>
+                <p className="office-print__qr-hint">Scan with any UPI app (Paytm, GPay, PhonePe, BHIM)</p>
               </div>
+            </section>
+
+            <section className="office-print__section">
+              <h2 className="office-print__section-title">{parentEthicsSectionTitle}</h2>
+              <div className="office-print__section-body">
+                <ol className="office-print__numbered-rules office-print__numbered-rules--ethics">
+                  {parentEthicsRules.map((rule) => (
+                    <li key={rule}>{rule}</li>
+                  ))}
+                </ol>
+              </div>
+            </section>
+
+            {hasSchoolFees && (
+              <section className="office-print__section">
+                <h2 className="office-print__section-title">Payment rules &amp; conditions</h2>
+                <div className="office-print__section-body">
+                  <div
+                    className={`office-print__rules-grid${
+                      displayBus ? '' : ' office-print__rules-grid--single'
+                    }`}
+                  >
+                    <div>
+                      <h4>School fees</h4>
+                      <ol>
+                        {schoolPaymentRules.map((rule) => (
+                          <li key={rule}>{rule}</li>
+                        ))}
+                      </ol>
+                    </div>
+                    {displayBus && (
+                      <div>
+                        <h4>Bus (if opted)</h4>
+                        <ol>
+                          {busPaymentRules.map((rule) => (
+                            <li key={rule}>{rule}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {!hasSchoolFees && displayBus && (
+              <section className="office-print__section">
+                <h2 className="office-print__section-title">Payment rules &amp; conditions</h2>
+                <div className="office-print__section-body">
+                  <div className="office-print__rules-grid office-print__rules-grid--single">
+                    <div>
+                      <h4>Bus (if opted)</h4>
+                      <ol>
+                        {busPaymentRules.map((rule) => (
+                          <li key={rule}>{rule}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
             </div>
-          </section>
+
+            <footer className="office-print__footer office-print__footer--page2">
+              <div className="office-print__signatures" aria-label="Signatures">
+                <div className="office-print__signature">
+                  <span className="office-print__signature-line" />
+                  <span>Signature of assigned teacher</span>
+                </div>
+                <div className="office-print__signature">
+                  <span className="office-print__signature-line" />
+                  <span>Signature of parent(s)</span>
+                </div>
+              </div>
+              <div className="office-print__page-disclaimer">
+                <p>Estimate only — subject to school confirmation. Official receipt required for all payments.</p>
+                <p>
+                  {site.name} · {contact.email}
+                </p>
+              </div>
+            </footer>
+          </div>
         )}
 
         </div>
-
-        <footer className="office-print__footer">
-          <div className="office-print__signatures" aria-label="Signatures">
-            <div className="office-print__signature">
-              <span className="office-print__signature-line" />
-              <span>Signature of assigned teacher</span>
-            </div>
-            <div className="office-print__signature">
-              <span className="office-print__signature-line" />
-              <span>Signature of parent(s)</span>
-            </div>
-          </div>
-          {hasSchoolFees && (
-            <div className="office-print__page-disclaimer">
-              <p>Estimate only — subject to school confirmation. Official receipt required for all payments.</p>
-              <p>{site.name} · {contact.email}</p>
-            </div>
-          )}
-        </footer>
       </article>
     </div>
   )

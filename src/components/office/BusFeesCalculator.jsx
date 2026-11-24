@@ -22,7 +22,8 @@ import './BusFees.css'
 const BUS_JOY_TOUR_KEY = 'galaxy-bus-joy-tour-done'
 
 function BusFeesCalculator() {
-  const { setBus, admission } = useOfficeStudent()
+  const { setBus, admission, bus: savedBus } = useOfficeStudent()
+  const [includeOnParentForm, setIncludeOnParentForm] = useState(() => Boolean(savedBus?.opted))
   const [destination, setDestination] = useState('')
   const [showMap, setShowMap] = useState(false)
   const [distanceKm, setDistanceKm] = useState('')
@@ -97,6 +98,7 @@ function BusFeesCalculator() {
       busSiblingDiscount: calculation.discount,
       monthlyTotal: calculation.total,
       studentName: admission?.student?.name ?? '',
+      opted: includeOnParentForm,
     })
   }, [
     hasValidKm,
@@ -107,6 +109,7 @@ function BusFeesCalculator() {
     selectedTrip,
     siblingDiscount,
     calculation,
+    includeOnParentForm,
     setBus,
     admission?.student?.name,
   ])
@@ -331,6 +334,17 @@ ${site.name}, ${site.location}`
           >
             <span className="bus-toggle__track"><span className="bus-toggle__thumb" /></span>
             <span>Sibling discount ({busFeeOptions.siblingDiscountPercent}%)</span>
+          </button>
+
+          <button
+            type="button"
+            className={`bus-toggle bus-report__opt-form${includeOnParentForm ? ' bus-toggle--on' : ''}`}
+            onClick={() => setIncludeOnParentForm((v) => !v)}
+            aria-pressed={includeOnParentForm}
+            disabled={!hasValidKm}
+          >
+            <span className="bus-toggle__track"><span className="bus-toggle__thumb" /></span>
+            <span>Bus facility opted (include on parent PDF &amp; print)</span>
           </button>
 
           <div

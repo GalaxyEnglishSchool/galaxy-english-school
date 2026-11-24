@@ -5,7 +5,18 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { academicYear } from '../data/admissionData'
-import { busPaymentRules, parentDocumentChecklist, schoolPaymentRules } from '../data/paymentRulesPrint'
+import {
+  busPaymentRules,
+  parentDocumentChecklist,
+  schoolInstallmentIntro,
+  schoolInstallmentLateFeeNote,
+  schoolInstallmentSectionTitle,
+  schoolInstallmentTableBody,
+  schoolInstallmentTableHeaders,
+  schoolPaymentRules,
+  parentEthicsRules,
+  parentEthicsSectionTitle,
+} from '../data/paymentRulesPrint'
 import { contact, site } from '../data/siteData'
 import { buildPrintSchoolFeeRows } from './buildPrintFeeRows'
 
@@ -35,6 +46,34 @@ function loadImageDataUrl(src) {
     img.onerror = () => reject(new Error('Could not load school logo for PDF.'))
     img.src = src
   })
+}
+
+/** Full Paytm/UPI card JPEGs — keep natural aspect in PDF. */
+function loadImageForPdf(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0)
+      resolve({
+        dataUrl: canvas.toDataURL('image/jpeg', 0.92),
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+      })
+    }
+    img.onerror = () => reject(new Error('Could not load QR image for PDF.'))
+    img.src = src
+  })
+}
+
+function qrDisplaySizeMm(naturalW, naturalH, maxWmm) {
+  const w = maxWmm
+  const h = (naturalH / naturalW) * w
+  return { w, h }
 }
 
 function sectionBar(doc, title, y, { compact = false } = {}) {
@@ -319,6 +358,100 @@ function drawBusPanel(doc, y, displayBus) {
   return doc.lastAutoTable.finalY + 4
 }
 
+function drawNumberedRules(doc, y, rules) {
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7.5)
+  rules.forEach((rule, i) => {
+    const lines = wrapLines(doc, `${i + 1}. ${rule}`, CONTENT_W - 4)
+    y = ensureSpace(doc, y, lines.length * 3.2 + 1)
+    doc.text(lines, MARGIN + 2, y)
+    y += lines.length * 3.2 + 0.8
+  })
+  return y
+}
+
+function drawInstallmentSection(doc, y) {
+  y = sectionBar(doc, schoolInstallmentSectionTitle, y)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7.5)
+  const intro = wrapLines(doc, schoolInstallmentIntro, CONTENT_W)
+  y = ensureSpace(doc, y, intro.length * 3.2 + 4)
+  doc.text(intro, MARGIN, y)
+  y += intro.length * 3.2 + 3
+
+  autoTable(doc, {
+    startY: y,
+    margin: { left: MARGIN, right: MARGIN },
+    theme: 'grid',
+    styles: { fontSize: 8, cellPadding: 2.2, minCellHeight: 11, valign: 'middle' },
+    head: [schoolInstallmentTableHeaders],
+    headStyles: { fillColor: [243, 244, 246], textColor: 55, fontStyle: 'bold' },
+    body: schoolInstallmentTableBody(),
+    columnStyles: {
+      0: { cellWidth: 52, fontStyle: 'bold' },
+      1: { cellWidth: (CONTENT_W - 52 - 48) / 2 + 10, halign: 'left' },
+      2: { cellWidth: 48, halign: 'right' },
+    },
+  })
+  y = doc.lastAutoTable.finalY + 3
+
+  doc.setFontSize(7)
+  const lateNote = wrapLines(doc, schoolInstallmentLateFeeNote, CONTENT_W)
+  y = ensureSpace(doc, y, lateNote.length * 3.2 + 2)
+  doc.text(lateNote, MARGIN, y)
+  return y + lateNote.length * 3.2 + 2
+}
+
+function drawQrPaymentSection(doc, y, { schoolQr, busQr, showBus }) {
+  y = sectionBar(doc, 'Pay by UPI (scan QR)', y)
+  const gap = 6
+  const dualMaxW = (CONTENT_W - gap) / 2
+  const singleMaxW = Math.min(56, CONTENT_W)
+
+  const labelGap = 3.5
+
+  const drawCard = (qr, label, x, yPos, maxW) => {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8)
+    doc.setTextColor(...NAVY)
+    const { w, h } = qrDisplaySizeMm(qr.width, qr.height, maxW)
+    doc.text(label, x + w / 2, yPos, { align: 'center' })
+    const imageY = yPos + labelGap
+    doc.addImage(qr.dataUrl, 'JPEG', x, imageY, w, h)
+    doc.setTextColor(0, 0, 0)
+    return { w, h: h + labelGap }
+  }
+
+  if (showBus && busQr && schoolQr) {
+    const s = qrDisplaySizeMm(schoolQr.width, schoolQr.height, dualMaxW)
+    const b = qrDisplaySizeMm(busQr.width, busQr.height, dualMaxW)
+    const rowH = Math.max(s.h, b.h) + labelGap
+    const pairW = s.w + gap + b.w
+    const startX = MARGIN + (CONTENT_W - pairW) / 2
+    drawCard(schoolQr, 'School fees QR', startX, y, dualMaxW)
+    drawCard(busQr, 'Bus fees QR', startX + s.w + gap, y, dualMaxW)
+    y += rowH + 2
+    return y
+  }
+
+  if (showBus && busQr) {
+    const sized = qrDisplaySizeMm(busQr.width, busQr.height, singleMaxW)
+    const x = MARGIN + (CONTENT_W - sized.w) / 2
+    drawCard(busQr, 'Bus fees QR', x, y, singleMaxW)
+    return y + sized.h + labelGap + 2
+  }
+
+  if (schoolQr) {
+    const { w, h } = qrDisplaySizeMm(schoolQr.width, schoolQr.height, singleMaxW)
+    drawCard(schoolQr, 'School fees QR', MARGIN + (CONTENT_W - w) / 2, y, singleMaxW)
+    return y + h + labelGap + 2
+  }
+
+  doc.setFontSize(7.5)
+  doc.text('QR image not available — contact the school office for payment details.', MARGIN, y)
+  return y + 6
+}
+
 function drawDocumentsChecklist(doc, y) {
   y = ensureSpace(doc, y, 28)
   y = sectionBar(doc, 'Documents from parents (please submit)', y)
@@ -356,6 +489,8 @@ function pdfFileNameFromStudent(studentName) {
  */
 export async function buildParentSummaryPdf({
   logoUrl,
+  schoolQrUrl,
+  busQrUrl,
   fileName,
   printDate,
   isWalkIn,
@@ -467,59 +602,90 @@ export async function buildParentSummaryPdf({
     y = drawBusPanel(doc, y, displayBus)
   }
 
-  if (feeReport) {
-    y = ensureSpace(doc, y, 45)
-    y = sectionBar(doc, 'Payment rules & conditions', y)
-    doc.setFontSize(7.5)
+  /* —— Page 2: payment options, QR, rules —— */
+  if (feeReport || displayBus) {
+    let schoolQr = null
+    let busQr = null
+    try {
+      if (schoolQrUrl) schoolQr = await loadImageForPdf(schoolQrUrl)
+    } catch {
+      /* optional */
+    }
+    try {
+      if (busQrUrl && displayBus) busQr = await loadImageForPdf(busQrUrl)
+    } catch {
+      /* optional */
+    }
+
+    doc.addPage()
+    const paymentPageNumber = doc.internal.getNumberOfPages()
+    y = MARGIN
+
     doc.setFont('helvetica', 'bold')
-    doc.text('School fees', MARGIN, y)
-    y += 3.5
-    doc.setFont('helvetica', 'normal')
-    schoolPaymentRules.forEach((rule, i) => {
-      const lines = wrapLines(doc, `${i + 1}. ${rule}`, CONTENT_W - 4)
-      y = ensureSpace(doc, y, lines.length * 3.2 + 1)
-      doc.text(lines, MARGIN + 2, y)
-      y += lines.length * 3.2 + 0.8
-    })
-    if (displayBus) {
-      y += 2
+    doc.setFontSize(10)
+    doc.setTextColor(...NAVY)
+    doc.text('Payment — options, QR & rules', MARGIN, y + 4)
+    doc.setTextColor(0, 0, 0)
+    y += 10
+
+    if (feeReport) {
+      y = drawInstallmentSection(doc, y)
+      y = ensureSpace(doc, y, 55)
+      y = ensureSpace(doc, y, 75)
+      y = drawQrPaymentSection(doc, y, {
+        schoolQr,
+        busQr,
+        showBus: Boolean(displayBus),
+      })
+
+      y = ensureSpace(doc, y, 38)
+      y = sectionBar(doc, parentEthicsSectionTitle, y)
+      y = drawNumberedRules(doc, y, parentEthicsRules)
+
+      y = ensureSpace(doc, y, 40)
+      y = sectionBar(doc, 'Payment rules & conditions', y)
+      doc.setFontSize(7.5)
       doc.setFont('helvetica', 'bold')
+      doc.text('School fees', MARGIN, y)
+      y += 3.5
+      y = drawNumberedRules(doc, y, schoolPaymentRules)
+      if (displayBus) {
+        y += 2
+        doc.setFont('helvetica', 'bold')
+        doc.text('Bus (if opted)', MARGIN, y)
+        y += 3.5
+        y = drawNumberedRules(doc, y, busPaymentRules)
+      }
+    } else if (displayBus) {
+      y = ensureSpace(doc, y, 75)
+      y = drawQrPaymentSection(doc, y, { schoolQr: null, busQr, showBus: true })
+
+      y = ensureSpace(doc, y, 38)
+      y = sectionBar(doc, parentEthicsSectionTitle, y)
+      y = drawNumberedRules(doc, y, parentEthicsRules)
+
+      y = sectionBar(doc, 'Payment rules & conditions', y)
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(7.5)
       doc.text('Bus (if opted)', MARGIN, y)
       y += 3.5
-      doc.setFont('helvetica', 'normal')
-      busPaymentRules.forEach((rule, i) => {
-        const lines = wrapLines(doc, `${i + 1}. ${rule}`, CONTENT_W - 4)
-        y = ensureSpace(doc, y, lines.length * 3.2 + 1)
-        doc.text(lines, MARGIN + 2, y)
-        y += lines.length * 3.2 + 0.8
-      })
+      y = drawNumberedRules(doc, y, busPaymentRules)
     }
-  }
 
-  y = drawDocumentFooter(doc, y, { showDisclaimer: Boolean(feeReport) })
+    drawPage2FooterPinned(doc, paymentPageNumber)
+  }
 
   return { doc, fileName: resolvedFileName }
 }
 
-/** Signatures + disclaimer pinned to bottom of the page when there is room. */
-function drawDocumentFooter(doc, contentY, { showDisclaimer = true } = {}) {
+/** Page 2 only — signatures + disclaimer fixed at bottom of the payment page. */
+function drawPage2FooterPinned(doc, pageNumber) {
+  doc.setPage(pageNumber)
   const pageH = doc.internal.pageSize.getHeight()
-  const blockH = showDisclaimer ? 38 : 22
-  let y = contentY + 5
-
-  if (y + blockH <= pageH - MARGIN) {
-    const pinnedY = pageH - MARGIN - blockH
-    if (y < pinnedY) y = pinnedY
-  } else {
-    y = ensureSpace(doc, y, blockH)
-    const pageH2 = doc.internal.pageSize.getHeight()
-    const pinnedY = pageH2 - MARGIN - blockH
-    if (y < pinnedY) y = pinnedY
-  }
-
-  y = drawSignatureFooter(doc, y, { skipEnsure: true })
-  if (showDisclaimer) drawCenteredDisclaimerBlock(doc, y)
-  return y
+  const blockH = 36
+  const topY = pageH - MARGIN - blockH
+  let y = drawSignatureFooter(doc, topY, { skipEnsure: true })
+  drawCenteredDisclaimerBlock(doc, y)
 }
 
 function drawSignatureFooter(doc, y, { skipEnsure = false } = {}) {
