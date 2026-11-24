@@ -153,8 +153,16 @@ function startHeartbeat() {
   }, HEARTBEAT_MS)
 }
 
+/** No Supabase tracking on localhost / dev — production (GitHub Pages) only. */
+function isLocalAnalyticsHost() {
+  if (import.meta.env.DEV) return true
+  if (typeof window === 'undefined') return false
+  const host = window.location.hostname
+  return host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host === '0.0.0.0'
+}
+
 export function isSiteAnalyticsEnabled() {
-  return isSupabaseConfigured()
+  return isSupabaseConfigured() && !isLocalAnalyticsHost()
 }
 
 function isDuplicatePageView(path) {
@@ -180,7 +188,7 @@ function rememberPageView(path) {
  * Call on each SPA navigation. Sends page_view and rolls engagement for the previous page.
  */
 export async function trackPageView(path) {
-  if (!isSupabaseConfigured() || !shouldTrackPath(path)) return
+  if (!isSiteAnalyticsEnabled() || !shouldTrackPath(path)) return
 
   bindLifecycle()
 
